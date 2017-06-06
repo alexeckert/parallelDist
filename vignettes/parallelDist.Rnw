@@ -1,0 +1,365 @@
+% !Rnw driver = highlight::HighlightWeaveLatex()
+\documentclass[10pt]{article}
+%\VignetteIndexEntry{parallelDist vignette}
+%\VignetteEngine{highlight::highlight}
+%\VignetteKeywords{parallelDist, Performance}
+%\VignetteDepends{parallelDist, stats, ggplot2}
+
+\usepackage[USletter]{vmargin}
+\setmargrb{0.75in}{0.75in}{0.75in}{0.75in}
+
+\usepackage{color,alltt}
+\usepackage[colorlinks]{hyperref}
+\definecolor{link}{rgb}{0,0,0.3}	%% next few lines courtesy of RJournal.sty
+\hypersetup{
+    colorlinks,%
+    citecolor=link,%
+    filecolor=link,%
+    linkcolor=link,%
+    urlcolor=link
+}
+
+\usepackage{microtype}                     %% cf http://www.khirevich.com/latex/microtype/
+\usepackage[T1]{fontenc}		   %% cf http://www.khirevich.com/latex/font/
+\usepackage[bitstream-charter]{mathdesign} %% cf http://www.khirevich.com/latex/font/
+
+\newcommand{\proglang}[1]{\textsf{#1}}
+\newcommand{\pkg}[1]{{\fontseries{b}\selectfont #1}}
+\newcommand{\code}[1]{\texttt{#1}}
+\newcommand{\R}[0]{\proglang{R}}
+
+%% defined as a stop-gap measure til interaction with highlight is sorted out
+\newcommand{\hlboxlessthan}{   \hlnormalsizeboxlessthan}
+\newcommand{\hlboxgreaterthan}{\hlnormalsizeboxgreaterthan}
+\newcommand{\hlboxopenbrace}{  \hlnormalsizeboxopenbrace}
+\newcommand{\hlboxclosebrace}{ \hlnormalsizeboxclosebrace}
+\newcommand{\hlboxbacktick}{   \hlnormalsizeboxbacktick}
+\newcommand{\hlboxunderscore}{ \hlnormalsizeboxunderscore}
+
+%% This corresponds to setting boxes=TRUE for highlight
+\newsavebox{\hlbox}
+\definecolor{hlBg}{rgb}{0.949019607843137,0.949019607843137,0.949019607843137}
+\definecolor{hlBd}{rgb}{0.9,0.9,0.9} % border
+\renewenvironment{Hchunk}{\vspace{0.5em}\noindent\begin{lrbox}{\hlbox}\begin{minipage}[b]{.9\textwidth}}%
+    {\end{minipage}\end{lrbox}\fcolorbox{hlBd}{hlBg}{\usebox{\hlbox}}\vspace{0.5em}}
+
+\newcommand{\rdoc}[2]{\href{http://www.rdocumentation.org/packages/#1/functions/#2}{\code{#2}}}
+
+<<echo=FALSE,print=FALSE>>=
+prettyVersion <- packageDescription("parallelDist")$Version
+require(ggplot2)
+require(highlight)
+@
+
+\author{Alexander Eckert}
+\title{\pkg{parallelDist}}
+\date{\pkg{parallelDist} version \Sexpr{prettyVersion} as of \today}
+
+\begin{document}
+\maketitle
+
+\abstract{
+  \noindent This document highlights the performance gains for calculating distance matrices with the \pkg{parallelDist} package and provides basic usage examples.}
+
+\tableofcontents
+
+\section{Introduction}
+
+The \pkg{parallelDist} package provides a fast parallelized alternative to \proglang{R}'s native \rdoc{stats}{dist} function to calculate distance matrices for continuous, binary, and multi-dimensional input matrices and offers a broad variety of distance functions from the \pkg{stats}, \pkg{proxy} and \pkg{dtw} \proglang{R} packages. For ease of use, the \rdoc{parallelDist}{parDist} function extends the signature of the \rdoc{stats}{dist} function and uses the same parameter naming conventions as distance methods of existing \proglang{R} packages.
+
+The package is mainly implemented in \proglang{C++} and leverages the \pkg{Rcpp} \cite{Rcpp} and \pkg{RcppParallel} \cite{RcppParallel} package to parallelize the distance computations with the help of the TinyThread library. Furthermore, the Armadillo linear algebra library \cite{Sanderson:2010:Armadillo} is used via \pkg{RcppArmadillo} \cite{RcppArmadillo} for optimized matrix operations for distance calculations. The curiously recurring template pattern (CRTP) technique is applied to avoid virtual functions, which improves the Dynamic Time Warping calculations while keeping the implementation flexible enough to support different step patterns and normalization methods.
+
+\section{Performance}
+
+The inital motivation for building this package was the need for a fast Dynamic Time Warping implementation which uses multiple cores and supports multi-dimensional (time) series. DTW is an expensive distance measure, where the computation of the DTW distance between two series of length $N$ has a complexity of $\mathcal{O}(N^2)$. This motivates an efficient and parallelized implementation in \proglang{C++}.
+
+Figure \ref{fig:performanceDtw} shows a performance comparison between the \rdoc{parallelDist}{parDist} function of \pkg{parallelDist} and the \rdoc{stats}{dist} function in conjunction with the \pkg{dtw} package.
+
+The benchmark has been performed on a system with the following specifications:
+\begin{itemize}
+  \item Intel(R) Xeon(R) E3-1230 v3 @ 3.30 GHz, 4 cores with hyper-threading
+  \item 32 Gb RAM
+\end{itemize}
+
+As depicted in figure \ref{fig:performanceDtw}, \rdoc{parallelDist}{parDist} makes the calculation of large distance matrices with DTW up to 3 orders of magnitudes faster.
+
+\begin{figure}
+\begin{center}
+%height=4, width=8
+<<label=performanceDtw,fig=TRUE,echo=FALSE>>=
+comparison <- structure(list(expr = c("10", "100", "1000", "10000", "10", "100",
+"1000", "10000", "20000", "30000", "10", "100", "1000", "10000",
+"20000", "30000"), min = c(0.02173888, 2.508674745, 247.536645172,
+24893.826760134, 0.001671714, 0.003850385, 0.36582544, 37.370421954,
+150.985056588, 344.875058432, 0.000135292, 0.001352922, 0.123839325,
+11.108382113, 43.928450332, 99.357240761), lq = c(0.02173888,
+2.508674745, 247.536645172, 24893.826760134, 0.001671714, 0.003850385,
+0.36582544, 37.370421954, 150.985056588, 344.875058432, 0.000135292,
+0.001352922, 0.123839325, 11.108382113, 43.928450332, 99.357240761
+), mean = c(0.02173888, 2.508674745, 247.536645172, 24893.826760134,
+0.001671714, 0.003850385, 0.36582544, 37.370421954, 150.985056588,
+344.875058432, 0.000135292, 0.001352922, 0.123839325, 11.108382113,
+43.928450332, 99.357240761), median = c(0.02173888, 2.508674745,
+247.536645172, 24893.826760134, 0.001671714, 0.003850385, 0.36582544,
+37.370421954, 150.985056588, 344.875058432, 0.000135292, 0.001352922,
+0.123839325, 11.108382113, 43.928450332, 99.357240761), uq = c(0.02173888,
+2.508674745, 247.536645172, 24893.826760134, 0.001671714, 0.003850385,
+0.36582544, 37.370421954, 150.985056588, 344.875058432, 0.000135292,
+0.001352922, 0.123839325, 11.108382113, 43.928450332, 99.357240761
+), max = c(0.02173888, 2.508674745, 247.536645172, 24893.826760134,
+0.001671714, 0.003850385, 0.36582544, 37.370421954, 150.985056588,
+344.875058432, 0.000135292, 0.001352922, 0.123839325, 11.108382113,
+43.928450332, 99.357240761), neval = c(1, 1, 1, 1, 1, 1, 1, 1,
+1, 1, 1, 1, 1, 1, 1, 1), method = c("dtw", "dtw", "dtw", "dtw",
+"parDist threads=1", "parDist threads=1", "parDist threads=1",
+"parDist threads=1", "parDist threads=1", "parDist threads=1",
+"parDist threads=8", "parDist threads=8", "parDist threads=8",
+"parDist threads=8", "parDist threads=8", "parDist threads=8"
+)), .Names = c("expr", "min", "lq", "mean", "median", "uq", "max",
+"neval", "method"), row.names = c(NA, -16L), unit = "seconds", class = "data.frame")
+fig2 <- ggplot(data=comparison, aes(x=expr, y=min, group = method, colour = method)) +
+  geom_line() +
+  geom_point() +
+  expand_limits(y=0) +
+   guides(fill=guide_legend(title="Method")) +
+  xlab("Number of series (length 10)") +
+  ylab("Computation time in s") +
+  theme_light() +
+ # theme(plot.title = element_text(hjust = 0.5), legend.position="bottom") +
+  theme(legend.position="bottom") +
+  ggtitle("Distance matrix computation time (dtw, parDist)")
+print(fig2)
+@
+\end{center}
+\caption{Distance matrix computation time for Dynamic Time Warping}
+\label{fig:performanceDtw}
+\end{figure}
+
+The \rdoc{parallelDist}{parDist} function can be used as a replacement for the \rdoc{stats}{dist} function of the \pkg{stats} package, since it supports all other distance methods of the \pkg{stats} package and most of the distances of the \pkg{proxy} package. Figure \ref{fig:benchmarkOverall} shows the performance comparison of the \rdoc{parallelDist}{parDist} function with the distance methods of \pkg{stats} and the \pkg{proxy} package when calculating distance matrices with 5000 series of length 10.
+
+\begin{figure}
+\begin{center}
+%height=4, width=8
+<<label=benchmarkOverall,fig=TRUE,echo=FALSE>>=
+comparison.overall <- structure(list(expr = c("dist", "parDist", "dist", "parDist",
+"dist", "parDist", "dist", "parDist", "dist", "parDist", "dist",
+"parDist", "dist", "parDist", "dist", "parDist", "dist", "parDist",
+"dist", "parDist", "dist", "parDist", "dist", "parDist", "dist",
+"parDist", "dist", "parDist", "dist", "parDist", "dist", "parDist",
+"dist", "parDist", "dist", "parDist", "dist", "parDist", "dist",
+"parDist", "dist", "parDist", "dist", "parDist", "dist", "parDist",
+"dist", "parDist", "dist", "parDist", "dist", "parDist", "dist",
+"parDist", "dist", "parDist", "dist", "parDist", "dist", "parDist",
+"dist", "parDist", "dist", "parDist", "dist", "parDist", "dist",
+"parDist", "dist", "parDist", "dist", "parDist"), min = c(27.023019786,
+0.42355673, 23.337486167, 0.162221163, 1.132874622, 0.258428158,
+57.787881691, 0.192326593, 38.823629012, 0.218193139, 0.943546255,
+0.125315296, 1.19984082, 0.560230453, 49.638932656, 0.287721827,
+38.601467265, 0.575263573, 40.453796831, 1.274451564, 0.933230054,
+0.122381139, 0.933518058, 0.124280224, 894.344310554, 1.209659702,
+24.010877591, 0.504667156, 22.613629988, 0.625519014, 28.623759888,
+0.311995644, 0.748200286, 0.150044756, 25.131624635, 0.151615403,
+21.827435577, 0.151512145, 32.544226019, 0.166376382, 17.890447476,
+0.156928859, 20.680027643, 0.142911527, 16.802475029, 0.152215982,
+27.751515131, 0.140722573, 45.313170363, 0.163320617, 27.947986367,
+0.146164789, 26.016592883, 0.164806356, 24.045695896, 0.159119679,
+46.747133491, 0.150115357, 12.639720779, 0.134051207, 16.417508337,
+0.152236198, 23.787851211, 0.137237601, 664.737856716, 0.422527878,
+26.300990224, 0.149172968, 28.118753098, 0.150392786, 35.712203217,
+0.164383059), lq = c(27.023019786, 0.42355673, 23.337486167,
+0.162221163, 1.132874622, 0.258428158, 57.787881691, 0.192326593,
+38.823629012, 0.218193139, 0.943546255, 0.125315296, 1.19984082,
+0.560230453, 49.638932656, 0.287721827, 38.601467265, 0.575263573,
+40.453796831, 1.274451564, 0.933230054, 0.122381139, 0.933518058,
+0.124280224, 894.344310554, 1.209659702, 24.010877591, 0.504667156,
+22.613629988, 0.625519014, 28.623759888, 0.311995644, 0.748200286,
+0.150044756, 25.131624635, 0.151615403, 21.827435577, 0.151512145,
+32.544226019, 0.166376382, 17.890447476, 0.156928859, 20.680027643,
+0.142911527, 16.802475029, 0.152215982, 27.751515131, 0.140722573,
+45.313170363, 0.163320617, 27.947986367, 0.146164789, 26.016592883,
+0.164806356, 24.045695896, 0.159119679, 46.747133491, 0.150115357,
+12.639720779, 0.134051207, 16.417508337, 0.152236198, 23.787851211,
+0.137237601, 664.737856716, 0.422527878, 26.300990224, 0.149172968,
+28.118753098, 0.150392786, 35.712203217, 0.164383059), mean = c(27.023019786,
+0.42355673, 23.337486167, 0.162221163, 1.132874622, 0.258428158,
+57.787881691, 0.192326593, 38.823629012, 0.218193139, 0.943546255,
+0.125315296, 1.19984082, 0.560230453, 49.638932656, 0.287721827,
+38.601467265, 0.575263573, 40.453796831, 1.274451564, 0.933230054,
+0.122381139, 0.933518058, 0.124280224, 894.344310554, 1.209659702,
+24.010877591, 0.504667156, 22.613629988, 0.625519014, 28.623759888,
+0.311995644, 0.748200286, 0.150044756, 25.131624635, 0.151615403,
+21.827435577, 0.151512145, 32.544226019, 0.166376382, 17.890447476,
+0.156928859, 20.680027643, 0.142911527, 16.802475029, 0.152215982,
+27.751515131, 0.140722573, 45.313170363, 0.163320617, 27.947986367,
+0.146164789, 26.016592883, 0.164806356, 24.045695896, 0.159119679,
+46.747133491, 0.150115357, 12.639720779, 0.134051207, 16.417508337,
+0.152236198, 23.787851211, 0.137237601, 664.737856716, 0.422527878,
+26.300990224, 0.149172968, 28.118753098, 0.150392786, 35.712203217,
+0.164383059), median = c(27.023019786, 0.42355673, 23.337486167,
+0.162221163, 1.132874622, 0.258428158, 57.787881691, 0.192326593,
+38.823629012, 0.218193139, 0.943546255, 0.125315296, 1.19984082,
+0.560230453, 49.638932656, 0.287721827, 38.601467265, 0.575263573,
+40.453796831, 1.274451564, 0.933230054, 0.122381139, 0.933518058,
+0.124280224, 894.344310554, 1.209659702, 24.010877591, 0.504667156,
+22.613629988, 0.625519014, 28.623759888, 0.311995644, 0.748200286,
+0.150044756, 25.131624635, 0.151615403, 21.827435577, 0.151512145,
+32.544226019, 0.166376382, 17.890447476, 0.156928859, 20.680027643,
+0.142911527, 16.802475029, 0.152215982, 27.751515131, 0.140722573,
+45.313170363, 0.163320617, 27.947986367, 0.146164789, 26.016592883,
+0.164806356, 24.045695896, 0.159119679, 46.747133491, 0.150115357,
+12.639720779, 0.134051207, 16.417508337, 0.152236198, 23.787851211,
+0.137237601, 664.737856716, 0.422527878, 26.300990224, 0.149172968,
+28.118753098, 0.150392786, 35.712203217, 0.164383059), uq = c(27.023019786,
+0.42355673, 23.337486167, 0.162221163, 1.132874622, 0.258428158,
+57.787881691, 0.192326593, 38.823629012, 0.218193139, 0.943546255,
+0.125315296, 1.19984082, 0.560230453, 49.638932656, 0.287721827,
+38.601467265, 0.575263573, 40.453796831, 1.274451564, 0.933230054,
+0.122381139, 0.933518058, 0.124280224, 894.344310554, 1.209659702,
+24.010877591, 0.504667156, 22.613629988, 0.625519014, 28.623759888,
+0.311995644, 0.748200286, 0.150044756, 25.131624635, 0.151615403,
+21.827435577, 0.151512145, 32.544226019, 0.166376382, 17.890447476,
+0.156928859, 20.680027643, 0.142911527, 16.802475029, 0.152215982,
+27.751515131, 0.140722573, 45.313170363, 0.163320617, 27.947986367,
+0.146164789, 26.016592883, 0.164806356, 24.045695896, 0.159119679,
+46.747133491, 0.150115357, 12.639720779, 0.134051207, 16.417508337,
+0.152236198, 23.787851211, 0.137237601, 664.737856716, 0.422527878,
+26.300990224, 0.149172968, 28.118753098, 0.150392786, 35.712203217,
+0.164383059), max = c(27.023019786, 0.42355673, 23.337486167,
+0.162221163, 1.132874622, 0.258428158, 57.787881691, 0.192326593,
+38.823629012, 0.218193139, 0.943546255, 0.125315296, 1.19984082,
+0.560230453, 49.638932656, 0.287721827, 38.601467265, 0.575263573,
+40.453796831, 1.274451564, 0.933230054, 0.122381139, 0.933518058,
+0.124280224, 894.344310554, 1.209659702, 24.010877591, 0.504667156,
+22.613629988, 0.625519014, 28.623759888, 0.311995644, 0.748200286,
+0.150044756, 25.131624635, 0.151615403, 21.827435577, 0.151512145,
+32.544226019, 0.166376382, 17.890447476, 0.156928859, 20.680027643,
+0.142911527, 16.802475029, 0.152215982, 27.751515131, 0.140722573,
+45.313170363, 0.163320617, 27.947986367, 0.146164789, 26.016592883,
+0.164806356, 24.045695896, 0.159119679, 46.747133491, 0.150115357,
+12.639720779, 0.134051207, 16.417508337, 0.152236198, 23.787851211,
+0.137237601, 664.737856716, 0.422527878, 26.300990224, 0.149172968,
+28.118753098, 0.150392786, 35.712203217, 0.164383059), neval = c(1,
+1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+1, 1, 1, 1, 1, 1, 1, 1), method = structure(c(36L, 36L, 33L,
+33L, 32L, 32L, 31L, 31L, 29L, 29L, 28L, 28L, 25L, 25L, 24L, 24L,
+22L, 22L, 19L, 19L, 18L, 18L, 17L, 17L, 11L, 11L, 7L, 7L, 4L,
+4L, 3L, 3L, 35L, 35L, 34L, 34L, 30L, 30L, 27L, 27L, 26L, 26L,
+23L, 23L, 21L, 21L, 20L, 20L, 16L, 16L, 15L, 15L, 14L, 14L, 13L,
+13L, 12L, 12L, 10L, 10L, 9L, 9L, 8L, 8L, 6L, 6L, 5L, 5L, 2L,
+2L, 1L, 1L), .Label = c("yule2", "yule", "whittaker", "wave",
+"tanimoto", "stiles", "soergel", "simpson", "simple matching",
+"russel", "podani", "phi", "ochiai", "mozley", "mountford", "michael",
+"maximum", "manhattan", "kullback", "kulczynski2", "kulczynski1",
+"hellinger", "hamman", "geodesic", "fJaccard", "faith", "fager",
+"euclidean", "divergence", "dice", "chord", "canberra", "bray",
+"braun-blanquet", "binary", "bhjattacharyya"), class = c("ordered",
+"factor"))), .Names = c("expr", "min", "lq", "mean", "median",
+"uq", "max", "neval", "method"), row.names = c(NA, -72L), unit = "seconds", class = "data.frame")
+plot.distances <- ggplot(data=comparison.overall, aes(x=method, y=min, fill=expr)) +
+  geom_bar(stat="identity", position=position_dodge()) +
+  xlab("Distance method") +
+  ylab("Computation time in s") +
+  theme_light() +
+  #scale_x_discrete(name="", limits = rev(levels(comparison.overall$method))) +
+  coord_flip() +
+    #theme(plot.title = element_text(hjust = 0.5), legend.position="bottom") +
+ # theme(legend.position="bottom") +
+ guides(fill=guide_legend(title="Method")) +
+labs(title = "Distance matrix computation time (5000 series of length 10)",
+     #subtitle = "Carat weight by Price",
+     caption = "Excluded distances for better comparison: dtw, mahalanobis, minkowski")
+print(plot.distances)
+@
+\end{center}
+\caption{Distance matrix computation times}
+\label{fig:benchmarkOverall}
+\end{figure}
+
+\section{Quick start}
+
+\subsection{Using matrices as input parameter}
+
+The function signature of \rdoc{parallelDist}{parDist} is based on dist. To calculate a distance matrix for 10 series of length 10, a matrix is passed to the \rdoc{parallelDist}{parDist} function where each row corresponds to one series.
+
+<<eval=FALSE>>=
+# matrix where each row corresponds to one series
+sample.matrix <- matrix(c(1:100), ncol = 10)
+@
+
+Here the \rdoc{parallelDist}{parDist} function calculates the distance matrix using the euclidean distance and returns a dist object, like the dist function.
+
+<<eval=FALSE>>=
+# euclidean distance
+dist.euclidean <- parDist(sample.matrix, method = "euclidean")
+@
+
+The dist object can easily converted into a matrix, or can be used as an input for R's clustering algorithms.
+
+<<eval=FALSE>>=
+# convert to matrix
+as.matrix(dist.euclidean)
+
+# create hierarchical agglomerative clustering model
+hclust.model <- hclust(dist.euclidean, method="ward")
+@
+
+Some distance methods require additional arguments (see \code{?parDist}). These additional arguments can be passed directly to the \rdoc{parallelDist}{parDist} function.
+
+<<eval=FALSE>>=
+# minkowski distance with parameter p=2
+parDist(x = sample.matrix, method = "minkowski", p=2)
+
+# dynamic time warping distance normalized with warping path length
+parDist(x = sample.matrix, method = "dtw", norm.method="path.length")
+@
+
+A list of all available distance methods can be found in the \rdoc{parallelDist}{parDist} documentation.
+
+<<eval=FALSE>>=
+?parDist
+@
+
+The number of threads to use can be set via the threads parameter.
+
+<<eval=FALSE>>=
+# use 2 threads
+dist.euclidean <- parDist(sample.matrix, method = "euclidean", threads = 2)
+@
+
+\subsection{Using a list of matrices as input parameter}
+
+\rdoc{parallelDist}{parDist} also supports the calculation of distances between multi-dimensional series. Instead of one single matrix a list of matrices is used as input parameter. One matrix with M rows and N columns corresponds to a series with M dimensions and length N.
+
+In the example below, a list with 2 matrices is defined where each matrix corresponds to a series with 2 dimensions of length 10.
+
+<<eval=FALSE>>=
+# defining a list of matrices, where each list entry row corresponds to a two dimensional series
+tmp.mat <- matrix(c(1:40), ncol = 10)
+sample.matrix.list <- list(tmp.mat[1:2,], tmp.mat[3:4,])
+@
+
+The sample matrix now can be used to calculate a distance matrix for the multi-dimensional DTW distance.
+
+<<eval=FALSE>>=
+# multi-dimensional dynamic time warping
+parDist(x = sample.matrix.list, method = "dtw")
+@
+
+\subsection{Using objects of other R packages}
+
+The \rdoc{parallelDist}{parDist} supports different kinds of step patterns for calculating DTW distance matrices (see \code{?parDist}). For ease of use, it is also possible to use the StepPattern objects of the \pkg{dtw} package as input parameters for \rdoc{parallelDist}{parDist}.
+
+<<eval=FALSE>>=
+# load dtw package
+library(dtw)
+# print the step pattern
+print(symmetric2)
+# use the symmetric2 object as input parameter for the parDist function
+parDist(x = sample.matrix, method = "dtw", step.pattern = symmetric2)
+@
+
+\bibliographystyle{alpha}
+\bibliography{parallelDist}
+\end{document}
