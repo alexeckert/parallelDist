@@ -47,25 +47,25 @@ std::shared_ptr<IDistance> DistanceDTWFactory::createDistanceFunction(std::strin
     }
 
     if (utility::isEqualStr(stepPatternName, "asymmetric")) {
-        distanceFunction = std::make_shared<DistanceDTWGeneric<StepPatternAsymmetric>>(warpingWindow, windowSize, normMethod);
+        distanceFunction = std::make_shared<StepPatternAsymmetric>(warpingWindow, windowSize, normMethod);
     } else if (utility::isEqualStr(stepPatternName, "asymmetricP0")) {
-        distanceFunction = std::make_shared<DistanceDTWGeneric<StepPatternAsymmetricP0>>(warpingWindow, windowSize, normMethod);
+        distanceFunction = std::make_shared<StepPatternAsymmetricP0>(warpingWindow, windowSize, normMethod);
     } else if (utility::isEqualStr(stepPatternName, "asymmetricP05")) {
-        distanceFunction = std::make_shared<DistanceDTWGeneric<StepPatternAsymmetricP05>>(warpingWindow, windowSize, normMethod);
+        distanceFunction = std::make_shared<StepPatternAsymmetricP05>(warpingWindow, windowSize, normMethod);
     } else if (utility::isEqualStr(stepPatternName, "asymmetricP1")) {
-        distanceFunction = std::make_shared<DistanceDTWGeneric<StepPatternAsymmetricP1>>(warpingWindow, windowSize, normMethod);
+        distanceFunction = std::make_shared<StepPatternAsymmetricP1>(warpingWindow, windowSize, normMethod);
     } else if (utility::isEqualStr(stepPatternName, "asymmetricP2")) {
-        distanceFunction = std::make_shared<DistanceDTWGeneric<StepPatternAsymmetricP2>>(warpingWindow, windowSize, normMethod);
+        distanceFunction = std::make_shared<StepPatternAsymmetricP2>(warpingWindow, windowSize, normMethod);
     } else if (utility::isEqualStr(stepPatternName, "symmetric2") || utility::isEqualStr(stepPatternName, "symmetricP0")) {
-        distanceFunction = std::make_shared<DistanceDTWGeneric<StepPatternSymmetric2>>(warpingWindow, windowSize, normMethod);
+        distanceFunction = std::make_shared<StepPatternSymmetric2>(warpingWindow, windowSize, normMethod);
     } else if (utility::isEqualStr(stepPatternName, "symmetricP05")) {
-        distanceFunction = std::make_shared<DistanceDTWGeneric<StepPatternSymmetricP05>>(warpingWindow, windowSize, normMethod);
+        distanceFunction = std::make_shared<StepPatternSymmetricP05>(warpingWindow, windowSize, normMethod);
     } else if (utility::isEqualStr(stepPatternName, "symmetricP1")) {
-        distanceFunction = std::make_shared<DistanceDTWGeneric<StepPatternSymmetricP1>>(warpingWindow, windowSize, normMethod);
+        distanceFunction = std::make_shared<StepPatternSymmetricP1>(warpingWindow, windowSize, normMethod);
     } else if (utility::isEqualStr(stepPatternName, "symmetricP2")) {
-        distanceFunction = std::make_shared<DistanceDTWGeneric<StepPatternSymmetricP2>>(warpingWindow, windowSize, normMethod);
+        distanceFunction = std::make_shared<StepPatternSymmetricP2>(warpingWindow, windowSize, normMethod);
     } else {
-        distanceFunction = std::make_shared<DistanceDTWGeneric<StepPatternSymmetric1>>(warpingWindow, windowSize, normMethod);
+        distanceFunction = std::make_shared<StepPatternSymmetric1>(warpingWindow, windowSize, normMethod);
     }
     return distanceFunction;
 }

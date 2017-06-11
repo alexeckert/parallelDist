@@ -33,9 +33,8 @@
 //   )
 class StepPatternSymmetric1 : public DistanceDTWGeneric<StepPatternSymmetric1> {
 public:
+    using DistanceDTWGeneric::DistanceDTWGeneric;
     static constexpr unsigned int patternOffset = 1;
-    // Grants IStepPattern access to private and protected members of this StepPattern
-    // friend DistanceDTWGeneric<StepPatternSymmetric1>;
     std::pair<double, int> getCost(double *pen, const arma::mat &A, const arma::mat &B, unsigned int i, unsigned int j) {
         double distance = getDistance(A, B, i, j);
 
@@ -60,6 +59,7 @@ public:
 // )
 class StepPatternSymmetric2 : public DistanceDTWGeneric<StepPatternSymmetric2> {
 public:
+    using DistanceDTWGeneric::DistanceDTWGeneric;
     static constexpr unsigned int patternOffset = 1;
     std::pair<double, int> getCost(double *pen, const arma::mat &A, const arma::mat &B, unsigned int i, unsigned int j) {
         double distance = getDistance(A, B, i, j);
@@ -82,6 +82,7 @@ public:
 // )
 class StepPatternAsymmetric : public DistanceDTWGeneric<StepPatternAsymmetric> {
 public:
+    using DistanceDTWGeneric::DistanceDTWGeneric;
     static constexpr unsigned int patternOffset = 2;
     std::pair<double, int> getCost(double *pen, const arma::mat &A, const arma::mat &B, unsigned int i, unsigned int j) {
         double distance = getDistance(A, B, i, j);
@@ -105,6 +106,7 @@ public:
 // )
 class StepPatternAsymmetricP0 : public DistanceDTWGeneric<StepPatternAsymmetricP0> {
 public:
+    using DistanceDTWGeneric::DistanceDTWGeneric;
     static constexpr unsigned int patternOffset = 1;
     std::pair<double, int> getCost(double *pen, const arma::mat &A, const arma::mat &B, unsigned int i, unsigned int j) {
         double distance = getDistance(A, B, i, j);
@@ -130,6 +132,7 @@ public:
 //   )
 class StepPatternAsymmetricP05 : public DistanceDTWGeneric<StepPatternAsymmetricP05> {
 public:
+    using DistanceDTWGeneric::DistanceDTWGeneric;
     static constexpr unsigned int patternOffset = 3;
     std::pair<double, int> getCost(double *pen, const arma::mat &A, const arma::mat &B, unsigned int i, unsigned int j) {
         double multiplier = 1.0 / 3;
@@ -154,6 +157,7 @@ public:
 // )
 class StepPatternSymmetricP05 : public DistanceDTWGeneric<StepPatternSymmetricP05> {
 public:
+    using DistanceDTWGeneric::DistanceDTWGeneric;
     static constexpr unsigned int patternOffset = 3;
     std::pair<double, int> getCost(double *pen, const arma::mat &A, const arma::mat &B, unsigned int i, unsigned int j) {
 
@@ -170,6 +174,7 @@ public:
 
 class StepPatternSymmetricP1 : public DistanceDTWGeneric<StepPatternSymmetricP1> {
 public:
+    using DistanceDTWGeneric::DistanceDTWGeneric;
     static constexpr unsigned int patternOffset = 2;
     std::pair<double, int> getCost(double *pen, const arma::mat &A, const arma::mat &B, unsigned int i, unsigned int j) {
         double minArray[3] = {
@@ -183,6 +188,7 @@ public:
 
 class StepPatternAsymmetricP1 : public DistanceDTWGeneric<StepPatternAsymmetricP1> {
 public:
+    using DistanceDTWGeneric::DistanceDTWGeneric;
     static constexpr unsigned int patternOffset = 2;
     std::pair<double, int> getCost(double *pen, const arma::mat &A, const arma::mat &B, unsigned int i, unsigned int j) {
         double minArray[3] = {
@@ -203,6 +209,7 @@ public:
 //   )
 class StepPatternAsymmetricP2 : public DistanceDTWGeneric<StepPatternAsymmetricP2> {
 public:
+    using DistanceDTWGeneric::DistanceDTWGeneric;
     static constexpr unsigned int patternOffset = 3;
     std::pair<double, int> getCost(double *pen, const arma::mat &A, const arma::mat &B, unsigned int i, unsigned int j) {
         double multiplier = 2.0 / 3;
@@ -223,6 +230,7 @@ public:
 // )
 class StepPatternSymmetricP2 : public DistanceDTWGeneric<StepPatternSymmetricP2> {
 public:
+    using DistanceDTWGeneric::DistanceDTWGeneric;
     static constexpr unsigned int patternOffset = 3;
     std::pair<double, int> getCost(double *pen, const arma::mat &A, const arma::mat &B, unsigned int i, unsigned int j) {
         double minArray[3] = {

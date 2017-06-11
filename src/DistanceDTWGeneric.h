@@ -54,36 +54,37 @@ private:
     inline Implementation& impl() {
         return *static_cast<Implementation*>(this);
     }
-protected:
-    // returns value of cell of matrix
-    double getCell(double *matrix, unsigned int i, unsigned int j) {
-        return matrix[i * idxOffset + j];
-    }
-    // calculates minimum and argmin of a double array
-    std::pair<double, int> argmin(double arr[], unsigned int len) {
-        double min = arr[0];
-        unsigned int argMin = 0;
-
-        for (unsigned int i = 1; i < len; i++) {
-            if (arr[i] < min) {
-                min = arr[i];
-                argMin = i;
-            }
-        }
-        return std::make_pair(min, argMin);
-    }
-
-    double getDistance(const arma::mat &A, const arma::mat &B, unsigned int i, unsigned int j) {
-        if (i < getPatternOffset() || j < getPatternOffset()) {
-            return INFINITY;
-        } else {
-            return sqrt(arma::accu(arma::square(A.col(i - getPatternOffset()) - B.col(j - getPatternOffset()))));
-        }
-    }
 
     std::pair<double, int> getCost(double *pen, const arma::mat &A, const arma::mat &B, unsigned int i, unsigned int j) {
         return impl().getCost(pen, A, B, i, j);
     };
+
+protected:
+  // calculates minimum and argmin of a double array
+  std::pair<double, int> argmin(double arr[], unsigned int len) {
+    double min = arr[0];
+    unsigned int argMin = 0;
+
+    for (unsigned int i = 1; i < len; i++) {
+      if (arr[i] < min) {
+        min = arr[i];
+        argMin = i;
+      }
+    }
+    return std::make_pair(min, argMin);
+  }
+  // returns value of cell of matrix
+  double getCell(double *matrix, unsigned int i, unsigned int j) {
+    return matrix[i * idxOffset + j];
+  }
+  // calculates euclidean distance between two matrices
+  double getDistance(const arma::mat &A, const arma::mat &B, unsigned int i, unsigned int j) {
+    if (i < getPatternOffset() || j < getPatternOffset()) {
+      return INFINITY;
+    } else {
+      return sqrt(arma::accu(arma::square(A.col(i - getPatternOffset()) - B.col(j - getPatternOffset()))));
+    }
+  }
 
 public:
     DistanceDTWGeneric(bool warpingWindow = false, unsigned int windowSize = 0, NormMethod normalizationMethod = NormMethod::NoNorm) : matrixSize(0), idxOffset(0) {
