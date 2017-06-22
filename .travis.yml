@@ -1,0 +1,18 @@
+language: r
+
+dist: trusty
+
+r:
+  - devel
+warnings_are_errors: false
+
+cache:
+  packages: true
+
+before_install:
+  - tlmgr install ly1 mathdesign charter
+
+addons:
+  apt:
+    packages:
+      - ghostscript

@@ -1,4 +1,4 @@
-## parallelDist [![CRAN](http://www.r-pkg.org/badges/version/parallelDist)](https://CRAN.R-project.org/package=parallelDist)
+## parallelDist [![Build Status](https://travis-ci.org/alexeckert/parallelDist.svg?branch=master)](https://travis-ci.org/alexeckert/parallelDist) [![CRAN](http://www.r-pkg.org/badges/version/parallelDist)](https://CRAN.R-project.org/package=parallelDist)
 
 ### Introduction
 
