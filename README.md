@@ -1,4 +1,4 @@
-## parallelDist [![Build Status](https://travis-ci.org/alexeckert/parallelDist.svg?branch=master)](https://travis-ci.org/alexeckert/parallelDist) [![CRAN](http://www.r-pkg.org/badges/version/parallelDist)](https://CRAN.R-project.org/package=parallelDist)
+## parallelDist [![CRAN](http://www.r-pkg.org/badges/version/parallelDist)](https://CRAN.R-project.org/package=parallelDist) [![Build Status](https://travis-ci.org/alexeckert/parallelDist.svg?branch=master)](https://travis-ci.org/alexeckert/parallelDist) [![codecov](https://codecov.io/gh/alexeckert/parallelDist/branch/master/graph/badge.svg)](https://codecov.io/gh/alexeckert/parallelDist) 
 
 ### Introduction
 
