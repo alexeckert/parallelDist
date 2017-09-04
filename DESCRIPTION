@@ -26,6 +26,8 @@ LazyData: TRUE
 URL: https://github.com/alexeckert/parallelDist, https://www.alexandereckert.com/R
 BugReports: https://github.com/alexeckert/parallelDist/issues
 NeedsCompilation: yes
+Depends:
+    R (>= 3.0.2)
 Imports:
     Rcpp (>= 0.12.6),
     RcppParallel (>= 4.3.20)
