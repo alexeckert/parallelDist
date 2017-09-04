@@ -28,6 +28,7 @@ mat.sample6 <- matrix(c(-50:49), ncol = 5)
 mat.sample7 <- matrix(c(1:8), ncol = 2)
 mat.sample8 <- matrix(c(1:15), ncol = 5)
 mat.sample9 <- matrix(c(1,88,55,72,3,33,44,11,3,42, 52,29,3,45,34,21,34,59,35,84), nrow = 2, byrow = TRUE)
+tolerance <- 1e-8
 
 mat.list <- list(mat.sample1, mat.sample2, mat.sample3, mat.sample4, mat.sample5, mat.sample6, mat.sample7, mat.sample8, mat.sample9)
 
@@ -42,7 +43,6 @@ testMatrixListEquality <- function(matlist, method, ...) {
 
 # symmetric1 / symmetric
 testMatrixListEquality(mat.list, method="dtw", window.type="none", step.pattern=symmetric1)
-#testMatrixListEquality(mat.list, method="dtw", window.type="none", norm.method="n+m", step.pattern=symmetric1)
 testMatrixListEquality(mat.list, method="dtw", window.size = 5, window.type=sakoeChibaWindow, step.pattern=symmetric1)
 
 # symmetric2 / symmetricP0
@@ -80,3 +80,14 @@ testMatrixListEquality(mat.list, method="dtw", window.size = 5, window.type=sako
 # asymmetricP2
 testMatrixListEquality(mat.list, method="dtw", window.type="none", step.pattern=asymmetricP2)
 testMatrixListEquality(mat.list, method="dtw", window.size = 5, window.type=sakoeChibaWindow, step.pattern=asymmetricP2)
+
+# warping path normalization
+expect_equal(as.matrix(parDist(mat.sample9[1:2, 1:3], method = "dtw", norm.method="path.length", threads=1)),
+             as.matrix(dist(mat.sample9[1:2, 1:3], method = "dtw", step.pattern=symmetric1)) / 3,
+             tolerance=tolerance)
+expect_equal(as.matrix(parDist(mat.sample9, method = "dtw", norm.method="n")),
+             as.matrix(dist(mat.sample9, method = "dtw", step.pattern=symmetric1)) / dim(mat.sample9)[2],
+             tolerance=tolerance)
+expect_equal(as.matrix(parDist(mat.sample9, method = "dtw", norm.method="n+m")),
+             as.matrix(dist(mat.sample9, method = "dtw", step.pattern=symmetric1)) / (dim(mat.sample9)[2] * 2),
+             tolerance=tolerance)
