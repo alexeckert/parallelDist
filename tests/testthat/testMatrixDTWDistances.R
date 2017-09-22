@@ -41,8 +41,16 @@ testMatrixListEquality <- function(matlist, method, ...) {
   invisible(sapply(matlist, function(x) { testMatrixEquality(x, method, ...) }))
 }
 
+test_that("error for unsupported step pattern shows up", {
+  expect_error(parDist(mat.sample1, method = "dtw", step.pattern="unknown"), "Step pattern is not supported.")
+})
+
 # symmetric1 / symmetric
 testMatrixListEquality(mat.list, method="dtw", window.type="none", step.pattern=symmetric1)
+invisible(sapply(mat.list, function(x) {
+  expect_equal(as.matrix(parDist(x, method = "dtw",  window.type="none", step.pattern="symmetric1")),
+               as.matrix(dist(x, method = "dtw",  step.pattern=symmetric1)))
+})) # step.pattern as string
 testMatrixListEquality(mat.list, method="dtw", window.size = 5, window.type=sakoeChibaWindow, step.pattern=symmetric1)
 
 # symmetric2 / symmetricP0
@@ -85,6 +93,11 @@ testMatrixListEquality(mat.list, method="dtw", window.size = 5, window.type=sako
 expect_equal(as.matrix(parDist(mat.sample9[1:2, 1:3], method = "dtw", norm.method="path.length", threads=1)),
              as.matrix(dist(mat.sample9[1:2, 1:3], method = "dtw", step.pattern=symmetric1)) / 3,
              tolerance=tolerance)
+expect_equal(as.matrix(parDist(mat.sample3, method = "dtw", norm.method="path.length", threads=1)),
+             as.matrix(dist(mat.sample3, method = "dtw", step.pattern=symmetric1)) / 5,
+             tolerance=tolerance)
+expect_equal(as.matrix(parDist(mat.sample4[c(3, 20),], method = "dtw", norm.method="path.length", threads=1)),
+             as.matrix(dist(mat.sample4[c(3, 20),], method = "dtw", step.pattern=symmetric1)) / 7, tolerance=tolerance)
 expect_equal(as.matrix(parDist(mat.sample9, method = "dtw", norm.method="n")),
              as.matrix(dist(mat.sample9, method = "dtw", step.pattern=symmetric1)) / dim(mat.sample9)[2],
              tolerance=tolerance)

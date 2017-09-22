@@ -9,9 +9,6 @@ warnings_are_errors: false
 r_github_packages:
   - jimhester/covr
 
-cache:
-  packages: true
-
 before_install:
   - tlmgr install ly1 mathdesign charter
 

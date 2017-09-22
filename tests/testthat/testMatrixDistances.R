@@ -38,7 +38,14 @@ testMatrixListEquality <- function(matlist, method, ...) {
   invisible(sapply(matlist, function(x) { testMatrixEquality(x, method, ...) }))
 }
 
-library(proxy)
+test_that("error for invalid distance method shows up", {
+  expect_error(parDist(mat.sample1, method = "unknown"), "Invalid distance method")
+})
+
+test_that("error for invalid input type", {
+  expect_error(parDist(data.frame(c(1:2))), "x must be a matrix or a list of matrices.")
+})
+
 # works
 test_that("bhjattacharyya method produces same outputs as dist", {
   testMatrixListEquality(mat.list, "bhjattacharyya")
@@ -84,6 +91,13 @@ test_that("mahalanobis method produces same outputs as dist", {
   mat.mahalanobis <- cbind(1:6, 1:3)
   testMatrixEquality(mat.mahalanobis, "mahalanobis")
   testMatrixEquality(mat.mahalanobis, "mahalanobis", cov=cov(mat.mahalanobis))
+  expect_equal(as.matrix(parDist(mat.mahalanobis, "mahalanobis", cov=solve(cov(mat.mahalanobis)), inverted=TRUE)),
+               as.matrix(dist(mat.mahalanobis, method = "mahalanobis", cov=cov(mat.mahalanobis))))
+})
+test_that("mahalanobis method throws error for list of matrices input", {
+  mat.mahalanobis <- cbind(1:6, 1:3)
+  mat.list <- list(mat.mahalanobis, mat.mahalanobis)
+  expect_error(parDist(mat.list, "mahalanobis"), "Calculation of inverted covariance matrix is only supported for input data in matrix format.")
 })
 # works
 test_that("manhattan method produces same outputs as dist", {
@@ -103,19 +117,30 @@ test_that("minkowski method produces same outputs as dist", {
 test_that("podani method produces same outputs as dist", {
   testMatrixListEquality(mat.list, "podani")
 })
+# possible wrong implementation in proxy?
+test_that("soergel method produces expected output", {
+  expect_equal(as.matrix(parDist(mat.list[[1]], method = "soergel"))[1, 2], 1)
+  expect_equal(as.matrix(parDist(mat.list[[2]], method = "soergel"))[1, 2], 0.75)
+  expect_equal(as.matrix(parDist(mat.list[[3]], method = "soergel"))[1, 2], 0.0049504950495049506)
+  expect_equal(as.matrix(parDist(mat.list[[4]], method = "soergel"))[1, 2], NaN)
+  expect_equal(as.matrix(parDist(mat.list[[5]], method = "soergel"))[1, 2], -0.010101010101010102)
+  expect_equal(as.matrix(parDist(mat.list[[6]], method = "soergel"))[1, 2], 0.5)
+  expect_equal(as.matrix(parDist(mat.list[[7]], method = "soergel"))[1, 2], 0.55)
+})
 # wrong implementation in proxy?
-#test_that("soergel method produces same outputs as dist", {
-#  testMatrixListEquality(mat.list, "soergel")
-#})
-# wrong implementation in proxy?
-#test_that("wave method produces same outputs as dist", {
-#  testMatrixListEquality(mat.list, "wave")
-#})
+test_that("wave method produces same outputs as dist", {
+  expect_equal(as.matrix(parDist(mat.list[[1]], method = "wave"))[1, 2], NaN)
+  expect_equal(as.matrix(parDist(mat.list[[2]], method = "wave"))[1, 2], NaN)
+  expect_equal(as.matrix(parDist(mat.list[[3]], method = "wave"))[1, 2], 0.5205532370853329)
+  expect_equal(as.matrix(parDist(mat.list[[4]], method = "wave"))[1, 2], NaN)
+  expect_equal(as.matrix(parDist(mat.list[[5]], method = "wave"))[1, 2], -0.0022262504871707334)
+  expect_equal(as.matrix(parDist(mat.list[[6]], method = "wave"))[1, 2], 0.5)
+  expect_equal(as.matrix(parDist(mat.list[[7]], method = "wave"))[1, 2], NaN)
+})
 # works
 test_that("whittaker method produces same outputs as dist", {
   testMatrixListEquality(mat.list, "whittaker")
 })
-
 # binary distances
 #works
 test_that("binary method produces same outputs as dist", {

@@ -21,8 +21,6 @@
 # Calculates distance matrices in parallel
 #
 parDist <- parallelDist <- function (x, method = "euclidean", diag = FALSE, upper = FALSE, threads = NULL, ...) {
-  if (!is.na(pmatch(method, "euclidian")))
-    method <- "euclidean"
   METHODS <- c("bhjattacharyya", "bray", "canberra", "chord", "divergence",
                "dtw", "euclidean", "fJaccard", "geodesic", "hellinger",
                "kullback", "mahalanobis", "manhattan", "maximum", "minkowski",
@@ -31,11 +29,10 @@ parDist <- parallelDist <- function (x, method = "euclidean", diag = FALSE, uppe
                "hamman", "kulczynski1", "kulczynski2", "michael", "mountford",
                "mozley", "ochiai", "phi", "russel", "simple matching",
                "simpson", "stiles", "tanimoto", "yule", "yule2") # w/o "levenshtein"
-  method <- pmatch(method, METHODS)
-  if (is.na(method))
+  methodIdx <- pmatch(method, METHODS)
+  if (is.na(methodIdx))
     stop("Invalid distance method")
-  if (method == -1)
-    stop("Ambiguous distance method")
+  method <- METHODS[methodIdx]
 
   arguments <- list(...)
   # set step pattern (for dtw distances)
@@ -51,10 +48,10 @@ parDist <- parallelDist <- function (x, method = "euclidean", diag = FALSE, uppe
 
   N <- ifelse(is.list(x), length(x), nrow(x))
   attrs <- list(Size = N, Labels = names(x), Diag = diag, Upper = upper,
-                method = METHODS[method], call = match.call(), class = "dist")
+                method = METHODS[methodIdx], call = match.call(), class = "dist")
 
   # check data type
-  if (is.list(x)) {
+  if (is.list(x) && inherits(x, "list")) {
     methods.first.row.only <- c("chord", "geodesic", "podani")
     if (method %in% methods.first.row.only) {
       warning("Only first row of each matrix is used for distance calculation.")
