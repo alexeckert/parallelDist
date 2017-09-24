@@ -27,12 +27,12 @@ Check these declarations against the C/Fortran source code.
 */
 
 /* .Call calls */
-extern SEXP parallelDist_cpp_parallelDistMatrixVec(SEXP, SEXP, SEXP);
-extern SEXP parallelDist_cpp_parallelDistVec(SEXP, SEXP, SEXP);
+extern SEXP _parallelDist_cpp_parallelDistMatrixVec(SEXP, SEXP, SEXP);
+extern SEXP _parallelDist_cpp_parallelDistVec(SEXP, SEXP, SEXP);
 
 static const R_CallMethodDef CallEntries[] = {
-  {"parallelDist_cpp_parallelDistMatrixVec", (DL_FUNC) &parallelDist_cpp_parallelDistMatrixVec, 3},
-  {"parallelDist_cpp_parallelDistVec",       (DL_FUNC) &parallelDist_cpp_parallelDistVec,       3},
+  {"_parallelDist_cpp_parallelDistMatrixVec", (DL_FUNC) &_parallelDist_cpp_parallelDistMatrixVec, 3},
+  {"_parallelDist_cpp_parallelDistVec",       (DL_FUNC) &_parallelDist_cpp_parallelDistVec,       3},
   {NULL, NULL, 0}
 };
 

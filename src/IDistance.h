@@ -22,6 +22,8 @@
 
 #include <RcppArmadillo.h>
 
+typedef double (*funcPtr)(const arma::mat &A, const arma::mat &B);
+
 using namespace std;
 using namespace arma;
 

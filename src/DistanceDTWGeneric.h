@@ -184,7 +184,6 @@ public:
                     j -= 1;
                 }
             }
-
             // free memory
             delete [] pre;
             dist /= warpPathLength;

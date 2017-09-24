@@ -1,7 +1,7 @@
 Package: parallelDist
 Type: Package
 Title: Parallel Distance Matrix Computation using Multiple Threads
-Version: 0.1.1
+Version: 0.2.0
 Author: Alexander Eckert [aut, cre]
 Authors@R: c(
     person("Alexander", "Eckert", role = c("aut", "cre"), email = "info@alexandereckert.com")
@@ -9,17 +9,18 @@ Authors@R: c(
 Maintainer: Alexander Eckert <info@alexandereckert.com>
 Description: A fast parallelized alternative to R's native 'dist' function to
     calculate distance matrices for continuous, binary, and multi-dimensional
-    input matrices with support for a broad variety of distance functions from
-    the 'stats', 'proxy' and 'dtw' R packages. For ease of use, the 'parDist'
-    function extends the signature of the 'dist' function and uses the same
-    parameter naming conventions as distance methods of existing R packages.
-    The package is mainly implemented in C++ and leverages the 'RcppParallel'
-    package to parallelize the distance computations with the help of the
-    'TinyThread' library. Furthermore, the 'Armadillo' linear algebra library
-    is used for optimized matrix operations during distance calculations. The
-    curiously recurring template pattern (CRTP) technique is applied to avoid
-    virtual functions, which improves the Dynamic Time Warping calculations
-    while keeping the implementation flexible enough to support different step
+    input matrices, which supports a broad variety of 39 predefined distance
+    functions from the 'stats', 'proxy' and 'dtw' R packages, as well as user-
+    defined functions written in C++. For ease of use, the 'parDist' function
+    extends the signature of the 'dist' function and uses the same parameter
+    naming conventions as distance methods of existing R packages. The package
+    is mainly implemented in C++ and leverages the 'RcppParallel' package to
+    parallelize the distance computations with the help of the 'TinyThread'
+    library. Furthermore, the 'Armadillo' linear algebra library is used for
+    optimized matrix operations during distance calculations. The curiously
+    recurring template pattern (CRTP) technique is applied to avoid virtual
+    functions, which improves the Dynamic Time Warping calculations while
+    the implementation stays flexible enough to support different DTW step
     patterns and normalization methods.
 License: GPL (>= 2)
 LazyData: TRUE
@@ -40,5 +41,7 @@ Suggests:
     ggplot2,
     proxy,
     highlight,
-    testthat
+    testthat,
+    RcppArmadillo,
+    RcppXPtrUtils
 VignetteBuilder: highlight

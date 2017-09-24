@@ -21,11 +21,30 @@ parallelDist(x, method = "euclidean", diag = FALSE, upper = FALSE, threads = NUL
 
 }
 \description{
-Calculates distance matrices in parallel using multiple threads.
+Calculates distance matrices in parallel using multiple threads. Supports 39 predefined distance measures and user-defined distance functions.
 }
 
 \details{
-  Available distance measures (written for two vectors \eqn{x} and \eqn{y}):
+\subsection{User-defined distance functions}{
+  \describe{
+      \item{\code{custom}}{
+      Defining and compiling a user-defined C++ distance function, as well as creating an external pointer to the function can easily be achieved with the \code{\link[RcppXPtrUtils]{cppXPtr}} function of the \pkg{RcppXPtrUtils} package. The resulting \verb{Xptr} external pointer object needs to be passed to \code{\link[parallelDist]{parDist}} using the \code{func} parameter.
+
+Parameters:
+          \itemize{
+            \item{
+              \describe{
+                \item{\code{func} (Xptr)}{External pointer to a user-defined distance function with the following signature: \cr \code{double customDist(const arma::mat &A, const arma::mat &B)} \cr Note that the return value must be a \verb{double} and the two parameters must be of type \verb{const arma::mat &param}.  \cr \cr
+                More information about the Armadillo library can be found at \url{http://arma.sourceforge.net/docs.html} or as part of the documentation of the \pkg{RcppArmadillo} package.}
+              }
+            }
+          }
+An exemplary definition and usage of an user-defined euclidean distance function can be found in the examples section below.
+    }
+  }
+}
+
+\subsection{Available predefined distance measures (written for two vectors \eqn{x} and \eqn{y})}{
 
   \bold{Distance methods for continuous input variables}
 
@@ -46,7 +65,7 @@ Calculates distance matrices in parallel using multiple threads.
       The Divergence distance.\cr Type: continuous\cr Formula: \eqn{sum_i (x_i - y_i)^2 / (x_i + y_i)^2}.\cr Details: See \command{pr_DB$get_entry("divergence")} in \pkg{proxy}.
     }
 
-        \item{\code{dtw}}{Implementation of a multi-dimensional Dynamic Time Warping algorithm.\cr Type: continuous\cr Formula: Euclidean distance \eqn{sqrt(sum_i (x_i - y_i)^2)}.\cr
+    \item{\code{dtw}}{Implementation of a multi-dimensional Dynamic Time Warping algorithm.\cr Type: continuous\cr Formula: Euclidean distance \eqn{sqrt(sum_i (x_i - y_i)^2)}.\cr
     Parameters:
           \itemize{
             \item{
@@ -58,21 +77,9 @@ Calculates distance matrices in parallel using multiple threads.
               \describe{
                 \item{\code{norm.method} (character, optional)}{Normalization method for DTW distances.
                   \itemize{
-                    \item{
-                      \describe{
-                        \item{\code{path.length}}{Normalization with the length of the warping path.}
-                      }
-                    }
-                    \item{
-                      \describe{
-                        \item{\code{n}}{Normalization with n. n is the length of series x.}
-                      }
-                    }
-                    \item{
-                      \describe{
-                        \item{\code{n+m}}{Normalization with n + m. n is the length of series x, m is the length of series y.}
-                      }
-                    }
+                    \item{\code{path.length} Normalization with the length of the warping path.}
+                    \item{\code{n} Normalization with n. n is the length of series x.}
+                    \item{\code{n+m} Normalization with n + m. n is the length of series x, m is the length of series y.}
                   }
                 }
               }
@@ -258,6 +265,7 @@ Calculates distance matrices in parallel using multiple threads.
      The Yule similarity.\cr Type: binary\cr Formula: \eqn{(sqrt(ad) - sqrt(bc)) / (sqrt(ad) + sqrt(bc))}.\cr Details: See \command{pr_DB$get_entry("yule2")} in \pkg{proxy}.
     }
   }
+  }
 }
 
 
@@ -286,6 +294,8 @@ Calculates distance matrices in parallel using multiple threads.
 }
 
 \examples{
+## Not run:
+### predefined distance functions
 # defining a matrix, where each row corresponds to one series
 sample.matrix <- matrix(c(1:100), ncol = 10)
 
@@ -302,7 +312,7 @@ parDist(x = sample.matrix, method = "dtw", step.pattern="symmetric2")
 # dynamic time warping with window size constraint
 parDist(x = sample.matrix, method = "dtw", step.pattern="symmetric2", window.size=1)
 
-
+### multi-dimensional distance functions using list of matrices
 # defining a list of matrices, where each list entry row corresponds to a two dimensional series
 tmp.mat <- matrix(c(1:40), ncol = 10)
 sample.matrix.list <- list(tmp.mat[1:2,], tmp.mat[3:4,])
@@ -311,5 +321,19 @@ sample.matrix.list <- list(tmp.mat[1:2,], tmp.mat[3:4,])
 parDist(x = sample.matrix.list, method = "euclidean")
 # multi-dimensional dynamic time warping
 parDist(x = sample.matrix.list, method = "dtw")
-}
 
+### user-defined distance function
+library(RcppArmadillo)
+# Use RcppXPtrUtils for simple usage of C++ external pointers
+library(RcppXPtrUtils)
+
+# compile user-defined function and return pointer (RcppArmadillo is used as dependency)
+euclideanFuncPtr <- cppXPtr(
+"double customDist(const arma::mat &A, const arma::mat &B) {
+  return sqrt(arma::accu(arma::square(A - B)));
+}", depends = c("RcppArmadillo"))
+
+# distance matrix for user-defined euclidean distance function (note that method is set to "custom")
+parDist(matrix(1:16, ncol=2), method="custom", func = euclideanFuncPtr)
+## End(**Not run**)
+}

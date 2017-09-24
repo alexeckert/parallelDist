@@ -8,7 +8,7 @@ using namespace Rcpp;
 
 // cpp_parallelDistVec
 Rcpp::NumericVector cpp_parallelDistVec(Rcpp::List dataList, Rcpp::List attrs, Rcpp::List arguments);
-RcppExport SEXP parallelDist_cpp_parallelDistVec(SEXP dataListSEXP, SEXP attrsSEXP, SEXP argumentsSEXP) {
+RcppExport SEXP _parallelDist_cpp_parallelDistVec(SEXP dataListSEXP, SEXP attrsSEXP, SEXP argumentsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -21,7 +21,7 @@ END_RCPP
 }
 // cpp_parallelDistMatrixVec
 Rcpp::NumericVector cpp_parallelDistMatrixVec(arma::mat dataMatrix, Rcpp::List attrs, Rcpp::List arguments);
-RcppExport SEXP parallelDist_cpp_parallelDistMatrixVec(SEXP dataMatrixSEXP, SEXP attrsSEXP, SEXP argumentsSEXP) {
+RcppExport SEXP _parallelDist_cpp_parallelDistMatrixVec(SEXP dataMatrixSEXP, SEXP attrsSEXP, SEXP argumentsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;

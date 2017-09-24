@@ -2,7 +2,7 @@
 
 ### Introduction
 
-The [parallelDist](https://CRAN.R-project.org/package=parallelDist) package provides a fast parallelized alternative to R's native 'dist' function to calculate distance matrices for continuous, binary, and multi-dimensional input matrices and offers a broad variety of distance functions from the 'stats', 'proxy' and 'dtw' R packages. For ease of use, the 'parDist' function extends the signature of the 'dist' function and uses the same parameter naming conventions as distance methods of existing R packages. Currently 39 different distance methods are supported.
+The [parallelDist](https://CRAN.R-project.org/package=parallelDist) package provides a fast parallelized alternative to R's native 'dist' function to calculate distance matrices for continuous, binary, and multi-dimensional input matrices and offers a broad variety of predefined distance functions from the 'stats', 'proxy' and 'dtw' R packages, as well as support for user-defined distance functions written in C++. For ease of use, the 'parDist' function extends the signature of the 'dist' function and uses the same parameter naming conventions as distance methods of existing R packages. Currently 39 different distance methods are supported.
 
 The package is mainly implemented in C++ and leverages the '[Rcpp](https://CRAN.R-project.org/package=Rcpp)' and '[RcppParallel](https://CRAN.R-project.org/package=RcppParallel)' package to parallelize the distance computations with the help of the 'TinyThread' library. Furthermore, the Armadillo linear algebra library is used via '[RcppArmadillo](https://CRAN.R-project.org/package=RcppArmadillo)' for optimized matrix operations for distance calculations. The curiously recurring template pattern (CRTP) technique is applied to avoid virtual functions, which improves the Dynamic Time Warping calculations while keeping the implementation flexible enough to support different step patterns and normalization methods.
 
@@ -15,6 +15,35 @@ Details about the 39 supported distance methods and their parameters are describ
 ```R
 ?parDist
 ```
+
+#### User-defined distance functions
+
+Since version 0.2.0, parallelDist supports fast parallel distance matrix computations for user-defined distance functions written in C++.
+
+A user-defined function needs to have the following signature (also see the [Armadillo documentation](http://arma.sourceforge.net/docs.html)):
+
+```Cpp
+double customDist(const arma::mat &A, const arma::mat &B)
+```
+
+Defining and compiling the function, as well as creating an external pointer to the user-defined function can easily be achieved with the *cppXPtr* function of the '[RcppXPtrUtils](https://CRAN.R-project.org/package=RcppXPtrUtils)' package. The following code shows a full example of defining and using a user-defined euclidean distance function:
+
+```R
+# RcppArmadillo is used as dependency
+library(RcppArmadillo)
+# RcppXPtrUtils is used for simple handling of C++ external pointers
+library(RcppXPtrUtils)
+
+# compile user-defined function and return pointer (RcppArmadillo is used as dependency)
+euclideanFuncPtr <- cppXPtr("double customDist(const arma::mat &A, const arma::mat &B) { return sqrt(arma::accu(arma::square(A - B))); }",
+                            depends = c("RcppArmadillo"))
+
+# distance matrix for user-defined euclidean distance function
+# (note that method is set to "custom")
+parDist(matrix(1:16, ncol=2), method="custom", func = euclideanFuncPtr)
+```
+
+More information can be found in the vignette and the help pages.
 
 ### Installation
 

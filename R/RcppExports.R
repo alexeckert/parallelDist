@@ -2,10 +2,10 @@
 # Generator token: 10BE3573-1514-4C36-9D1C-5A225CD40393
 
 cpp_parallelDistVec <- function(dataList, attrs, arguments) {
-    .Call(parallelDist_cpp_parallelDistVec, dataList, attrs, arguments)
+    .Call(`_parallelDist_cpp_parallelDistVec`, dataList, attrs, arguments)
 }
 
 cpp_parallelDistMatrixVec <- function(dataMatrix, attrs, arguments) {
-    .Call(parallelDist_cpp_parallelDistMatrixVec, dataMatrix, attrs, arguments)
+    .Call(`_parallelDist_cpp_parallelDistMatrixVec`, dataMatrix, attrs, arguments)
 }
 

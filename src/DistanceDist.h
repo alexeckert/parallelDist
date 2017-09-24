@@ -311,18 +311,17 @@ public:
 //=======================
 // Custom distance
 //=======================
-// class DistanceCustom : public IDistance {
-// private:
-//     Rcpp::Function func;
-// public:
-//     explicit DistanceCustom (std::string& funcName) : func(NULL) {
-//         Rcpp::Environment myEnv = Rcpp::Environment::global_env();
-//         func = myEnv["prototype"];
-//     };
-//     ~DistanceCustom () {}
-//     double calcDistance(const arma::mat &A, const arma::mat &B) {
-//         return Rcpp::as<double >(func(A,B));
-//     }
-// };
+class DistanceCustom : public IDistance {
+private:
+    funcPtr func;
+public:
+    explicit DistanceCustom (funcPtr function) : func(function) {
+      this->func = function;
+    };
+    ~DistanceCustom () {}
+    double calcDistance(const arma::mat &A, const arma::mat &B) {
+        return func(A, B);
+    }
+};
 
 #endif

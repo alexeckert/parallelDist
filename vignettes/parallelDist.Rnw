@@ -65,7 +65,7 @@ require(highlight)
 
 \section{Introduction}
 
-The \pkg{parallelDist} package provides a fast parallelized alternative to \proglang{R}'s native \rdoc{stats}{dist} function to calculate distance matrices for continuous, binary, and multi-dimensional input matrices and offers a broad variety of distance functions from the \pkg{stats}, \pkg{proxy} and \pkg{dtw} \proglang{R} packages. For ease of use, the \rdoc{parallelDist}{parDist} function extends the signature of the \rdoc{stats}{dist} function and uses the same parameter naming conventions as distance methods of existing \proglang{R} packages.
+The \pkg{parallelDist} package provides a fast parallelized alternative to \proglang{R}'s native \rdoc{stats}{dist} function to calculate distance matrices for continuous, binary, and multi-dimensional input matrices and offers a broad variety of predefined distance functions from the \pkg{stats}, \pkg{proxy} and \pkg{dtw} \proglang{R} packages, as well as support for user-defined distance functions written in C++. For ease of use, the \rdoc{parallelDist}{parDist} function extends the signature of the \rdoc{stats}{dist} function and uses the same parameter naming conventions as distance methods of existing \proglang{R} packages.
 
 The package is mainly implemented in \proglang{C++} and leverages the \pkg{Rcpp} \cite{Rcpp} and \pkg{RcppParallel} \cite{RcppParallel} package to parallelize the distance computations with the help of the TinyThread library. Furthermore, the Armadillo linear algebra library \cite{Sanderson:2010:Armadillo} is used via \pkg{RcppArmadillo} \cite{RcppArmadillo} for optimized matrix operations for distance calculations. The curiously recurring template pattern (CRTP) technique is applied to avoid virtual functions, which improves the Dynamic Time Warping calculations while keeping the implementation flexible enough to support different step patterns and normalization methods.
 
@@ -264,11 +264,8 @@ plot.distances <- ggplot(data=comparison.overall, aes(x=method, y=min, fill=expr
   theme_light() +
   #scale_x_discrete(name="", limits = rev(levels(comparison.overall$method))) +
   coord_flip() +
-    #theme(plot.title = element_text(hjust = 0.5), legend.position="bottom") +
- # theme(legend.position="bottom") +
  guides(fill=guide_legend(title="Method")) +
 labs(title = "Distance matrix computation time (5000 series of length 10)",
-     #subtitle = "Carat weight by Price",
      caption = "Excluded distances for better comparison: dtw, mahalanobis, minkowski")
 print(plot.distances)
 @
@@ -346,6 +343,58 @@ The sample matrix now can be used to calculate a distance matrix for the multi-d
 # multi-dimensional dynamic time warping
 parDist(x = sample.matrix.list, method = "dtw")
 @
+
+\subsection{Using user-defined distance functions}
+
+Since version 0.2.0 of \pkg{parallelDist} custom user-defined distance measures can be defined to calculate distances matrices in parallel. To ensure a performant execution, the user-defined function needs to be defined and compiled in C++ and an external pointer to the compiled C++ function needs to be passed to \rdoc{parallelDist}{parDist} with the \code{func} argument.
+\newline\newline
+The user-defined function needs to have the following signature:
+
+<<lang=cpp>>=
+double customDist(const arma::mat &A, const arma::mat &B)
+@
+Note that the return value must be a \texttt{double} and the two parameters must be of type \texttt{const arma::mat \&param}. More information about the Armadillo library can be found at \cite{ArmadilloDoc} or as part of the documentation of the \pkg{RcppArmadillo} \cite{RcppArmadillo} package.
+\newline\newline
+Defining and compiling the function, as well as creating an external pointer to the user-defined function can easily be achieved with the \rdoc{RcppXPtrUtils}{cppXPtr} function of the \pkg{RcppXPtrUtils} package. The following code shows a full example of defining and using a user-defined euclidean distance function:
+
+<<eval=FALSE>>=
+# RcppArmadillo is used as dependency
+library(RcppArmadillo)
+# Use RcppXPtrUtils for simple usage of C++ external pointers
+library(RcppXPtrUtils)
+
+# compile user-defined function and return pointer (RcppArmadillo is used as dependency)
+euclideanFuncPtr <- cppXPtr("double customDist(const arma::mat &A, const arma::mat &B) { return sqrt(arma::accu(arma::square(A - B))); }",
+                            depends = c("RcppArmadillo"))
+
+# distance matrix for user-defined euclidean distance function
+# (note that method is set to "custom")
+parDist(matrix(1:16, ncol=2), method="custom", func = euclideanFuncPtr)
+@
+
+As displayed in table \ref{table:performanceCustomDist}, the performance between a user-defined and a predefined distance function is close to equal for large matrices.
+
+% latex table generated in R 3.4.0 by xtable 1.8-2 package
+% Sat Sep 23 16:06:28 2017
+\begin{table}[ht]
+\centering
+\begin{tabular}{rrrrrrrrrr}
+  \hline
+ & matrix & method & min & lq & mean & median & uq & max & neval \\
+  \hline
+1 & 10x10 & euclidean & 0.04 & 0.05 & 0.08 & 0.06 & 0.13 & 0.17 & 100.00 \\
+  2 & 10x10 & custom & 0.16 & 0.18 & 0.24 & 0.22 & 0.30 & 0.40 & 100.00 \\
+  3 & 100x10 & euclidean & 0.09 & 0.11 & 0.14 & 0.13 & 0.18 & 0.24 & 100.00 \\
+  4 & 100x10 & custom & 0.22 & 0.24 & 0.31 & 0.29 & 0.37 & 0.51 & 100.00 \\
+  5 & 1000x10 & euclidean & 4.19 & 4.29 & 4.44 & 4.35 & 4.50 & 5.54 & 100.00 \\
+  6 & 1000x10 & custom & 4.34 & 4.48 & 4.66 & 4.60 & 4.80 & 5.14 & 100.00 \\
+  7 & 10000x10 & euclidean & 448.87 & 451.33 & 490.99 & 453.26 & 465.36 & 644.65 & 100.00 \\
+  8 & 10000x10 & custom & 452.83 & 454.99 & 492.68 & 456.36 & 464.66 & 678.49 & 100.00 \\
+   \hline
+\end{tabular}
+\caption{Performance comparison between user-defined and predefined euclidean distance function (in ms)}
+\label{table:performanceCustomDist}
+\end{table}
 
 \subsection{Using objects of other R packages}
 
