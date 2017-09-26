@@ -294,8 +294,8 @@ An exemplary definition and usage of an user-defined euclidean distance function
 }
 
 \examples{
-## Not run:
-### predefined distance functions
+\dontrun{
+## predefined distance functions
 # defining a matrix, where each row corresponds to one series
 sample.matrix <- matrix(c(1:100), ncol = 10)
 
@@ -312,7 +312,7 @@ parDist(x = sample.matrix, method = "dtw", step.pattern="symmetric2")
 # dynamic time warping with window size constraint
 parDist(x = sample.matrix, method = "dtw", step.pattern="symmetric2", window.size=1)
 
-### multi-dimensional distance functions using list of matrices
+## multi-dimensional distance functions using list of matrices
 # defining a list of matrices, where each list entry row corresponds to a two dimensional series
 tmp.mat <- matrix(c(1:40), ncol = 10)
 sample.matrix.list <- list(tmp.mat[1:2,], tmp.mat[3:4,])
@@ -322,7 +322,7 @@ parDist(x = sample.matrix.list, method = "euclidean")
 # multi-dimensional dynamic time warping
 parDist(x = sample.matrix.list, method = "dtw")
 
-### user-defined distance function
+## user-defined distance function
 library(RcppArmadillo)
 # Use RcppXPtrUtils for simple usage of C++ external pointers
 library(RcppXPtrUtils)
@@ -334,6 +334,5 @@ euclideanFuncPtr <- cppXPtr(
 }", depends = c("RcppArmadillo"))
 
 # distance matrix for user-defined euclidean distance function (note that method is set to "custom")
-parDist(matrix(1:16, ncol=2), method="custom", func = euclideanFuncPtr)
-## End(**Not run**)
+parDist(matrix(1:16, ncol=2), method="custom", func = euclideanFuncPtr)}
 }

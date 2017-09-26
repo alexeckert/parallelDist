@@ -3,3 +3,4 @@
 ^\misc$
 LICENSE
 .travis.yml
+appveyor.yml
