@@ -1,7 +1,7 @@
 Package: parallelDist
 Type: Package
 Title: Parallel Distance Matrix Computation using Multiple Threads
-Version: 0.2.0
+Version: 0.2.1
 Author: Alexander Eckert [aut, cre]
 Authors@R: c(
     person("Alexander", "Eckert", role = c("aut", "cre"), email = "info@alexandereckert.com")
@@ -40,8 +40,6 @@ Suggests:
     dtw,
     ggplot2,
     proxy,
-    highlight,
     testthat,
     RcppArmadillo,
     RcppXPtrUtils
-VignetteBuilder: highlight

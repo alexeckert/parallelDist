@@ -1,12 +1,10 @@
-% !Rnw driver = highlight::HighlightWeaveLatex()
 \documentclass[10pt]{article}
 %\VignetteIndexEntry{parallelDist vignette}
-%\VignetteEngine{highlight::highlight}
 %\VignetteKeywords{parallelDist, Performance}
 %\VignetteDepends{parallelDist, stats, ggplot2}
 
-\usepackage[USletter]{vmargin}
-\setmargrb{0.75in}{0.75in}{0.75in}{0.75in}
+\usepackage{geometry}
+\geometry{letterpaper}
 
 \usepackage{color,alltt}
 \usepackage[colorlinks]{hyperref}
@@ -28,27 +26,11 @@
 \newcommand{\code}[1]{\texttt{#1}}
 \newcommand{\R}[0]{\proglang{R}}
 
-%% defined as a stop-gap measure til interaction with highlight is sorted out
-\newcommand{\hlboxlessthan}{   \hlnormalsizeboxlessthan}
-\newcommand{\hlboxgreaterthan}{\hlnormalsizeboxgreaterthan}
-\newcommand{\hlboxopenbrace}{  \hlnormalsizeboxopenbrace}
-\newcommand{\hlboxclosebrace}{ \hlnormalsizeboxclosebrace}
-\newcommand{\hlboxbacktick}{   \hlnormalsizeboxbacktick}
-\newcommand{\hlboxunderscore}{ \hlnormalsizeboxunderscore}
-
-%% This corresponds to setting boxes=TRUE for highlight
-\newsavebox{\hlbox}
-\definecolor{hlBg}{rgb}{0.949019607843137,0.949019607843137,0.949019607843137}
-\definecolor{hlBd}{rgb}{0.9,0.9,0.9} % border
-\renewenvironment{Hchunk}{\vspace{0.5em}\noindent\begin{lrbox}{\hlbox}\begin{minipage}[b]{.9\textwidth}}%
-    {\end{minipage}\end{lrbox}\fcolorbox{hlBd}{hlBg}{\usebox{\hlbox}}\vspace{0.5em}}
-
 \newcommand{\rdoc}[2]{\href{http://www.rdocumentation.org/packages/#1/functions/#2}{\code{#2}}}
 
 <<echo=FALSE,print=FALSE>>=
 prettyVersion <- packageDescription("parallelDist")$Version
 require(ggplot2)
-require(highlight)
 @
 
 \author{Alexander Eckert}
@@ -56,6 +38,7 @@ require(highlight)
 \date{\pkg{parallelDist} version \Sexpr{prettyVersion} as of \today}
 
 \begin{document}
+\SweaveOpts{concordance=TRUE}
 \maketitle
 
 \abstract{
@@ -332,7 +315,8 @@ dist.euclidean <- parDist(sample.matrix, method = "euclidean", threads = 2)
 In the example below, a list with 2 matrices is defined where each matrix corresponds to a series with 2 dimensions of length 10.
 
 <<eval=FALSE>>=
-# defining a list of matrices, where each list entry row corresponds to a two dimensional series
+# defining a list of matrices, where each
+# list entry row corresponds to a two dimensional series
 tmp.mat <- matrix(c(1:40), ncol = 10)
 sample.matrix.list <- list(tmp.mat[1:2,], tmp.mat[3:4,])
 @
@@ -350,9 +334,10 @@ Since version 0.2.0 of \pkg{parallelDist} custom user-defined distance measures 
 \newline\newline
 The user-defined function needs to have the following signature:
 
-<<lang=cpp>>=
+\begin{verbatim}
 double customDist(const arma::mat &A, const arma::mat &B)
-@
+\end{verbatim}
+
 Note that the return value must be a \texttt{double} and the two parameters must be of type \texttt{const arma::mat \&param}. More information about the Armadillo library can be found at \cite{ArmadilloDoc} or as part of the documentation of the \pkg{RcppArmadillo} \cite{RcppArmadillo} package.
 \newline\newline
 Defining and compiling the function, as well as creating an external pointer to the user-defined function can easily be achieved with the \rdoc{RcppXPtrUtils}{cppXPtr} function of the \pkg{RcppXPtrUtils} package. The following code shows a full example of defining and using a user-defined euclidean distance function:
@@ -364,7 +349,8 @@ library(RcppArmadillo)
 library(RcppXPtrUtils)
 
 # compile user-defined function and return pointer (RcppArmadillo is used as dependency)
-euclideanFuncPtr <- cppXPtr("double customDist(const arma::mat &A, const arma::mat &B) { return sqrt(arma::accu(arma::square(A - B))); }",
+euclideanFuncPtr <- cppXPtr("double customDist(const arma::mat &A, const arma::mat &B) {
+                            return sqrt(arma::accu(arma::square(A - B))); }",
                             depends = c("RcppArmadillo"))
 
 # distance matrix for user-defined euclidean distance function
