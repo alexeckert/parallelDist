@@ -38,31 +38,30 @@ testMatrixListEquality <- function(matlist, comparisonMethod, func, ...) {
 }
 
 library(RcppXPtrUtils)
-test_that("custom euclidean distance method produces same outputs as native method", {
-  ptr <- cppXPtr("double customDist(const arma::mat &A, const arma::mat &B) { return sqrt(arma::accu(arma::square(A - B))); }", depends = c("RcppArmadillo"))
-  testMatrixListEquality(mat.list, "euclidean", func=ptr)
-})
-
 test_that("error for missing func parameter shows up", {
   expect_error(parDist(mat.sample1, method = "custom"), "Parameter 'func' is missing.")
 })
 
+test_that("custom euclidean distance method produces same outputs as native method", {
+  skip_on_os("solaris")
+  ptr <- cppXPtr("double customDist(const arma::mat &A, const arma::mat &B) { return sqrt(arma::accu(arma::square(A - B))); }", depends = c("RcppArmadillo"))
+  testMatrixListEquality(mat.list, "euclidean", func=ptr)
+})
+
 test_that("error for wrong return value of func pointer shows up", {
+  skip_on_os("solaris")
   ptr <- cppXPtr("int customDist(const arma::mat &A, const arma::mat &B) { return 0; }", depends = c("RcppArmadillo"))
   expect_error(parDist(mat.sample1, method = "custom", func=ptr), "Wrong return type 'int', should be 'double'.")
 })
 
 test_that("error for wrong argument type of func pointer shows up", {
+  skip_on_os("solaris")
   ptr <- cppXPtr("double customDist(int a, const arma::mat &B) { return 0; }", depends = c("RcppArmadillo"))
   expect_error(parDist(mat.sample1, method = "custom", func=ptr), "Wrong argument type 'int', should be 'const arma::mat&'.")
 })
 
 test_that("error for wrong number of arguments of func pointer shows up", {
-#  ptr <- ""
-#  class(ptr) <- "XPtr"
-#  attr(ptr, "type")="double"
-#  attr(ptr, "fname")="customDist"
-#  attr(ptr, "args")="const arma::mat& A"
+  skip_on_os("solaris")
   ptr <- cppXPtr("double customDist(const arma::mat &A) { return 0; }", depends = c("RcppArmadillo"))
   expect_error(parDist(mat.sample1, method = "custom", func=ptr), "Wrong number of arguments \\('1'\\), should be 2.")
 })

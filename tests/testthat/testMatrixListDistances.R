@@ -99,12 +99,6 @@ test_that("hellinger method produces same outputs as dist", {
 test_that("kullback method produces same outputs as dist", {
   testMatrixListEquality(matlist.list.h, mat.list, "kullback")
 })
-# not supported
-#test_that("mahalanobis method produces same outputs as dist", {
-#  mat.mahalanobis <- cbind(1:6, 1:3)
-#  testMatrixEquality(mat.mahalanobis, "mahalanobis")
-#  testMatrixEquality(mat.mahalanobis, "mahalanobis", cov=cov(mat.mahalanobis))
-#})
 # works
 test_that("manhattan method produces same outputs as dist", {
   testMatrixListEquality(matlist.list.h, mat.list, "manhattan")
