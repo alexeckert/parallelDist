@@ -29,6 +29,10 @@ mat.sample7 <- matrix(c(0.5,1,0,1,0,0,1,0.3,1,1), nrow = 2)
 
 mat.list <- list(mat.sample1, mat.sample2, mat.sample3, mat.sample4, mat.sample5, mat.sample6, mat.sample7)
 
+if (isCran()) {
+  mat.list <- mat.list[1:4]
+}
+
 testMatrixEquality <- function(matrix, method, ...) {
   expect_equal(as.matrix(parDist(matrix, method = method, ...)), as.matrix(dist(matrix, method = method, ...)))
 }
@@ -72,7 +76,7 @@ test_that("euclidean method produces same outputs as dist", {
 })
 # works (only vals [0,1])
 test_that("fJaccard method produces same outputs as dist", {
-  testMatrixListEquality(mat.list[c(1,2,7)], "fJaccard")
+  testMatrixListEquality(list(mat.sample1, mat.sample2, mat.sample7), "fJaccard")
 })
 # works
 test_that("geodesic method produces same outputs as dist", {
@@ -119,23 +123,23 @@ test_that("podani method produces same outputs as dist", {
 })
 # possible wrong implementation in proxy?
 test_that("soergel method produces expected output", {
-  expect_equal(as.matrix(parDist(mat.list[[1]], method = "soergel"))[1, 2], 1)
-  expect_equal(as.matrix(parDist(mat.list[[2]], method = "soergel"))[1, 2], 0.75)
-  expect_equal(as.matrix(parDist(mat.list[[3]], method = "soergel"))[1, 2], 0.0049504950495049506)
-  expect_equal(as.matrix(parDist(mat.list[[4]], method = "soergel"))[1, 2], NaN)
-  expect_equal(as.matrix(parDist(mat.list[[5]], method = "soergel"))[1, 2], -0.010101010101010102)
-  expect_equal(as.matrix(parDist(mat.list[[6]], method = "soergel"))[1, 2], 0.5)
-  expect_equal(as.matrix(parDist(mat.list[[7]], method = "soergel"))[1, 2], 0.55)
+  expect_equal(as.matrix(parDist(mat.sample1, method = "soergel"))[1, 2], 1)
+  expect_equal(as.matrix(parDist(mat.sample2, method = "soergel"))[1, 2], 0.75)
+  expect_equal(as.matrix(parDist(mat.sample3, method = "soergel"))[1, 2], 0.0049504950495049506)
+  expect_equal(as.matrix(parDist(mat.sample4, method = "soergel"))[1, 2], NaN)
+  expect_equal(as.matrix(parDist(mat.sample5, method = "soergel"))[1, 2], -0.010101010101010102)
+  expect_equal(as.matrix(parDist(mat.sample6, method = "soergel"))[1, 2], 0.5)
+  expect_equal(as.matrix(parDist(mat.sample7, method = "soergel"))[1, 2], 0.55)
 })
 # wrong implementation in proxy?
 test_that("wave method produces same outputs as dist", {
-  expect_equal(as.matrix(parDist(mat.list[[1]], method = "wave"))[1, 2], NaN)
-  expect_equal(as.matrix(parDist(mat.list[[2]], method = "wave"))[1, 2], NaN)
-  expect_equal(as.matrix(parDist(mat.list[[3]], method = "wave"))[1, 2], 0.5205532370853329)
-  expect_equal(as.matrix(parDist(mat.list[[4]], method = "wave"))[1, 2], NaN)
-  expect_equal(as.matrix(parDist(mat.list[[5]], method = "wave"))[1, 2], -0.0022262504871707334)
-  expect_equal(as.matrix(parDist(mat.list[[6]], method = "wave"))[1, 2], 0.5)
-  expect_equal(as.matrix(parDist(mat.list[[7]], method = "wave"))[1, 2], NaN)
+  expect_equal(as.matrix(parDist(mat.sample1, method = "wave"))[1, 2], NaN)
+  expect_equal(as.matrix(parDist(mat.sample2, method = "wave"))[1, 2], NaN)
+  expect_equal(as.matrix(parDist(mat.sample3, method = "wave"))[1, 2], 0.5205532370853329)
+  expect_equal(as.matrix(parDist(mat.sample4, method = "wave"))[1, 2], NaN)
+  expect_equal(as.matrix(parDist(mat.sample5, method = "wave"))[1, 2], -0.0022262504871707334)
+  expect_equal(as.matrix(parDist(mat.sample6, method = "wave"))[1, 2], 0.5)
+  expect_equal(as.matrix(parDist(mat.sample7, method = "wave"))[1, 2], NaN)
 })
 # works
 test_that("whittaker method produces same outputs as dist", {

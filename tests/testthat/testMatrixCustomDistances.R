@@ -29,6 +29,10 @@ mat.sample7 <- matrix(c(0.5,1,0,1,0,0,1,0.3,1,1), nrow = 2)
 
 mat.list <- list(mat.sample1, mat.sample2, mat.sample3, mat.sample4, mat.sample5, mat.sample6, mat.sample7)
 
+if (isCran()) {
+  mat.list <- mat.list[1:4]
+}
+
 testMatrixEquality <- function(matrix, comparisonMethod, func, ...) {
   expect_equal(as.matrix(parDist(matrix, method = "custom", func=func, ...)), as.matrix(parDist(matrix, method = comparisonMethod, ...)))
 }

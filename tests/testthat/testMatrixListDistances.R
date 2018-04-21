@@ -43,10 +43,13 @@ mat.sample7 <- matrix(c(0.5,1,0,1,0,0,1,0.3,1,1), nrow = 2)
 mat.sample8 <- matrix(c(1,1,2,1,3,5,1,6,1,1), nrow = 2)
 mat.multivar1 <- list(matrix(1:20, ncol = 4), matrix(seq(from = 1, by = 2, length.out = 20), ncol = 4))
 
-
-
 mat.list <- list(mat.sample1, mat.sample2, mat.sample3, mat.sample4, mat.sample5, mat.sample6, mat.sample7)
 matlist.list.h <- lapply(mat.list, function(x) matToList(x, vert=FALSE))
+
+if (isCran()) {
+  mat.list <- mat.list[1:4]
+  matlist.list.h <- lapply(mat.list, function(x) matToList(x, vert=FALSE))
+}
 
 testMatrixEquality <- function(matList, matrix, method, ...) {
   expect_equal(as.matrix(parDist(matList, method = method, ...)), as.matrix(dist(matrix, method = method, ...)))
@@ -85,7 +88,9 @@ test_that("euclidean method produces same outputs as dist", {
 })
 # works
 test_that("fJaccard method produces same outputs as dist", {
-  testMatrixListEquality(matlist.list.h[c(1,2,7)], mat.list[c(1,2,7)], "fJaccard")
+  testMatrixListEquality(list(matToList(mat.sample1, vert=FALSE), matToList(mat.sample2, vert=FALSE), matToList(mat.sample7, vert=FALSE)),
+                         list(mat.sample1, mat.sample2, mat.sample7),
+                         "fJaccard")
 })
 # first row only
 test_that("geodesic method produces same outputs as dist", {

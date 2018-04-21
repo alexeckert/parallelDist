@@ -1,5 +1,10 @@
 \name{NEWS}
 \title{NEWS for Package \pkg{parallelDist}}
+\section{Changes in parallelDist version 0.2.2}{
+  \itemize{
+    \item Reduced number of tests executed on CRAN
+  }
+}
 \section{Changes in parallelDist version 0.2.1}{
   \itemize{
     \item Fixed vignette generation errors for upcoming R releases

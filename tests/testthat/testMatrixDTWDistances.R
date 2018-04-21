@@ -32,6 +32,10 @@ tolerance <- 1e-8
 
 mat.list <- list(mat.sample1, mat.sample2, mat.sample3, mat.sample4, mat.sample5, mat.sample6, mat.sample7, mat.sample8, mat.sample9)
 
+if (isCran()) {
+  mat.list <- mat.list[1:5]
+}
+
 library(dtw)
 testMatrixEquality <- function(matrix, method, ...) {
   expect_equal(as.matrix(parDist(matrix, method = method, ...)), as.matrix(dist(matrix, method = method, ...)))

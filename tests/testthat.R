@@ -19,6 +19,14 @@
 
 library(testthat)
 library(parallelDist)
+
+isCran <- function() {
+  if (identical(Sys.getenv("NOT_CRAN"), "true")) {
+    return(TRUE)
+  }
+  return(FALSE)
+}
+
 # workaround for error "cannot open file 'startup.Rs': No such file or directory"
 Sys.setenv("R_TESTS" = "")
 test_check("parallelDist")
