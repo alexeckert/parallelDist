@@ -1,6 +1,6 @@
 // DistanceDTWGeneric.h
 //
-// Copyright (C)  2017  Alexander Eckert
+// Copyright (C)  2017, 2018  Alexander Eckert
 //
 // This file is part of parallelDist.
 //
@@ -39,13 +39,6 @@ private:
     unsigned int windowSize;
     bool warpingWindow;
     NormMethod normalizationMethod;
-    unsigned int matrixSize;
-    unsigned int idxOffset;
-
-    void setMatrixSize(unsigned int matrixSize) {
-        this->matrixSize = matrixSize;
-        this->idxOffset = matrixSize + getPatternOffset();
-    }
 
     const unsigned int getPatternOffset() {
         return Implementation::patternOffset;
@@ -55,8 +48,18 @@ private:
         return *static_cast<Implementation*>(this);
     }
 
-    std::pair<double, int> getCost(double *pen, const arma::mat &A, const arma::mat &B, unsigned int i, unsigned int j) {
-        return impl().getCost(pen, A, B, i, j);
+    /**
+     Calculate costs for two entries of input matrices A and B
+     @param pen penality matrix
+     @param bSizeOffset B.ncol + patternOffset
+     @param A matrix A
+     @param B matrix B
+     @param i index i
+     @param j index j
+     @return costs for two entries of input matrices A and B
+     */
+    std::pair<double, int> getCost(double *pen, unsigned int bSizeOffset, const arma::mat &A, const arma::mat &B, unsigned int i, unsigned int j) {
+        return impl().getCost(pen, bSizeOffset, A, B, i, j);
     };
 
 protected:
@@ -74,8 +77,8 @@ protected:
     return std::make_pair(min, argMin);
   }
   // returns value of cell of matrix
-  double getCell(double *matrix, unsigned int i, unsigned int j) {
-    return matrix[i * idxOffset + j];
+  double getCell(double *matrix, unsigned int bMatrixSizeOffset, unsigned int i, unsigned int j) {
+    return matrix[i * bMatrixSizeOffset + j];
   }
   // calculates euclidean distance between two matrices
   double getDistance(const arma::mat &A, const arma::mat &B, unsigned int i, unsigned int j) {
@@ -87,7 +90,7 @@ protected:
   }
 
 public:
-    DistanceDTWGeneric(bool warpingWindow = false, unsigned int windowSize = 0, NormMethod normalizationMethod = NormMethod::NoNorm) : matrixSize(0), idxOffset(0) {
+    DistanceDTWGeneric(bool warpingWindow = false, unsigned int windowSize = 0, NormMethod normalizationMethod = NormMethod::NoNorm) {
         this->warpingWindow = warpingWindow;
         this->windowSize = windowSize;
         this->normalizationMethod = normalizationMethod;
@@ -102,8 +105,6 @@ public:
         const unsigned int Asize = A.n_cols, Bsize = B.n_cols;
         const unsigned int aSizeOffset = Asize + patternOffset;
         const unsigned int bSizeOffset = Bsize + patternOffset;
-
-        setMatrixSize(Bsize);
 
         // size penality matrix according to the possible offset of the steppattern
         double *pen = new double[aSizeOffset * bSizeOffset];
@@ -131,9 +132,6 @@ public:
             effectiveWindowSize = max(Asize, Bsize);
         }
 
-        // set starting node to zero penalty
-        pen[0] = INFINITY;
-
         for (unsigned int i = patternOffset; i < aSizeOffset; ++i) {
             unsigned int lower = patternOffset, upper = bSizeOffset;
 
@@ -146,7 +144,7 @@ public:
                 if (i == patternOffset && j == patternOffset) {
                     pen[currIdx + j] = getDistance(A, B, i, j);
                 } else {
-                    std::pair<double, int> cost = getCost(pen, A, B, i, j);
+                    std::pair<double, int> cost = getCost(pen, bSizeOffset, A, B, i, j);
                     pen[currIdx + j] = cost.first;
 
                     if (normalizationMethod == NormMethod::PathLength) {
@@ -158,6 +156,7 @@ public:
 
         // remember the optimal distance measure
         double dist = pen[aSizeOffset * bSizeOffset - 1];
+
         // free memory
         delete [] pen;
 

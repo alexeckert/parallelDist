@@ -1,6 +1,6 @@
 ## testMatrixListDistances.R
 ##
-## Copyright (C)  2017  Alexander Eckert
+## Copyright (C)  2017, 2018  Alexander Eckert
 ##
 ## This file is part of parallelDist.
 ##
@@ -19,10 +19,6 @@
 
 context("Distance methods using matrix list as input")
 
-matrixToVertList <- function(matrix) {
-  lapply(as.list(data.frame(t(matrix))), function(x) matrix(x))
-}
-
 matToList <- function(matrix, vert=TRUE) {
   mat <- if (vert == TRUE) {
     lapply(as.list(data.frame(t(matrix))), function(x) { matrix(x)})
@@ -40,8 +36,6 @@ mat.sample4 <- matrix(rep(0,100), ncol = 5)
 mat.sample5 <- matrix(c(-500:499), ncol = 5)
 mat.sample6 <- matrix(c(1:2), ncol = 1)
 mat.sample7 <- matrix(c(0.5,1,0,1,0,0,1,0.3,1,1), nrow = 2)
-mat.sample8 <- matrix(c(1,1,2,1,3,5,1,6,1,1), nrow = 2)
-mat.multivar1 <- list(matrix(1:20, ncol = 4), matrix(seq(from = 1, by = 2, length.out = 20), ncol = 4))
 
 mat.list <- list(mat.sample1, mat.sample2, mat.sample3, mat.sample4, mat.sample5, mat.sample6, mat.sample7)
 matlist.list.h <- lapply(mat.list, function(x) matToList(x, vert=FALSE))
@@ -51,13 +45,13 @@ if (isCran()) {
   matlist.list.h <- lapply(mat.list, function(x) matToList(x, vert=FALSE))
 }
 
-testMatrixEquality <- function(matList, matrix, method, ...) {
+testMatrixListMatrixEquality <- function(matList, matrix, method, ...) {
   expect_equal(as.matrix(parDist(matList, method = method, ...)), as.matrix(dist(matrix, method = method, ...)))
 }
 
 testMatrixListEquality <- function(matListList, matList, method, ...) {
   mapply(function(X,Y) {
-    testMatrixEquality(X, Y, method, ...)
+    testMatrixListMatrixEquality(X, Y, method, ...)
   }, X=matListList, Y=matList)
 }
 

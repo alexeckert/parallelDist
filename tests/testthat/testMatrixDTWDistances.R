@@ -1,6 +1,6 @@
 ## testMatrixDTWDistances.R
 ##
-## Copyright (C)  2017  Alexander Eckert
+## Copyright (C)  2017, 2018  Alexander Eckert
 ##
 ## This file is part of parallelDist.
 ##
@@ -17,7 +17,7 @@
 ## You should have received a copy of the GNU General Public License
 ## along with parallelDist. If not, see <http://www.gnu.org/licenses/>.
 
-context("Distance methods using matrix as input")
+context("DTW distance methods using matrix as input")
 
 mat.sample1 <- matrix(c(0,1,0,1,0,0,1,0), nrow = 2)
 mat.sample2 <- matrix(c(0,1,0,1,0,0,1,0,1,1), nrow = 2)
@@ -41,70 +41,76 @@ testMatrixEquality <- function(matrix, method, ...) {
   expect_equal(as.matrix(parDist(matrix, method = method, ...)), as.matrix(dist(matrix, method = method, ...)))
 }
 
-testMatrixListEquality <- function(matlist, method, ...) {
+testMatrixEqualityForMatList <- function(matlist, method, ...) {
   invisible(sapply(matlist, function(x) { testMatrixEquality(x, method, ...) }))
 }
+
+# Tests
 
 test_that("error for unsupported step pattern shows up", {
   expect_error(parDist(mat.sample1, method = "dtw", step.pattern="unknown"), "Step pattern is not supported.")
 })
 
-# symmetric1 / symmetric
-testMatrixListEquality(mat.list, method="dtw", window.type="none", step.pattern=symmetric1)
-invisible(sapply(mat.list, function(x) {
-  expect_equal(as.matrix(parDist(x, method = "dtw",  window.type="none", step.pattern="symmetric1")),
-               as.matrix(dist(x, method = "dtw",  step.pattern=symmetric1)))
-})) # step.pattern as string
-testMatrixListEquality(mat.list, method="dtw", window.size = 5, window.type=sakoeChibaWindow, step.pattern=symmetric1)
+test_that("parDist and dtw produces same results for differen step patterns", {
+  # symmetric1 / symmetric
+  testMatrixEqualityForMatList(mat.list, method="dtw", window.type="none", step.pattern=symmetric1)
+  invisible(sapply(mat.list, function(x) {
+    expect_equal(as.matrix(parDist(x, method = "dtw",  window.type="none", step.pattern="symmetric1")),
+                 as.matrix(dist(x, method = "dtw",  step.pattern=symmetric1)))
+  })) # step.pattern as string
+  testMatrixEqualityForMatList(mat.list, method="dtw", window.size = 5, window.type=sakoeChibaWindow, step.pattern=symmetric1)
 
-# symmetric2 / symmetricP0
-testMatrixListEquality(mat.list, method="dtw", window.type="none", step.pattern=symmetric2)
-testMatrixListEquality(mat.list, method="dtw", window.size = 5,  window.type=sakoeChibaWindow, step.pattern=symmetric2)
+  # symmetric2 / symmetricP0
+  testMatrixEqualityForMatList(mat.list, method="dtw", window.type="none", step.pattern=symmetric2)
+  testMatrixEqualityForMatList(mat.list, method="dtw", window.size = 5,  window.type=sakoeChibaWindow, step.pattern=symmetric2)
 
-# symmetricP05
-testMatrixListEquality(mat.list, method="dtw",  window.type="none", step.pattern=symmetricP05)
-testMatrixListEquality(mat.list, method="dtw", window.size = 5,  window.type=sakoeChibaWindow, step.pattern=symmetricP05)
+  # symmetricP05
+  testMatrixEqualityForMatList(mat.list, method="dtw",  window.type="none", step.pattern=symmetricP05)
+  testMatrixEqualityForMatList(mat.list, method="dtw", window.size = 5,  window.type=sakoeChibaWindow, step.pattern=symmetricP05)
 
-# symmetricP1
-testMatrixListEquality(mat.list, method="dtw", window.type="none", step.pattern=symmetricP1)
-testMatrixListEquality(mat.list, method="dtw", window.size = 5, window.type=sakoeChibaWindow, step.pattern=symmetricP1)
+  # symmetricP1
+  testMatrixEqualityForMatList(mat.list, method="dtw", window.type="none", step.pattern=symmetricP1)
+  testMatrixEqualityForMatList(mat.list, method="dtw", window.size = 5, window.type=sakoeChibaWindow, step.pattern=symmetricP1)
 
-# symmetricP2
-testMatrixListEquality(mat.list, method="dtw", window.type="none", step.pattern=symmetricP2)
-testMatrixListEquality(mat.list, method="dtw", window.size = 5, window.type=sakoeChibaWindow, step.pattern=symmetricP2)
+  # symmetricP2
+  testMatrixEqualityForMatList(mat.list, method="dtw", window.type="none", step.pattern=symmetricP2)
+  testMatrixEqualityForMatList(mat.list, method="dtw", window.size = 5, window.type=sakoeChibaWindow, step.pattern=symmetricP2)
 
-# asymmetric
-testMatrixListEquality(mat.list, method="dtw", window.type="none", step.pattern=asymmetric)
-testMatrixListEquality(mat.list, method="dtw", window.size = 5, window.type=sakoeChibaWindow, step.pattern=asymmetric)
+  # asymmetric
+  testMatrixEqualityForMatList(mat.list, method="dtw", window.type="none", step.pattern=asymmetric)
+  testMatrixEqualityForMatList(mat.list, method="dtw", window.size = 5, window.type=sakoeChibaWindow, step.pattern=asymmetric)
 
-# asymmetricP0
-testMatrixListEquality(mat.list, method="dtw", window.type="none", step.pattern=asymmetricP0)
-testMatrixListEquality(mat.list, method="dtw", window.size = 5, window.type=sakoeChibaWindow, step.pattern=asymmetricP0)
+  # asymmetricP0
+  testMatrixEqualityForMatList(mat.list, method="dtw", window.type="none", step.pattern=asymmetricP0)
+  testMatrixEqualityForMatList(mat.list, method="dtw", window.size = 5, window.type=sakoeChibaWindow, step.pattern=asymmetricP0)
 
-# asymmetricP05
-testMatrixListEquality(mat.list, method="dtw", window.type="none", step.pattern=asymmetricP05)
-testMatrixListEquality(mat.list, method="dtw", window.size = 5, window.type=sakoeChibaWindow, step.pattern=asymmetricP05)
+  # asymmetricP05
+  testMatrixEqualityForMatList(mat.list, method="dtw", window.type="none", step.pattern=asymmetricP05)
+  testMatrixEqualityForMatList(mat.list, method="dtw", window.size = 5, window.type=sakoeChibaWindow, step.pattern=asymmetricP05)
 
-# asymmetricP1
-testMatrixListEquality(mat.list, method="dtw", window.type="none", step.pattern=asymmetricP1)
-testMatrixListEquality(mat.list, method="dtw", window.size = 5, window.type=sakoeChibaWindow, step.pattern=asymmetricP1)
+  # asymmetricP1
+  testMatrixEqualityForMatList(mat.list, method="dtw", window.type="none", step.pattern=asymmetricP1)
+  testMatrixEqualityForMatList(mat.list, method="dtw", window.size = 5, window.type=sakoeChibaWindow, step.pattern=asymmetricP1)
 
-# asymmetricP2
-testMatrixListEquality(mat.list, method="dtw", window.type="none", step.pattern=asymmetricP2)
-testMatrixListEquality(mat.list, method="dtw", window.size = 5, window.type=sakoeChibaWindow, step.pattern=asymmetricP2)
+  # asymmetricP2
+  testMatrixEqualityForMatList(mat.list, method="dtw", window.type="none", step.pattern=asymmetricP2)
+  testMatrixEqualityForMatList(mat.list, method="dtw", window.size = 5, window.type=sakoeChibaWindow, step.pattern=asymmetricP2)
+})
 
 # warping path normalization
-expect_equal(as.matrix(parDist(mat.sample9[1:2, 1:3], method = "dtw", norm.method="path.length", threads=1)),
-             as.matrix(dist(mat.sample9[1:2, 1:3], method = "dtw", step.pattern=symmetric1)) / 3,
-             tolerance=tolerance)
-expect_equal(as.matrix(parDist(mat.sample3, method = "dtw", norm.method="path.length", threads=1)),
-             as.matrix(dist(mat.sample3, method = "dtw", step.pattern=symmetric1)) / 5,
-             tolerance=tolerance)
-expect_equal(as.matrix(parDist(mat.sample4[c(3, 20),], method = "dtw", norm.method="path.length", threads=1)),
-             as.matrix(dist(mat.sample4[c(3, 20),], method = "dtw", step.pattern=symmetric1)) / 7, tolerance=tolerance)
-expect_equal(as.matrix(parDist(mat.sample9, method = "dtw", norm.method="n")),
-             as.matrix(dist(mat.sample9, method = "dtw", step.pattern=symmetric1)) / dim(mat.sample9)[2],
-             tolerance=tolerance)
-expect_equal(as.matrix(parDist(mat.sample9, method = "dtw", norm.method="n+m")),
-             as.matrix(dist(mat.sample9, method = "dtw", step.pattern=symmetric1)) / (dim(mat.sample9)[2] * 2),
-             tolerance=tolerance)
+test_that("Warping path normalization produces expected outputs", {
+  expect_equal(as.matrix(parDist(mat.sample9[1:2, 1:3], method = "dtw", norm.method="path.length", threads=1)),
+               as.matrix(dist(mat.sample9[1:2, 1:3], method = "dtw", step.pattern=symmetric1)) / 3,
+               tolerance=tolerance)
+  expect_equal(as.matrix(parDist(mat.sample3, method = "dtw", norm.method="path.length", threads=1)),
+               as.matrix(dist(mat.sample3, method = "dtw", step.pattern=symmetric1)) / 5,
+               tolerance=tolerance)
+  expect_equal(as.matrix(parDist(mat.sample4[c(3, 20),], method = "dtw", norm.method="path.length", threads=1)),
+               as.matrix(dist(mat.sample4[c(3, 20),], method = "dtw", step.pattern=symmetric1)) / 7, tolerance=tolerance)
+  expect_equal(as.matrix(parDist(mat.sample9, method = "dtw", norm.method="n")),
+               as.matrix(dist(mat.sample9, method = "dtw", step.pattern=symmetric1)) / dim(mat.sample9)[2],
+               tolerance=tolerance)
+  expect_equal(as.matrix(parDist(mat.sample9, method = "dtw", norm.method="n+m")),
+               as.matrix(dist(mat.sample9, method = "dtw", step.pattern=symmetric1)) / (dim(mat.sample9)[2] * 2),
+               tolerance=tolerance)
+})
