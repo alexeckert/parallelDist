@@ -3,7 +3,7 @@
 \section{Changes in parallelDist version 0.2.2}{
   \itemize{
     \item Fixed DTW calculation errors for matrices of different length when using multiple threads.
-    \item Reduced number of tests executed on CRAN
+    \item Reduced number of tests executed on CRAN.
   }
 }
 \section{Changes in parallelDist version 0.2.1}{
