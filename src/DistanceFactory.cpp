@@ -48,6 +48,8 @@ std::shared_ptr<IDistance> DistanceFactory::createDistanceFunction(Rcpp::List& a
         distanceFunction = std::make_shared<DistanceHellinger>();
     } else if (isEqualStr(distName, "kullback")) {
         distanceFunction = std::make_shared<DistanceKullback>();
+    } else if (isEqualStr(distName, "cosine")) {
+        distanceFunction = std::make_shared<DistanceCosine>();
     } else if (isEqualStr(distName, "mahalanobis")) {
         bool isInvertedCov = false;
         bool isCov = arguments.containsElementNamed("cov");

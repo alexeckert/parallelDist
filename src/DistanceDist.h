@@ -309,6 +309,16 @@ public:
 };
 
 //=======================
+// Cosine
+//=======================
+class DistanceCosine : public IDistance {
+public:
+  double calcDistance(const arma::mat &A, const arma::mat &B) {
+    return utility::similarityToDistance(arma::as_scalar(arma::dot(A, B))/(arma::as_scalar(arma::norm(A))*arma::as_scalar(arma::norm(B))));
+  }
+};
+
+//=======================
 // Custom distance
 //=======================
 class DistanceCustom : public IDistance {
