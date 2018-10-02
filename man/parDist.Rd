@@ -21,7 +21,7 @@ parallelDist(x, method = "euclidean", diag = FALSE, upper = FALSE, threads = NUL
 
 }
 \description{
-Calculates distance matrices in parallel using multiple threads. Supports 39 predefined distance measures and user-defined distance functions.
+Calculates distance matrices in parallel using multiple threads. Supports 40 predefined distance measures and user-defined distance functions.
 }
 
 \details{
@@ -209,6 +209,9 @@ An exemplary definition and usage of an user-defined euclidean distance function
     }
     \item{\code{braun-blanquet}}{
       The Braun-Blanquet similarity.\cr Type: binary\cr Formula: \eqn{a / max{(a + b), (a + c)}}.\cr Details: See \command{pr_DB$get_entry("braun-blanquet")} in \pkg{proxy}.
+    }
+    \item{\code{cosine}}{
+      The cosine similarity.\cr Type: continuous\cr Formula: \eqn{(a * b) / (|a|*|b|)}.\cr Details: See \command{pr_DB$get_entry("cosine")} in \pkg{proxy}.
     }
     \item{\code{dice}}{
       The Dice similarity.\cr Type: binary\cr Formula: \eqn{2a / (2a + b + c)}.\cr Details: See \command{pr_DB$get_entry("dice")} in \pkg{proxy}.
