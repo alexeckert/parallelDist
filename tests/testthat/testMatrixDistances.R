@@ -67,6 +67,10 @@ test_that("chord method produces same outputs as dist", {
   testMatrixListEquality(mat.list, "chord")
 })
 # works
+test_that("cosine method produces same outputs as dist", {
+  testMatrixListEquality(mat.list, "cosine")
+})
+# works
 test_that("divergence method produces same outputs as dist", {
   testMatrixListEquality(mat.list, "divergence")
 })
