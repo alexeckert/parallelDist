@@ -10,7 +10,7 @@ Authors@R: c(
 Maintainer: Alexander Eckert <info@alexandereckert.com>
 Description: A fast parallelized alternative to R's native 'dist' function to
     calculate distance matrices for continuous, binary, and multi-dimensional
-    input matrices, which supports a broad variety of 39 predefined distance
+    input matrices, which supports a broad variety of 40 predefined distance
     functions from the 'stats', 'proxy' and 'dtw' R packages, as well as user-
     defined functions written in C++. For ease of use, the 'parDist' function
     extends the signature of the 'dist' function and uses the same parameter
