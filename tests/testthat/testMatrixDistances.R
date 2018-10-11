@@ -226,3 +226,7 @@ test_that("yule method produces same outputs as dist", {
 test_that("yule2 method produces same outputs as dist", {
   testMatrixListEquality(mat.list, "yule2")
 })
+# works
+test_that("cosine method produces same outputs as dist", {
+  testMatrixListEquality(mat.list[-4], "cosine") # dividing by zero
+})

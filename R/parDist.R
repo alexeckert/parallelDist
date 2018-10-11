@@ -28,7 +28,7 @@ parDist <- parallelDist <- function (x, method = "euclidean", diag = FALSE, uppe
                "binary", "braun-blanquet", "dice", "fager", "faith",
                "hamman", "kulczynski1", "kulczynski2", "michael", "mountford",
                "mozley", "ochiai", "phi", "russel", "simple matching",
-               "simpson", "stiles", "tanimoto", "yule", "yule2", "custom") # w/o "levenshtein"
+               "simpson", "stiles", "tanimoto", "yule", "yule2", "cosine", "custom") # w/o "levenshtein"
   methodIdx <- pmatch(method, METHODS)
   if (is.na(methodIdx))
     stop("Invalid distance method")
