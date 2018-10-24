@@ -130,6 +130,8 @@ std::shared_ptr<IDistance> DistanceFactory::createDistanceFunction(Rcpp::List& a
         distanceFunction = std::make_shared<DistanceYule>();
     } else if (isEqualStr(distName, "yule2")) {
         distanceFunction = std::make_shared<DistanceYule2>();
+    } else if (isEqualStr(distName, "hamming")) {
+      distanceFunction = std::make_shared<DistanceHamming>();
     } else if (isEqualStr(distName, "custom")) {
         SEXP func_ = arguments["func"];
         funcPtr func = *Rcpp::XPtr<funcPtr>(func_);

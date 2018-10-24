@@ -318,6 +318,18 @@ public:
   }
 };
 
+
+//=======================
+// Hamming distance
+//=======================
+class DistanceHamming : public IDistance {
+public:
+  double calcDistance(const arma::mat &A, const arma::mat &B) {
+    double nc = A.n_cols;
+    return arma::accu(A != B) / nc;
+  }
+};
+
 //=======================
 // Custom distance
 //=======================
