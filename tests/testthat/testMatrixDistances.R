@@ -230,3 +230,22 @@ test_that("yule2 method produces same outputs as dist", {
 test_that("cosine method produces same outputs as dist", {
   testMatrixListEquality(mat.list[-4], "cosine") # dividing by zero
 })
+
+# test for hamming distance method
+hammingR <- function(x, y){ sum(x != y)/length(x) }
+
+testMatrixEqualityHamming <- function(matrix, ...) {
+  testthat::expect_equal(
+    as.matrix(parDist(matrix, method = "hamming", ...))
+    , as.matrix(proxy::dist(matrix, method = hammingR, ...))
+    )
+}
+
+testMatrixListEqualityHamming <- function(matlist, ...) {
+  invisible(sapply(matlist, function(x) { testMatrixEqualityHamming(x, ...) }))
+}
+
+testthat::test_that("hamming method produces same outputs as dist", {
+  testMatrixListEqualityHamming(mat.list)
+})
+
