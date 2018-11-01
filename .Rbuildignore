@@ -1,6 +1,7 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
 ^\misc$
-LICENSE
 .travis.yml
+.lintr
+LICENSE
 appveyor.yml

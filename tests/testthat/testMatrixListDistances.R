@@ -21,28 +21,32 @@ context("Distance methods using matrix list as input")
 
 matToList <- function(matrix, vert=TRUE) {
   mat <- if (vert == TRUE) {
-    lapply(as.list(data.frame(t(matrix))), function(x) { matrix(x)})
+    lapply(as.list(data.frame(t(matrix))), function(x) {
+      matrix(x)
+    })
   } else {
-    lapply(as.list(data.frame(t(matrix))), function(x) {matrix(x, nrow=1)})
+    lapply(as.list(data.frame(t(matrix))), function(x) {
+      matrix(x, nrow = 1)
+    })
   }
   names(mat) <- NULL
   mat
 }
 
-mat.sample1 <- matrix(c(0,1,0,1,0,0,1,0), nrow = 2)
-mat.sample2 <- matrix(c(0,1,0,1,0,0,1,0,1,1), nrow = 2)
+mat.sample1 <- matrix(c(0, 1, 0, 1, 0, 0, 1, 0), nrow = 2)
+mat.sample2 <- matrix(c(0, 1, 0, 1, 0, 0, 1, 0, 1, 1), nrow = 2)
 mat.sample3 <- matrix(c(1:500), ncol = 5)
-mat.sample4 <- matrix(rep(0,100), ncol = 5)
+mat.sample4 <- matrix(rep(0, 100), ncol = 5)
 mat.sample5 <- matrix(c(-500:499), ncol = 5)
 mat.sample6 <- matrix(c(1:2), ncol = 1)
-mat.sample7 <- matrix(c(0.5,1,0,1,0,0,1,0.3,1,1), nrow = 2)
+mat.sample7 <- matrix(c(0.5, 1, 0, 1, 0, 0, 1, 0.3, 1, 1), nrow = 2)
 
 mat.list <- list(mat.sample1, mat.sample2, mat.sample3, mat.sample4, mat.sample5, mat.sample6, mat.sample7)
-matlist.list.h <- lapply(mat.list, function(x) matToList(x, vert=FALSE))
+matlist.list.h <- lapply(mat.list, function(x) matToList(x, vert = FALSE))
 
 if (isCran()) {
   mat.list <- mat.list[1:4]
-  matlist.list.h <- lapply(mat.list, function(x) matToList(x, vert=FALSE))
+  matlist.list.h <- lapply(mat.list, function(x) matToList(x, vert = FALSE))
 }
 
 testMatrixListMatrixEquality <- function(matList, matrix, method, ...) {
@@ -50,9 +54,10 @@ testMatrixListMatrixEquality <- function(matList, matrix, method, ...) {
 }
 
 testMatrixListEquality <- function(matListList, matList, method, ...) {
-  mapply(function(X,Y) {
+  mapply(function(X, Y) {
     testMatrixListMatrixEquality(X, Y, method, ...)
-  }, X=matListList, Y=matList)
+  }
+  , X = matListList, Y = matList)
 }
 
 library(proxy)
@@ -82,7 +87,9 @@ test_that("euclidean method produces same outputs as dist", {
 })
 # works
 test_that("fJaccard method produces same outputs as dist", {
-  testMatrixListEquality(list(matToList(mat.sample1, vert=FALSE), matToList(mat.sample2, vert=FALSE), matToList(mat.sample7, vert=FALSE)),
+  testMatrixListEquality(list(matToList(mat.sample1, vert = FALSE),
+                              matToList(mat.sample2, vert = FALSE),
+                              matToList(mat.sample7, vert = FALSE)),
                          list(mat.sample1, mat.sample2, mat.sample7),
                          "fJaccard")
 })
@@ -109,7 +116,7 @@ test_that("maximum method produces same outputs as dist", {
 # works
 test_that("minkowski method produces same outputs as dist", {
   for (p_param in c(1:10)) {
-    testMatrixListEquality(matlist.list.h, mat.list, "minkowski", p=as.numeric(p_param))
+    testMatrixListEquality(matlist.list.h, mat.list, "minkowski", p = as.numeric(p_param))
   }
 })
 # first row only

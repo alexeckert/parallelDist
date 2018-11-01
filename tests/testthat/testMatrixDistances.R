@@ -19,13 +19,13 @@
 
 context("Distance methods using matrix as input")
 
-mat.sample1 <- matrix(c(0,1,0,1,0,0,1,0), nrow = 2)
-mat.sample2 <- matrix(c(0,1,0,1,0,0,1,0,1,1), nrow = 2)
+mat.sample1 <- matrix(c(0, 1, 0, 1, 0, 0, 1, 0), nrow = 2)
+mat.sample2 <- matrix(c(0, 1, 0, 1, 0, 0, 1, 0, 1, 1), nrow = 2)
 mat.sample3 <- matrix(c(1:500), ncol = 5)
-mat.sample4 <- matrix(rep(0,100), ncol = 5)
+mat.sample4 <- matrix(rep(0, 100), ncol = 5)
 mat.sample5 <- matrix(c(-500:499), ncol = 5)
 mat.sample6 <- matrix(c(1:2), ncol = 1)
-mat.sample7 <- matrix(c(0.5,1,0,1,0,0,1,0.3,1,1), nrow = 2)
+mat.sample7 <- matrix(c(0.5, 1, 0, 1, 0, 0, 1, 0.3, 1, 1), nrow = 2)
 
 mat.list <- list(mat.sample1, mat.sample2, mat.sample3, mat.sample4, mat.sample5, mat.sample6, mat.sample7)
 
@@ -39,7 +39,9 @@ testMatrixEquality <- function(matrix, method, ...) {
 
 library(proxy)
 testMatrixListEquality <- function(matlist, method, ...) {
-  invisible(sapply(matlist, function(x) { testMatrixEquality(x, method, ...) }))
+  invisible(sapply(matlist, function(x) {
+    testMatrixEquality(x, method, ...)
+  }))
 }
 
 test_that("error for invalid distance method shows up", {
@@ -94,14 +96,15 @@ test_that("kullback method produces same outputs as dist", {
 test_that("mahalanobis method produces same outputs as dist", {
   mat.mahalanobis <- cbind(1:6, 1:3)
   testMatrixEquality(mat.mahalanobis, "mahalanobis")
-  testMatrixEquality(mat.mahalanobis, "mahalanobis", cov=cov(mat.mahalanobis))
-  expect_equal(as.matrix(parDist(mat.mahalanobis, "mahalanobis", cov=solve(cov(mat.mahalanobis)), inverted=TRUE)),
-               as.matrix(dist(mat.mahalanobis, method = "mahalanobis", cov=cov(mat.mahalanobis))))
+  testMatrixEquality(mat.mahalanobis, "mahalanobis", cov = cov(mat.mahalanobis))
+  expect_equal(as.matrix(parDist(mat.mahalanobis, "mahalanobis", cov = solve(cov(mat.mahalanobis)), inverted = TRUE)),
+               as.matrix(dist(mat.mahalanobis, method = "mahalanobis", cov = cov(mat.mahalanobis))))
 })
 test_that("mahalanobis method throws error for list of matrices input", {
   mat.mahalanobis <- cbind(1:6, 1:3)
   mat.list <- list(mat.mahalanobis, mat.mahalanobis)
-  expect_error(parDist(mat.list, "mahalanobis"), "Calculation of inverted covariance matrix is only supported for input data in matrix format.")
+  expect_error(parDist(mat.list, "mahalanobis"),
+               "Calculation of inverted covariance matrix is only supported for input data in matrix format.")
 })
 # works
 test_that("manhattan method produces same outputs as dist", {
@@ -114,7 +117,7 @@ test_that("maximum method produces same outputs as dist", {
 # works
 test_that("minkowski method produces same outputs as dist", {
   for (p_param in c(1:10)) {
-    testMatrixListEquality(mat.list, "minkowski", p=as.numeric(p_param))
+    testMatrixListEquality(mat.list, "minkowski", p = as.numeric(p_param))
   }
 })
 # works
