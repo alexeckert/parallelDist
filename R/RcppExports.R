@@ -8,4 +8,3 @@ cpp_parallelDistVec <- function(dataList, attrs, arguments) {
 cpp_parallelDistMatrixVec <- function(dataMatrix, attrs, arguments) {
     .Call(`_parallelDist_cpp_parallelDistMatrixVec`, dataMatrix, attrs, arguments)
 }
-

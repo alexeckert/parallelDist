@@ -19,13 +19,13 @@
 
 context("Custom distance methods using matrix as input")
 
-mat.sample1 <- matrix(c(0,1,0,1,0,0,1,0), nrow = 2)
-mat.sample2 <- matrix(c(0,1,0,1,0,0,1,0,1,1), nrow = 2)
+mat.sample1 <- matrix(c(0, 1, 0, 1, 0, 0, 1, 0), nrow = 2)
+mat.sample2 <- matrix(c(0, 1, 0, 1, 0, 0, 1, 0, 1, 1), nrow = 2)
 mat.sample3 <- matrix(c(1:500), ncol = 5)
-mat.sample4 <- matrix(rep(0,100), ncol = 5)
+mat.sample4 <- matrix(rep(0, 100), ncol = 5)
 mat.sample5 <- matrix(c(-500:499), ncol = 5)
 mat.sample6 <- matrix(c(1:2), ncol = 1)
-mat.sample7 <- matrix(c(0.5,1,0,1,0,0,1,0.3,1,1), nrow = 2)
+mat.sample7 <- matrix(c(0.5, 1, 0, 1, 0, 0, 1, 0.3, 1, 1), nrow = 2)
 
 mat.list <- list(mat.sample1, mat.sample2, mat.sample3, mat.sample4, mat.sample5, mat.sample6, mat.sample7)
 
@@ -34,11 +34,14 @@ if (isCran()) {
 }
 
 testMatrixEquality <- function(matrix, comparisonMethod, func, ...) {
-  expect_equal(as.matrix(parDist(matrix, method = "custom", func=func, ...)), as.matrix(parDist(matrix, method = comparisonMethod, ...)))
+  expect_equal(as.matrix(parDist(matrix, method = "custom", func = func, ...)),
+               as.matrix(parDist(matrix, method = comparisonMethod, ...)))
 }
 
 testMatrixListEquality <- function(matlist, comparisonMethod, func, ...) {
-  invisible(sapply(matlist, function(x) { testMatrixEquality(x, comparisonMethod, func, ...) }))
+  invisible(sapply(matlist, function(x) {
+    testMatrixEquality(x, comparisonMethod, func, ...)
+  }))
 }
 
 library(RcppXPtrUtils)
@@ -48,24 +51,27 @@ test_that("error for missing func parameter shows up", {
 
 test_that("custom euclidean distance method produces same outputs as native method", {
   skip_on_os("solaris")
-  ptr <- cppXPtr("double customDist(const arma::mat &A, const arma::mat &B) { return sqrt(arma::accu(arma::square(A - B))); }", depends = c("RcppArmadillo"))
-  testMatrixListEquality(mat.list, "euclidean", func=ptr)
+  ptr <- cppXPtr(
+    "double customDist(const arma::mat &A, const arma::mat &B) { return sqrt(arma::accu(arma::square(A - B))); }",
+    depends = c("RcppArmadillo"))
+  testMatrixListEquality(mat.list, "euclidean", func = ptr)
 })
 
 test_that("error for wrong return value of func pointer shows up", {
   skip_on_os("solaris")
   ptr <- cppXPtr("int customDist(const arma::mat &A, const arma::mat &B) { return 0; }", depends = c("RcppArmadillo"))
-  expect_error(parDist(mat.sample1, method = "custom", func=ptr), "Wrong return type 'int', should be 'double'.")
+  expect_error(parDist(mat.sample1, method = "custom", func = ptr), "Wrong return type 'int', should be 'double'.")
 })
 
 test_that("error for wrong argument type of func pointer shows up", {
   skip_on_os("solaris")
   ptr <- cppXPtr("double customDist(int a, const arma::mat &B) { return 0; }", depends = c("RcppArmadillo"))
-  expect_error(parDist(mat.sample1, method = "custom", func=ptr), "Wrong argument type 'int', should be 'const arma::mat&'.")
+  expect_error(parDist(mat.sample1, method = "custom", func = ptr),
+               "Wrong argument type 'int', should be 'const arma::mat&'.")
 })
 
 test_that("error for wrong number of arguments of func pointer shows up", {
   skip_on_os("solaris")
   ptr <- cppXPtr("double customDist(const arma::mat &A) { return 0; }", depends = c("RcppArmadillo"))
-  expect_error(parDist(mat.sample1, method = "custom", func=ptr), "Wrong number of arguments \\('1'\\), should be 2.")
+  expect_error(parDist(mat.sample1, method = "custom", func = ptr), "Wrong number of arguments \\('1'\\), should be 2.")
 })

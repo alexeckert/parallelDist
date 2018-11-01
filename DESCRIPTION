@@ -40,6 +40,7 @@ SystemRequirements: C++11
 Suggests:
     dtw,
     ggplot2,
+    lintr,
     proxy,
     testthat,
     RcppArmadillo,

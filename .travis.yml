@@ -1,6 +1,5 @@
 language: r
-
-dist: trusty
+cache: packages
 
 r:
   - devel
@@ -13,6 +12,8 @@ before_install:
   - tlmgr install ly1 mathdesign charter
 
 after_success:
+  - unset CI
+  - Rscript -e 'lintr::lint_package()'
   - Rscript -e 'covr::codecov()'
 
 addons:

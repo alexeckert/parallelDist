@@ -68,16 +68,18 @@ structure(c(0, 0.498706765350665, 0.875807932165434, 0.997939444221616,
 matListList <- list(matList.sample1, matList.sample2)
 
 # Test methods
-
+library(dtw)
 # Method for calculating a dtw distance matrix with vectors of different length
 calcDTWDistMatForMatList <- function(matrixList, step.pattern) {
   matrixListLength <- length(matrixList)
-  mat <- matrix(NA, nrow=matrixListLength, ncol=matrixListLength)
-  for (i in c(1:(matrixListLength -1))) {
-    for (j in (i+1):matrixListLength) {
-      mat[j,i] <- tryCatch({
-        dtw(as.vector(matrixList[[j]]), as.vector(matrixList[[i]]), step.pattern = step.pattern, distance.only = TRUE)$distance
-      }, error=function(e){
+  mat <- matrix(NA, nrow = matrixListLength, ncol = matrixListLength)
+  for (i in c(1:(matrixListLength - 1))) {
+    for (j in (i + 1):matrixListLength) {
+      mat[j, i] <- tryCatch({
+        dtw(as.vector(matrixList[[j]]), as.vector(matrixList[[i]]),
+            step.pattern = step.pattern, distance.only = TRUE)$distance
+      }
+      , error = function(e) {
         Inf
       })
     }
@@ -85,16 +87,16 @@ calcDTWDistMatForMatList <- function(matrixList, step.pattern) {
   as.dist(mat)
 }
 
-library(dtw)
+
 testDtwMatrixListEquality <- function(matList, threads = 2, ...) {
   expect_equal(as.matrix(calcDTWDistMatForMatList(matList, ...)),
-               as.matrix(parDist(matList, method = "dtw", threads = threads, window.type="none", ...)))
+               as.matrix(parDist(matList, method = "dtw", threads = threads, window.type = "none", ...)))
 }
 
 # Tests
 
 test_that("parDist produces same distance for list of matrices with different length for different step patterns", {
-  threadsForTest = 2
+  threadsForTest <- 2
   for (matList in matListList) {
     testDtwMatrixListEquality(matList, threads = threadsForTest, step.pattern = symmetric1)
     testDtwMatrixListEquality(matList, threads = threadsForTest, step.pattern = symmetric2)
