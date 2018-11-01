@@ -45,5 +45,3 @@ Suggests:
     testthat,
     RcppArmadillo,
     RcppXPtrUtils
-RoxygenNote: 6.1.0
-Encoding: UTF-8
