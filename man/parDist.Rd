@@ -170,7 +170,7 @@ An exemplary definition and usage of an user-defined euclidean distance function
           \itemize{
             \item{
               \describe{
-                \item{\code{p} (integer, optional)}{The \eqn{p}th root of the sum of the \eqn{p}th powers of the differences of the components.}
+                \item{\code{p} (double, optional)}{The \eqn{p}th root of the sum of the \eqn{p}th powers of the differences of the components.}
               }
             }
           }

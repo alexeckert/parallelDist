@@ -73,29 +73,6 @@ public:
 };
 
 //=======================
-// Canberra distance
-//=======================
-// class DistanceCanberraOrg : public IDistance {
-// public:
-//   DistanceCanberraOrg () {}
-//   ~DistanceCanberraOrg () {}
-//   double calcDistance(const arma::mat &A, const arma::mat &B) {
-//     arma::mat denominator = arma::abs(A) + arma::abs(B);
-//     std::cout << "denominator"<< std::endl;
-//     denominator.print(std::cout);
-//     arma::mat ratio = arma::abs(A - B) / denominator;
-//     std::cout << "ratio"<< std::endl;
-//     ratio.print(std::cout);
-//     ratio.transform( [](double val) {
-//       return (std::isnan(val) ? double(1) : val);
-//     } );
-//     std::cout << "ratio after nan replacement"<< std::endl;
-//     ratio.print(std::cout);
-//     return arma::accu(ratio);
-//   }
-// };
-
-//=======================
 // Chord
 //=======================
 class DistanceChord : public IDistance {
@@ -223,9 +200,9 @@ public:
 //=======================
 class DistanceMinkowski : public IDistance {
 private:
-    unsigned int p;
+    double p;
 public:
-    explicit DistanceMinkowski (unsigned int p) {
+    explicit DistanceMinkowski (double p) {
         this->p = p;
     }
     ~DistanceMinkowski() {}

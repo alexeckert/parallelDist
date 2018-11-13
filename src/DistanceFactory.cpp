@@ -77,9 +77,9 @@ std::shared_ptr<IDistance> DistanceFactory::createDistanceFunction(Rcpp::List& a
     } else if (isEqualStr(distName, "maximum")) {
         distanceFunction = std::make_shared<DistanceMaximum>();
     } else if (isEqualStr(distName, "minkowski")) {
-        int p = 2;
+        double p = 2;
         if (arguments.containsElementNamed("p")) {
-          p = Rcpp::as<int >(arguments["p"]);
+          p = Rcpp::as<double >(arguments["p"]);
         }
         distanceFunction = std::make_shared<DistanceMinkowski>(p);
     } else if (isEqualStr(distName, "podani")) {
