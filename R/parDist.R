@@ -58,7 +58,7 @@ parDist <- parallelDist <- function (x, method = "euclidean", diag = FALSE, uppe
   }
 
   N <- ifelse(is.list(x), length(x), nrow(x))
-  attrs <- list(Size = N, Labels = names(x), Diag = diag, Upper = upper,
+  attrs <- list(Size = N, Labels = dimnames(x)[[1L]], Diag = diag, Upper = upper,
                 method = METHODS[methodIdx], call = match.call(), class = "dist")
 
   # check data type

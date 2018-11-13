@@ -1,6 +1,6 @@
 ## testMatrixDistances.R
 ##
-## Copyright (C)  2017  Alexander Eckert
+## Copyright (C)  2017, 2018  Alexander Eckert
 ##
 ## This file is part of parallelDist.
 ##
@@ -50,47 +50,61 @@ test_that("error for invalid input type", {
   expect_error(parDist(data.frame(c(1:2))), "x must be a matrix or a list of matrices.")
 })
 
-# works
+test_that("dist class attributes keep preserved", {
+  namedMatrix <- matrix(1:12, 4)
+  colnames(namedMatrix) <- c("A", "B", "C")
+  rownames(namedMatrix) <- c("a", "b", "c", "d")
+
+  attributes1 <- attributes(parDist(namedMatrix))
+  attributes2 <- attributes(dist(namedMatrix))
+
+  # remove call attribute value
+  attributes1$call <- NULL
+  attributes2$call <- NULL
+
+  expect_equal(attributes1, attributes2)
+})
+
 test_that("bhjattacharyya method produces same outputs as dist", {
   testMatrixListEquality(mat.list, "bhjattacharyya")
 })
-# works
+
 test_that("bray method produces same outputs as dist", {
   testMatrixListEquality(mat.list, "bray")
 })
-# works
+
 test_that("canberra method produces same outputs as dist", {
   testMatrixListEquality(mat.list, "canberra")
 })
-# works
+
 test_that("chord method produces same outputs as dist", {
   testMatrixListEquality(mat.list, "chord")
 })
-# works
+
 test_that("divergence method produces same outputs as dist", {
   testMatrixListEquality(mat.list, "divergence")
 })
-# works
+
 test_that("euclidean method produces same outputs as dist", {
   testMatrixListEquality(mat.list, "euclidean")
 })
-# works (only vals [0,1])
+# (only vals [0,1])
 test_that("fJaccard method produces same outputs as dist", {
   testMatrixListEquality(list(mat.sample1, mat.sample2, mat.sample7), "fJaccard")
 })
-# works
+
 test_that("geodesic method produces same outputs as dist", {
   testMatrixListEquality(mat.list, "geodesic")
 })
-# works
+
 test_that("hellinger method produces same outputs as dist", {
   testMatrixListEquality(mat.list, "hellinger")
 })
-# works
+
 test_that("kullback method produces same outputs as dist", {
   testMatrixListEquality(mat.list, "kullback")
 })
-#works
+
 test_that("mahalanobis method produces same outputs as dist", {
   mat.mahalanobis <- cbind(1:6, 1:3)
   testMatrixEquality(mat.mahalanobis, "mahalanobis")
@@ -103,21 +117,21 @@ test_that("mahalanobis method throws error for list of matrices input", {
   mat.list <- list(mat.mahalanobis, mat.mahalanobis)
   expect_error(parDist(mat.list, "mahalanobis"), "Calculation of inverted covariance matrix is only supported for input data in matrix format.")
 })
-# works
+
 test_that("manhattan method produces same outputs as dist", {
   testMatrixListEquality(mat.list, "manhattan")
 })
-# works
+
 test_that("maximum method produces same outputs as dist", {
   testMatrixListEquality(mat.list, "maximum")
 })
-# works
+
 test_that("minkowski method produces same outputs as dist", {
   for (p_param in c(1:10)) {
     testMatrixListEquality(mat.list, "minkowski", p=as.numeric(p_param))
   }
 })
-# works
+
 test_that("podani method produces same outputs as dist", {
   testMatrixListEquality(mat.list, "podani")
 })
@@ -141,92 +155,92 @@ test_that("wave method produces same outputs as dist", {
   expect_equal(as.matrix(parDist(mat.sample6, method = "wave"))[1, 2], 0.5)
   expect_equal(as.matrix(parDist(mat.sample7, method = "wave"))[1, 2], NaN)
 })
-# works
+
 test_that("whittaker method produces same outputs as dist", {
   testMatrixListEquality(mat.list, "whittaker")
 })
 # binary distances
-#works
+
 test_that("binary method produces same outputs as dist", {
   testMatrixListEquality(mat.list, "binary")
 })
-# works
+
 test_that("braunblanquet method produces same outputs as dist", {
   testMatrixListEquality(mat.list, "braun-blanquet")
 })
-# works
+
 test_that("dice method produces same outputs as dist", {
   testMatrixListEquality(mat.list, "dice")
 })
-# works
+
 test_that("fager method produces same outputs as dist", {
   testMatrixListEquality(mat.list, "fager")
 })
-# works
+
 test_that("faith method produces same outputs as dist", {
   testMatrixListEquality(mat.list, "faith")
 })
-# works
+
 test_that("hamman method produces same outputs as dist", {
   testMatrixListEquality(mat.list, "hamman")
 })
-# works
+
 test_that("kulczynski1 method produces same outputs as dist", {
   testMatrixListEquality(mat.list, "kulczynski1")
 })
-# works
+
 test_that("kulczynski2 method produces same outputs as dist", {
   testMatrixListEquality(mat.list, "kulczynski2")
 })
-# works
+
 test_that("michael method produces same outputs as dist", {
   testMatrixListEquality(mat.list, "michael")
 })
-# works
+
 test_that("mountford method produces same outputs as dist", {
   testMatrixListEquality(mat.list, "mountford")
 })
-# works
+
 test_that("mozley method produces same outputs as dist", {
   testMatrixListEquality(mat.list, "mozley")
 })
-# works
+
 test_that("ochiai method produces same outputs as dist", {
   testMatrixListEquality(mat.list, "ochiai")
 })
-# works
+
 test_that("phi method produces same outputs as dist", {
   testMatrixListEquality(mat.list, "phi")
 })
-# works
+
 test_that("russel method produces same outputs as dist", {
   testMatrixListEquality(mat.list, "russel")
 })
-# works
+
 test_that("simplematching method produces same outputs as dist", {
   testMatrixListEquality(mat.list, "simple matching")
 })
-# works
+
 test_that("simpson method produces same outputs as dist", {
   testMatrixListEquality(mat.list, "simpson")
 })
-# works
+
 test_that("stiles method produces same outputs as dist", {
   testMatrixListEquality(mat.list, "stiles")
 })
-# works
+
 test_that("tanimoto method produces same outputs as dist", {
   testMatrixListEquality(mat.list, "tanimoto")
 })
-# works
+
 test_that("yule method produces same outputs as dist", {
   testMatrixListEquality(mat.list, "yule")
 })
-# works
+
 test_that("yule2 method produces same outputs as dist", {
   testMatrixListEquality(mat.list, "yule2")
 })
-# works
+
 test_that("cosine method produces same outputs as dist", {
   testMatrixListEquality(mat.list[-4], "cosine") # dividing by zero
 })
