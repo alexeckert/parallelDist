@@ -50,7 +50,7 @@ test_that("error for invalid input type", {
   expect_error(parDist(data.frame(c(1:2))), "x must be a matrix or a list of matrices.")
 })
 
-test_that("dist class attributes keep preserved", {
+test_that("dist class label attribute keeps preserved", {
   namedMatrix <- matrix(1:12, 4)
   colnames(namedMatrix) <- c("A", "B", "C")
   rownames(namedMatrix) <- c("a", "b", "c", "d")
@@ -58,11 +58,7 @@ test_that("dist class attributes keep preserved", {
   attributes1 <- attributes(parDist(namedMatrix))
   attributes2 <- attributes(dist(namedMatrix))
 
-  # remove call attribute value
-  attributes1$call <- NULL
-  attributes2$call <- NULL
-
-  expect_equal(attributes1, attributes2)
+  expect_equal(attributes1$Labels, attributes2$Labels)
 })
 
 test_that("bhjattacharyya method produces same outputs as dist", {
