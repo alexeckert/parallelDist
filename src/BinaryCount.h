@@ -23,21 +23,22 @@
 #include <RcppArmadillo.h>
 
 class BinaryCount {
-private:
-    unsigned long a;
-    unsigned long b;
-    unsigned long c;
-    unsigned long d;
-public:
-    BinaryCount (unsigned long a, unsigned long b, unsigned long c, unsigned long d) : a(a), b(b), c(c), d(d) {};
-    ~BinaryCount () {};
-    static BinaryCount getBinaryCount(const arma::mat &A, const arma::mat &B) {
-        unsigned long a = 0;
-        unsigned long b = 0;
-        unsigned long c = 0;
-        unsigned long d = 0;
+ private:
+    uint64_t a;
+    uint64_t b;
+    uint64_t c;
+    uint64_t d;
 
-        for(arma::uword idx=0; idx < A.size(); ++idx) {
+ public:
+    BinaryCount(uint64_t a, uint64_t b, uint64_t c, uint64_t d) : a(a), b(b), c(c), d(d) {}
+    ~BinaryCount() {}
+    static BinaryCount getBinaryCount(const arma::mat &A, const arma::mat &B) {
+        uint64_t a = 0;
+        uint64_t b = 0;
+        uint64_t c = 0;
+        uint64_t d = 0;
+
+        for (arma::uword idx = 0; idx < A.size(); ++idx) {
             bool aZero = A.at(idx) == 0.0;
             bool bZero = B.at(idx) == 0.0;
 
@@ -54,18 +55,18 @@ public:
 
         return BinaryCount(a, b, c, d);
     }
-    unsigned long getA() {
+    uint64_t getA() {
         return a;
-    };
-    unsigned long getB() {
+    }
+    uint64_t getB() {
         return b;
-    };
-    unsigned long getC() {
+    }
+    uint64_t getC() {
         return c;
-    };
-    unsigned long getD() {
+    }
+    uint64_t getD() {
         return d;
-    };
+    }
 };
 
-#endif
+#endif  // BINARYCOUNT_H_

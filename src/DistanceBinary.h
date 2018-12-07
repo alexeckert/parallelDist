@@ -23,7 +23,7 @@
 #include <RcppArmadillo.h>
 #include <math.h>
 #include "IDistance.h"
-#include "Utility.h"
+#include "Util.h"
 #include "BinaryCount.h"
 
 #undef max
@@ -37,8 +37,8 @@ class DistanceBinary : public IDistance {
 public:
     double calcDistance(const arma::mat &A, const arma::mat &B) {
         BinaryCount bc = BinaryCount::getBinaryCount(A, B);
-        unsigned long denominator = bc.getA() + bc.getB() + bc.getC();
-        return ((denominator == 0) ? 0 : (double) (bc.getB() + bc.getC()) / denominator);
+        uint64_t denominator = bc.getA() + bc.getB() + bc.getC();
+        return ((denominator == 0) ? 0 : static_cast<double>(bc.getB() + bc.getC()) / denominator);
     }
 };
 
@@ -49,8 +49,8 @@ class DistanceBraunblanquet : public IDistance {
 public:
   double calcDistance(const arma::mat &A, const arma::mat &B) {
     BinaryCount bc = BinaryCount::getBinaryCount(A, B);
-    unsigned long denominator = maxOfPair((bc.getA() + bc.getB()), (bc.getA() + bc.getC()));
-    return utility::similarityToDistance((double) bc.getA() / denominator);
+    uint64_t denominator = maxOfPair((bc.getA() + bc.getB()), (bc.getA() + bc.getC()));
+    return util::similarityToDistance(static_cast<double>(bc.getA()) / denominator);
   }
 };
 
@@ -61,8 +61,8 @@ class DistanceDice : public IDistance {
 public:
   double calcDistance(const arma::mat &A, const arma::mat &B) {
     BinaryCount bc = BinaryCount::getBinaryCount(A, B);
-    unsigned long denominator = 2 * bc.getA() + bc.getB() + bc.getC();
-    return utility::similarityToDistance((double) (2 * bc.getA()) / denominator);
+    uint64_t denominator = 2 * bc.getA() + bc.getB() + bc.getC();
+    return util::similarityToDistance(static_cast<double>(2 * bc.getA()) / denominator);
   }
 };
 
@@ -73,7 +73,8 @@ class DistanceFager : public IDistance {
 public:
   double calcDistance(const arma::mat &A, const arma::mat &B) {
     BinaryCount bc = BinaryCount::getBinaryCount(A, B);
-    return utility::similarityToDistance(((double) bc.getA() / sqrt((bc.getA() + bc.getB()) * (bc.getA() + bc.getC()))) - ((sqrt(bc.getA() + bc.getC())) / 2.0));
+    return util::similarityToDistance((static_cast<double>(bc.getA()) /
+    sqrt((bc.getA() + bc.getB()) * (bc.getA() + bc.getC()))) - ((sqrt(bc.getA() + bc.getC())) / 2.0));
   }
 };
 
@@ -84,7 +85,7 @@ class DistanceFaith : public IDistance {
 public:
   double calcDistance(const arma::mat &A, const arma::mat &B) {
     BinaryCount bc = BinaryCount::getBinaryCount(A, B);
-    return utility::similarityToDistance((bc.getA() + (double) bc.getD() / 2.0) / A.n_cols);
+    return util::similarityToDistance((bc.getA() + static_cast<double>(bc.getD()) / 2.0) / A.n_cols);
   }
 };
 
@@ -95,7 +96,8 @@ class DistanceHamman : public IDistance {
 public:
   double calcDistance(const arma::mat &A, const arma::mat &B) {
     BinaryCount bc = BinaryCount::getBinaryCount(A, B);
-    return utility::similarityToDistance(((double) bc.getA() + bc.getD() - bc.getB() - bc.getC()) / A.n_cols);
+    return util::similarityToDistance(
+      (static_cast<double>(bc.getA()) + bc.getD() - bc.getB() - bc.getC()) / A.n_cols);
   }
 };
 
@@ -106,7 +108,7 @@ class DistanceKulczynski1 : public IDistance {
 public:
     double calcDistance(const arma::mat &A, const arma::mat &B) {
         BinaryCount bc = BinaryCount::getBinaryCount(A, B);
-        return utility::similarityToDistance((double) bc.getA() / (bc.getB() + bc.getC()));
+        return util::similarityToDistance(static_cast<double>(bc.getA()) / (bc.getB() + bc.getC()));
     }
 };
 
@@ -117,9 +119,9 @@ class DistanceKulczynski2 : public IDistance {
 public:
     double calcDistance(const arma::mat &A, const arma::mat &B) {
         BinaryCount bc = BinaryCount::getBinaryCount(A, B);
-        double div1 = (double) bc.getA() / (bc.getA() + bc.getB());
-        double div2 = (double) bc.getA() / (bc.getA() + bc.getC());
-        return utility::similarityToDistance((div1 + div2) / 2.0);
+        double div1 = static_cast<double>(bc.getA()) / (bc.getA() + bc.getB());
+        double div2 = static_cast<double>(bc.getA()) / (bc.getA() + bc.getC());
+        return util::similarityToDistance((div1 + div2) / 2.0);
     }
 };
 
@@ -131,7 +133,8 @@ public:
   double calcDistance(const arma::mat &A, const arma::mat &B) {
     BinaryCount bc = BinaryCount::getBinaryCount(A, B);
     double denominator = pow(bc.getA() + bc.getD(), 2) + pow(bc.getB() + bc.getC(), 2);
-    return utility::similarityToDistance((4.0 * ((double)(bc.getA() * bc.getD()) - (bc.getB() * bc.getC()))) / denominator);
+    return util::similarityToDistance((4.0 * (static_cast<double>(bc.getA() * bc.getD()) -
+    (bc.getB() * bc.getC()))) / denominator);
   }
 };
 
@@ -142,8 +145,8 @@ class DistanceMountford : public IDistance {
 public:
     double calcDistance(const arma::mat &A, const arma::mat &B) {
         BinaryCount bc = BinaryCount::getBinaryCount(A, B);
-        unsigned long denominator = bc.getA() * (bc.getB() + bc.getC()) + 2 * bc.getB() * bc.getC();
-        return utility::similarityToDistance((double) (2 * bc.getA()) / denominator);
+        uint64_t denominator = bc.getA() * (bc.getB() + bc.getC()) + 2 * bc.getB() * bc.getC();
+        return util::similarityToDistance(static_cast<double>(2 * bc.getA()) / denominator);
     }
 };
 
@@ -154,8 +157,8 @@ class DistanceMozley : public IDistance {
 public:
   double calcDistance(const arma::mat &A, const arma::mat &B) {
     BinaryCount bc = BinaryCount::getBinaryCount(A, B);
-    unsigned long denominator = (bc.getA() + bc.getB()) * (bc.getA() + bc.getC());
-    return utility::similarityToDistance(((double) bc.getA() * A.n_cols) / denominator);
+    uint64_t denominator = (bc.getA() + bc.getB()) * (bc.getA() + bc.getC());
+    return util::similarityToDistance((static_cast<double>(bc.getA() * A.n_cols)) / denominator);
   }
 };
 
@@ -167,7 +170,7 @@ public:
   double calcDistance(const arma::mat &A, const arma::mat &B) {
     BinaryCount bc = BinaryCount::getBinaryCount(A, B);
     double denominator = sqrt((bc.getA() + bc.getB()) * (bc.getA() + bc.getC()));
-    return utility::similarityToDistance((double) bc.getA() / denominator);
+    return util::similarityToDistance(static_cast<double>(bc.getA()) / denominator);
   }
 };
 
@@ -178,8 +181,10 @@ class DistancePhi : public IDistance {
 public:
   double calcDistance(const arma::mat &A, const arma::mat &B) {
     BinaryCount bc = BinaryCount::getBinaryCount(A, B);
-    double denominator = (sqrt(bc.getA() + bc.getB()) * sqrt(bc.getC() + bc.getD()) * sqrt(bc.getA() + bc.getC()) * sqrt(bc.getB() + bc.getD()));
-    return utility::similarityToDistance(((double) (bc.getA() * bc.getD()) - (bc.getB() * bc.getC())) / denominator);
+    double denominator = (sqrt(bc.getA() + bc.getB()) * sqrt(bc.getC() + bc.getD()) *
+      sqrt(bc.getA() + bc.getC()) * sqrt(bc.getB() + bc.getD()));
+    return util::similarityToDistance(
+      (static_cast<double>(bc.getA() * bc.getD()) - (bc.getB() * bc.getC()))/ denominator);
   }
 };
 
@@ -190,7 +195,7 @@ class DistanceRussel : public IDistance {
 public:
     double calcDistance(const arma::mat &A, const arma::mat &B) {
         BinaryCount bc = BinaryCount::getBinaryCount(A, B);
-        return utility::similarityToDistance((double) bc.getA() / A.n_cols);
+        return util::similarityToDistance(static_cast<double>(bc.getA()) / A.n_cols);
     }
 };
 
@@ -201,7 +206,7 @@ class DistanceSimplematching : public IDistance {
 public:
     double calcDistance(const arma::mat &A, const arma::mat &B) {
         BinaryCount bc = BinaryCount::getBinaryCount(A, B);
-        return utility::similarityToDistance((double) (bc.getA() + bc.getD()) / A.n_cols);
+        return util::similarityToDistance(static_cast<double>(bc.getA() + bc.getD()) / A.n_cols);
     }
 };
 
@@ -212,8 +217,8 @@ class DistanceSimpson : public IDistance {
 public:
   double calcDistance(const arma::mat &A, const arma::mat &B) {
     BinaryCount bc = BinaryCount::getBinaryCount(A, B);
-    unsigned long denominator = minOfPair((bc.getA() + bc.getB()), (bc.getA() + bc.getC()));
-    return utility::similarityToDistance((double) bc.getA() / denominator);
+    uint64_t denominator = minOfPair((bc.getA() + bc.getB()), (bc.getA() + bc.getC()));
+    return util::similarityToDistance(static_cast<double>(bc.getA()) / denominator);
   }
 };
 
@@ -225,7 +230,10 @@ public:
   double calcDistance(const arma::mat &A, const arma::mat &B) {
     BinaryCount bc = BinaryCount::getBinaryCount(A, B);
     unsigned int n = A.n_cols;
-    return utility::similarityToDistance((log(n) + 2 * log(abs((double) bc.getA() * bc.getD() - bc.getB() * bc.getC()) - n / 2.0) - log(bc.getA() + bc.getB()) - log(bc.getC() + bc.getD()) - log(bc.getA() + bc.getC()) - log(bc.getB() + bc.getD())));
+    return util::similarityToDistance(
+      (log(n) + 2 * log(fabs(static_cast<double>(bc.getA() * bc.getD()) - bc.getB() * bc.getC()) - n / 2.0) -
+      log(bc.getA() + bc.getB()) - log(bc.getC() + bc.getD()) -
+      log(bc.getA() + bc.getC()) - log(bc.getB() + bc.getD())));
   }
 };
 
@@ -236,8 +244,8 @@ class DistanceTanimoto : public IDistance {
 public:
     double calcDistance(const arma::mat &A, const arma::mat &B) {
         BinaryCount bc = BinaryCount::getBinaryCount(A, B);
-        unsigned long denominator = bc.getA() + 2 * bc.getB() + 2 * bc.getC() + bc.getD();
-        return utility::similarityToDistance((double) (bc.getA() + bc.getD()) / denominator);
+        uint64_t denominator = bc.getA() + 2 * bc.getB() + 2 * bc.getC() + bc.getD();
+        return util::similarityToDistance(static_cast<double>(bc.getA() + bc.getD()) / denominator);
     }
 };
 
@@ -248,8 +256,9 @@ class DistanceYule : public IDistance {
 public:
     double calcDistance(const arma::mat &A, const arma::mat &B) {
         BinaryCount bc = BinaryCount::getBinaryCount(A, B);
-        unsigned long denominator = (bc.getA() * bc.getD()) + (bc.getB() * bc.getC());
-        return utility::similarityToDistance(((double) (bc.getA() * bc.getD()) - (bc.getB() * bc.getC())) / denominator);
+        uint64_t denominator = (bc.getA() * bc.getD()) + (bc.getB() * bc.getC());
+        return util::similarityToDistance((static_cast<double>(bc.getA() * bc.getD()) -
+        (bc.getB() * bc.getC())) / denominator);
     }
 };
 
@@ -261,8 +270,9 @@ public:
     double calcDistance(const arma::mat &A, const arma::mat &B) {
         BinaryCount bc = BinaryCount::getBinaryCount(A, B);
         double denominator = sqrt(bc.getA() * bc.getD()) + sqrt(bc.getB() * bc.getC());
-        return utility::similarityToDistance((double) (sqrt(bc.getA() * bc.getD()) - sqrt(bc.getB() * bc.getC())) / denominator);
+        return util::similarityToDistance((static_cast<double>(sqrt(bc.getA() * bc.getD())) -
+        sqrt(bc.getB() * bc.getC())) / denominator);
     }
 };
 
-#endif
+#endif  // DISTANCEBINARY_H_

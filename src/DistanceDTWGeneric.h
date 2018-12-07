@@ -21,6 +21,8 @@
 #define DISTANCEDTWGENERIC_H_
 
 #include "IDistance.h"
+#include <algorithm>
+#include <utility>
 
 #define min(x, y) ((x) < (y) ? (x) : (y))
 #define max(x, y) ((x) < (y) ? (y) : (x))
@@ -58,9 +60,10 @@ private:
      @param j index j
      @return costs for two entries of input matrices A and B
      */
-    std::pair<double, int> getCost(double *pen, unsigned int bSizeOffset, const arma::mat &A, const arma::mat &B, unsigned int i, unsigned int j) {
+    std::pair<double, int> getCost(double *pen, unsigned int bSizeOffset, const arma::mat &A, const arma::mat &B,
+      unsigned int i, unsigned int j) {
         return impl().getCost(pen, bSizeOffset, A, B, i, j);
-    };
+    }
 
 protected:
   // calculates minimum and argmin of a double array
@@ -90,7 +93,8 @@ protected:
   }
 
 public:
-    DistanceDTWGeneric(bool warpingWindow = false, unsigned int windowSize = 0, NormMethod normalizationMethod = NormMethod::NoNorm) {
+    DistanceDTWGeneric(bool warpingWindow = false, unsigned int windowSize = 0,
+      NormMethod normalizationMethod = NormMethod::NoNorm) {
         this->warpingWindow = warpingWindow;
         this->windowSize = windowSize;
         this->normalizationMethod = normalizationMethod;
@@ -140,7 +144,6 @@ public:
 
             unsigned int currIdx = i * bSizeOffset;
             for (unsigned int j = lower; j < upper; ++j) {
-
                 if (i == patternOffset && j == patternOffset) {
                     pen[currIdx + j] = getDistance(A, B, i, j);
                 } else {
@@ -196,4 +199,4 @@ public:
     }
 };
 
-#endif
+#endif  // DISTANCEDTWGENERIC_H_

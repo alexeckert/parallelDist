@@ -22,10 +22,11 @@
 
 #include <RcppArmadillo.h>
 
-typedef double (*funcPtr)(const arma::mat &A, const arma::mat &B);
+using arma::mat;
+using arma::Mat;
+using arma::uword;
 
-using namespace std;
-using namespace arma;
+typedef double (*funcPtr)(const mat &A, const mat &B);
 
 template<typename T>
 Mat<T> colwise_max_idx(const Mat<T>& A) {
@@ -47,8 +48,8 @@ Mat<T> colwise_min_idx(const Mat<T>& A) {
 
 class IDistance {
 public:
-    virtual ~IDistance() {};
-    virtual double calcDistance(const arma::mat &A, const arma::mat &B) = 0;
+    virtual ~IDistance() {}
+    virtual double calcDistance(const mat &A, const mat &B) = 0;
 };
 
-#endif
+#endif  // IDISTANCE_H_

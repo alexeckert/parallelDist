@@ -4,3 +4,5 @@
 LICENSE
 .travis.yml
 appveyor.yml
+CPPLINT.cfg
+^\src\CPPLINT.cfg

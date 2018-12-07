@@ -1,6 +1,6 @@
 // DistanceDTWFactory.cpp
 //
-// Copyright (C)  2017  Alexander Eckert
+// Copyright (C)  2017, 2018  Alexander Eckert
 //
 // This file is part of parallelDist.
 //
@@ -19,9 +19,12 @@
 
 #include "DistanceDTWFactory.h"
 #include "StepPattern.h"
-#include "Utility.h"
+#include "Util.h"
 
-std::shared_ptr<IDistance> DistanceDTWFactory::createDistanceFunction(std::string& distName, Rcpp::List& arguments) {
+std::shared_ptr<IDistance> DistanceDTWFactory::createDistanceFunction(
+  const std::string& distName, const Rcpp::List& arguments) {
+    using util::isEqualStr;
+
     std::shared_ptr<IDistance> distanceFunction = NULL;
     unsigned int windowSize = 0;
     NormMethod normMethod = NormMethod::NoNorm;
@@ -34,11 +37,11 @@ std::shared_ptr<IDistance> DistanceDTWFactory::createDistanceFunction(std::strin
     }
     if (arguments.containsElementNamed("norm.method")) {
         std::string normMethodStr = Rcpp::as<std::string >(arguments["norm.method"]);
-        if (utility::isEqualStr(normMethodStr, "n")) {
+        if (isEqualStr(normMethodStr, "n")) {
             normMethod = NormMethod::ALength;
-        } else if (utility::isEqualStr(normMethodStr, "n+m")) {
+        } else if (isEqualStr(normMethodStr, "n+m")) {
             normMethod = NormMethod::ABLength;
-        } else if (utility::isEqualStr(normMethodStr, "path.length")) {
+        } else if (isEqualStr(normMethodStr, "path.length")) {
             normMethod = NormMethod::PathLength;
         }
     }
@@ -46,23 +49,26 @@ std::shared_ptr<IDistance> DistanceDTWFactory::createDistanceFunction(std::strin
         stepPatternName = Rcpp::as<std::string >(arguments["step.pattern"]);
     }
 
-    if (utility::isEqualStr(stepPatternName, "asymmetric")) {
+    if (isEqualStr(stepPatternName, "asymmetric")) {
         distanceFunction = std::make_shared<StepPatternAsymmetric>(warpingWindow, windowSize, normMethod);
-    } else if (utility::isEqualStr(stepPatternName, "asymmetricP0")) {
+    } else if (isEqualStr(stepPatternName, "asymmetricP0")) {
         distanceFunction = std::make_shared<StepPatternAsymmetricP0>(warpingWindow, windowSize, normMethod);
-    } else if (utility::isEqualStr(stepPatternName, "asymmetricP05")) {
+    } else if (isEqualStr(stepPatternName, "asymmetricP05")) {
         distanceFunction = std::make_shared<StepPatternAsymmetricP05>(warpingWindow, windowSize, normMethod);
-    } else if (utility::isEqualStr(stepPatternName, "asymmetricP1")) {
+    } else if (isEqualStr(stepPatternName, "asymmetricP1")) {
         distanceFunction = std::make_shared<StepPatternAsymmetricP1>(warpingWindow, windowSize, normMethod);
-    } else if (utility::isEqualStr(stepPatternName, "asymmetricP2")) {
+    } else if (isEqualStr(stepPatternName, "asymmetricP2")) {
         distanceFunction = std::make_shared<StepPatternAsymmetricP2>(warpingWindow, windowSize, normMethod);
-    } else if (utility::isEqualStr(stepPatternName, "symmetric2") || utility::isEqualStr(stepPatternName, "symmetricP0")) {
+    } else if (
+      isEqualStr(stepPatternName, "symmetric2") ||
+      isEqualStr(stepPatternName, "symmetricP0")
+    ) {
         distanceFunction = std::make_shared<StepPatternSymmetric2>(warpingWindow, windowSize, normMethod);
-    } else if (utility::isEqualStr(stepPatternName, "symmetricP05")) {
+    } else if (isEqualStr(stepPatternName, "symmetricP05")) {
         distanceFunction = std::make_shared<StepPatternSymmetricP05>(warpingWindow, windowSize, normMethod);
-    } else if (utility::isEqualStr(stepPatternName, "symmetricP1")) {
+    } else if (isEqualStr(stepPatternName, "symmetricP1")) {
         distanceFunction = std::make_shared<StepPatternSymmetricP1>(warpingWindow, windowSize, normMethod);
-    } else if (utility::isEqualStr(stepPatternName, "symmetricP2")) {
+    } else if (isEqualStr(stepPatternName, "symmetricP2")) {
         distanceFunction = std::make_shared<StepPatternSymmetricP2>(warpingWindow, windowSize, normMethod);
     } else {
         distanceFunction = std::make_shared<StepPatternSymmetric1>(warpingWindow, windowSize, normMethod);

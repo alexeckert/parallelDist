@@ -29,29 +29,25 @@
 #include "IDistance.h"
 #include "DistanceFactory.h"
 
-using namespace Rcpp;
-using namespace RcppParallel;
 
-unsigned long long sumForm(const unsigned long long n) {
+uint64_t sumForm(const uint64_t n) {
     return (pow(n, 2) + n) / 2;
 }
 
-unsigned long matToVecIdx(const unsigned long i, const unsigned long j, const unsigned long N) {
+uint64_t matToVecIdx(const uint64_t i, const uint64_t j, const uint64_t N) {
     return i * N - i - sumForm(i) - 1 + j;
 }
 
 inline bool isInteger(const std::string& s) {
-    if(s.empty() || ((!isdigit(s[0])) && (s[0] != '-') && (s[0] != '+'))) return false;
-
-    char * p ;
-    strtol(s.c_str(), &p, 10) ;
-
-    return (*p == 0) ;
+    if (s.empty() || ((!isdigit(s[0])) && (s[0] != '-') && (s[0] != '+'))) return false;
+    char * p;
+    strtol(s.c_str(), &p, 10);
+    return (*p == 0);
 }
 
-struct DistanceVec : public Worker {
+struct DistanceVec : public RcppParallel::Worker {
     // input vector of matrices
-    std::vector<arma::mat> seriesVec;
+    const std::vector<arma::mat>& seriesVec;
 
     int vecSize = 0;
 
@@ -63,7 +59,8 @@ struct DistanceVec : public Worker {
 
     // initialize from Rcpp input and output matrixes (the RMatrix class
     // can be automatically converted to from the Rcpp matrix type)
-    DistanceVec(std::vector<arma::mat> seriesVec, Rcpp::NumericVector& rvec, std::shared_ptr<IDistance>& distance)
+    DistanceVec(const std::vector<arma::mat>& seriesVec, Rcpp::NumericVector& rvec,
+      const std::shared_ptr<IDistance>& distance)
         : seriesVec(seriesVec), rvec(rvec), distance(distance) {
         vecSize = seriesVec.size();
     }
@@ -74,13 +71,13 @@ struct DistanceVec : public Worker {
                 rvec[matToVecIdx(j, i, vecSize)] = distance->calcDistance(seriesVec.at(i), seriesVec.at(j));
             }
         }
-    };
+    }
 };
 
 // uses not a list but the matrix
-struct DistanceMatrixVec : public Worker {
+struct DistanceMatrixVec : public RcppParallel::Worker {
     // input vector of matrices
-    arma::mat& seriesVec;
+    const arma::mat& seriesVec;
 
     int vecSize = 0;
 
@@ -92,7 +89,7 @@ struct DistanceMatrixVec : public Worker {
 
     // initialize from Rcpp input and output matrixes (the RMatrix class
     // can be automatically converted to from the Rcpp matrix type)
-    DistanceMatrixVec(arma::mat& seriesVec, Rcpp::NumericVector& rvec, std::shared_ptr<IDistance>& distance)
+    DistanceMatrixVec(const arma::mat& seriesVec, Rcpp::NumericVector& rvec, const std::shared_ptr<IDistance>& distance)
         : seriesVec(seriesVec), rvec(rvec), distance(distance) {
         vecSize = seriesVec.n_rows;
     }
@@ -103,10 +100,10 @@ struct DistanceMatrixVec : public Worker {
                 rvec[matToVecIdx(j, i, vecSize)] = distance->calcDistance(seriesVec.row(i), seriesVec.row(j));
             }
         }
-    };
+    }
 };
 
-void setVectorAttributes(Rcpp::NumericVector &rvec, Rcpp::List &attrs) {
+void setVectorAttributes(Rcpp::NumericVector &rvec, const Rcpp::List &attrs) {
     rvec.attr("Size") = attrs["Size"];
     rvec.attr("Labels") = attrs["Labels"];
     rvec.attr("Diag") = Rcpp::as<bool >(attrs["Diag"]);
@@ -118,7 +115,7 @@ void setVectorAttributes(Rcpp::NumericVector &rvec, Rcpp::List &attrs) {
 
 // [[Rcpp::export]]
 Rcpp::NumericVector cpp_parallelDistVec(Rcpp::List dataList, Rcpp::List attrs, Rcpp::List arguments) {
-    unsigned long n = dataList.size();
+    uint64_t n = dataList.size();
     // result matrix
     Rcpp::NumericVector rvec(sumForm(n) - n);
 
@@ -126,14 +123,14 @@ Rcpp::NumericVector cpp_parallelDistVec(Rcpp::List dataList, Rcpp::List attrs, R
 
     // Convert list to vector of double matrices
     std::vector<arma::mat> listVec;
-    for (List::iterator it = dataList.begin(); it != dataList.end(); ++it) {
-        listVec.push_back(as<arma::mat >(*it));
+    for (Rcpp::List::iterator it = dataList.begin(); it != dataList.end(); ++it) {
+        listVec.push_back(Rcpp::as<arma::mat >(*it));
     }
     std::shared_ptr<IDistance> distanceFunction = DistanceFactory(listVec).createDistanceFunction(attrs, arguments);
 
     DistanceVec* distanceWorker = new DistanceVec(listVec, rvec, distanceFunction);
     // call it with parallelFor
-    parallelFor(0, n, (*distanceWorker));
+    RcppParallel::parallelFor(0, n, (*distanceWorker));
     delete distanceWorker;
     distanceWorker = NULL;
 
@@ -142,7 +139,7 @@ Rcpp::NumericVector cpp_parallelDistVec(Rcpp::List dataList, Rcpp::List attrs, R
 
 // [[Rcpp::export]]
 Rcpp::NumericVector cpp_parallelDistMatrixVec(arma::mat dataMatrix, Rcpp::List attrs, Rcpp::List arguments) {
-    unsigned long n = dataMatrix.n_rows;
+    uint64_t n = dataMatrix.n_rows;
 
     // result matrix
     Rcpp::NumericVector rvec(sumForm(n) - n);
@@ -152,7 +149,7 @@ Rcpp::NumericVector cpp_parallelDistMatrixVec(arma::mat dataMatrix, Rcpp::List a
     std::shared_ptr<IDistance> distanceFunction = DistanceFactory(dataMatrix).createDistanceFunction(attrs, arguments);
     DistanceMatrixVec* distanceWorker = new DistanceMatrixVec(dataMatrix, rvec, distanceFunction);
     // call it with parallelFor
-    parallelFor(0, n, (*distanceWorker));
+    RcppParallel::parallelFor(0, n, (*distanceWorker));
     delete distanceWorker;
     distanceWorker = NULL;
 

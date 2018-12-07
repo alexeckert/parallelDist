@@ -19,12 +19,13 @@
 
 #include "DistanceFactory.h"
 #include "DistanceDTWFactory.h"
-#include "Utility.h"
+#include "Util.h"
 #include "DistanceDist.h"
 #include "DistanceBinary.h"
 
-std::shared_ptr<IDistance> DistanceFactory::createDistanceFunction(Rcpp::List& attrs, Rcpp::List& arguments) {
-    using namespace utility;
+std::shared_ptr<IDistance> DistanceFactory::createDistanceFunction(const Rcpp::List& attrs,
+  const Rcpp::List& arguments) {
+    using util::isEqualStr;
     std::string distName = attrs["method"];
     std::shared_ptr<IDistance> distanceFunction = NULL;
 
@@ -139,6 +140,5 @@ std::shared_ptr<IDistance> DistanceFactory::createDistanceFunction(Rcpp::List& a
     } else {
         distanceFunction = std::make_shared<DistanceEuclidean>();
     }
-
     return distanceFunction;
 }

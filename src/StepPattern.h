@@ -20,9 +20,10 @@
 #ifndef STEPPATTERN_H_
 #define STEPPATTERN_H_
 
+#include <math.h>
 #include <iostream>
 #include <string>
-#include <math.h>
+#include <utility>
 #include "DistanceDTWGeneric.h"
 
 // StepPatternSymmetric1
@@ -35,9 +36,10 @@ class StepPatternSymmetric1 : public DistanceDTWGeneric<StepPatternSymmetric1> {
 public:
     using DistanceDTWGeneric::DistanceDTWGeneric;
     static constexpr unsigned int patternOffset = 1;
-    std::pair<double, int> getCost(double *pen, unsigned int bSizeOffset, const arma::mat &A, const arma::mat &B, unsigned int i, unsigned int j) {
+    std::pair<double, int> getCost(double *pen, unsigned int bSizeOffset, const arma::mat &A, const arma::mat &B,
+      unsigned int i, unsigned int j) {
         double distance = getDistance(A, B, i, j);
-        //some checking for this step pattern
+        // bound checking for this step pattern
         double minArray[3] = {
             getCell(pen, bSizeOffset, i-1, j-1),
             getCell(pen, bSizeOffset, i, j-1),
@@ -60,9 +62,10 @@ class StepPatternSymmetric2 : public DistanceDTWGeneric<StepPatternSymmetric2> {
 public:
     using DistanceDTWGeneric::DistanceDTWGeneric;
     static constexpr unsigned int patternOffset = 1;
-    std::pair<double, int> getCost(double *pen, unsigned int bSizeOffset, const arma::mat &A, const arma::mat &B, unsigned int i, unsigned int j) {
+    std::pair<double, int> getCost(double *pen, unsigned int bSizeOffset, const arma::mat &A, const arma::mat &B,
+      unsigned int i, unsigned int j) {
         double distance = getDistance(A, B, i, j);
-        // some checking for this step pattern
+        // bound checking for this step pattern
         double minArray[3] = {
             2 * distance + getCell(pen, bSizeOffset, i-1, j-1),
             distance + getCell(pen, bSizeOffset, i, j-1),
@@ -82,9 +85,10 @@ class StepPatternAsymmetric : public DistanceDTWGeneric<StepPatternAsymmetric> {
 public:
     using DistanceDTWGeneric::DistanceDTWGeneric;
     static constexpr unsigned int patternOffset = 2;
-    std::pair<double, int> getCost(double *pen, unsigned int bSizeOffset, const arma::mat &A, const arma::mat &B, unsigned int i, unsigned int j) {
+    std::pair<double, int> getCost(double *pen, unsigned int bSizeOffset, const arma::mat &A, const arma::mat &B,
+      unsigned int i, unsigned int j) {
         double distance = getDistance(A, B, i, j);
-        // some checking for this step pattern
+        // bound checking for this step pattern
         double minArray[3] = {
             distance + getCell(pen, bSizeOffset, i-1, j),
             distance + getCell(pen, bSizeOffset, i-1, j-1),
@@ -105,9 +109,10 @@ class StepPatternAsymmetricP0 : public DistanceDTWGeneric<StepPatternAsymmetricP
 public:
     using DistanceDTWGeneric::DistanceDTWGeneric;
     static constexpr unsigned int patternOffset = 1;
-    std::pair<double, int> getCost(double *pen, unsigned int bSizeOffset, const arma::mat &A, const arma::mat &B, unsigned int i, unsigned int j) {
+    std::pair<double, int> getCost(double *pen, unsigned int bSizeOffset, const arma::mat &A, const arma::mat &B,
+      unsigned int i, unsigned int j) {
         double distance = getDistance(A, B, i, j);
-        // some checking for this step pattern
+        // bound checking for this step pattern
         double minArray[3] = {
             getCell(pen, bSizeOffset, i, j-1),
             distance + getCell(pen, bSizeOffset, i-1, j-1),
@@ -130,14 +135,17 @@ class StepPatternAsymmetricP05 : public DistanceDTWGeneric<StepPatternAsymmetric
 public:
     using DistanceDTWGeneric::DistanceDTWGeneric;
     static constexpr unsigned int patternOffset = 3;
-    std::pair<double, int> getCost(double *pen, unsigned int bSizeOffset, const arma::mat &A, const arma::mat &B, unsigned int i, unsigned int j) {
+    std::pair<double, int> getCost(double *pen, unsigned int bSizeOffset, const arma::mat &A, const arma::mat &B,
+      unsigned int i, unsigned int j) {
         double multiplier = 1.0 / 3;
         double minArray[5] = {
-            getCell(pen, bSizeOffset, i-1, j-3) + multiplier * getDistance(A, B, i, j-2) + multiplier * getDistance(A, B, i, j-1) + multiplier * getDistance(A, B, i, j),
+            getCell(pen, bSizeOffset, i-1, j-3) + multiplier * getDistance(A, B, i, j-2) +
+              multiplier * getDistance(A, B, i, j-1) + multiplier * getDistance(A, B, i, j),
             getCell(pen, bSizeOffset, i-1, j-2) + 0.5 * getDistance(A, B, i, j-1) + 0.5 * getDistance(A, B, i, j),
             getCell(pen, bSizeOffset, i-1, j-1) + getDistance(A, B, i, j),
             getCell(pen, bSizeOffset, i-2, j-1) + getDistance(A, B, i-1, j) + getDistance(A, B, i, j),
-            getCell(pen, bSizeOffset, i-3, j-1) + getDistance(A, B, i-2, j) + getDistance(A, B, i-1, j) + getDistance(A, B, i, j)
+            getCell(pen, bSizeOffset, i-3, j-1) + getDistance(A, B, i-2, j) + getDistance(A, B, i-1, j) +
+              getDistance(A, B, i, j)
         };
         return argmin(minArray, 5);
     }
@@ -155,13 +163,16 @@ class StepPatternSymmetricP05 : public DistanceDTWGeneric<StepPatternSymmetricP0
 public:
     using DistanceDTWGeneric::DistanceDTWGeneric;
     static constexpr unsigned int patternOffset = 3;
-    std::pair<double, int> getCost(double *pen, unsigned int bSizeOffset, const arma::mat &A, const arma::mat &B, unsigned int i, unsigned int j) {
+    std::pair<double, int> getCost(double *pen, unsigned int bSizeOffset, const arma::mat &A, const arma::mat &B,
+      unsigned int i, unsigned int j) {
         double minArray[5] = {
-            getCell(pen, bSizeOffset, i-1, j-3) + 2 * getDistance(A, B, i, j-2) + getDistance(A, B, i, j-1) + getDistance(A, B, i, j),
+            getCell(pen, bSizeOffset, i-1, j-3) + 2 * getDistance(A, B, i, j-2) + getDistance(A, B, i, j-1) +
+              getDistance(A, B, i, j),
             getCell(pen, bSizeOffset, i-1, j-2) + 2 * getDistance(A, B, i, j-1) + getDistance(A, B, i, j),
             getCell(pen, bSizeOffset, i-1, j-1) + 2 * getDistance(A, B, i, j),
             getCell(pen, bSizeOffset, i-2, j-1) + 2 * getDistance(A, B, i-1, j) + getDistance(A, B, i, j),
-            getCell(pen, bSizeOffset, i-3, j-1) + 2 * getDistance(A, B, i-2, j) + getDistance(A, B, i-1, j) + getDistance(A, B, i, j)
+            getCell(pen, bSizeOffset, i-3, j-1) + 2 * getDistance(A, B, i-2, j) + getDistance(A, B, i-1, j) +
+              getDistance(A, B, i, j)
         };
         return argmin(minArray, 5);
     }
@@ -171,7 +182,8 @@ class StepPatternSymmetricP1 : public DistanceDTWGeneric<StepPatternSymmetricP1>
 public:
     using DistanceDTWGeneric::DistanceDTWGeneric;
     static constexpr unsigned int patternOffset = 2;
-    std::pair<double, int> getCost(double *pen, unsigned int bSizeOffset, const arma::mat &A, const arma::mat &B, unsigned int i, unsigned int j) {
+    std::pair<double, int> getCost(double *pen, unsigned int bSizeOffset, const arma::mat &A, const arma::mat &B,
+      unsigned int i, unsigned int j) {
         double minArray[3] = {
             getCell(pen, bSizeOffset, i-1, j-2) + 2 * getDistance(A, B, i, j-1) + getDistance(A, B, i, j),
             getCell(pen, bSizeOffset, i-1, j-1) + 2 * getDistance(A, B, i, j),
@@ -185,7 +197,8 @@ class StepPatternAsymmetricP1 : public DistanceDTWGeneric<StepPatternAsymmetricP
 public:
     using DistanceDTWGeneric::DistanceDTWGeneric;
     static constexpr unsigned int patternOffset = 2;
-    std::pair<double, int> getCost(double *pen, unsigned int bSizeOffset, const arma::mat &A, const arma::mat &B, unsigned int i, unsigned int j) {
+    std::pair<double, int> getCost(double *pen, unsigned int bSizeOffset, const arma::mat &A, const arma::mat &B,
+      unsigned int i, unsigned int j) {
         double minArray[3] = {
             getCell(pen, bSizeOffset, i-1, j-2) + 0.5 * getDistance(A, B, i, j-1) + 0.5 * getDistance(A, B, i, j),
             getCell(pen, bSizeOffset, i-1, j-1) + getDistance(A, B, i, j),
@@ -206,12 +219,15 @@ class StepPatternAsymmetricP2 : public DistanceDTWGeneric<StepPatternAsymmetricP
 public:
     using DistanceDTWGeneric::DistanceDTWGeneric;
     static constexpr unsigned int patternOffset = 3;
-    std::pair<double, int> getCost(double *pen, unsigned int bSizeOffset, const arma::mat &A, const arma::mat &B, unsigned int i, unsigned int j) {
+    std::pair<double, int> getCost(double *pen, unsigned int bSizeOffset, const arma::mat &A, const arma::mat &B,
+      unsigned int i, unsigned int j) {
         double multiplier = 2.0 / 3;
         double minArray[3] = {
-            getCell(pen, bSizeOffset, i-2, j-3) + multiplier * getDistance(A, B, i-1, j-2) + multiplier * getDistance(A, B, i, j-1) + multiplier * getDistance(A, B, i, j),
+            getCell(pen, bSizeOffset, i-2, j-3) + multiplier * getDistance(A, B, i-1, j-2) +
+              multiplier * getDistance(A, B, i, j-1) + multiplier * getDistance(A, B, i, j),
             getCell(pen, bSizeOffset, i-1, j-1) + getDistance(A, B, i, j),
-            getCell(pen, bSizeOffset, i-3, j-2) + getDistance(A, B, i-2, j-1) + getDistance(A, B, i-1, j) + getDistance(A, B, i, j)
+            getCell(pen, bSizeOffset, i-3, j-2) + getDistance(A, B, i-2, j-1) + getDistance(A, B, i-1, j) +
+              getDistance(A, B, i, j)
         };
         return argmin(minArray, 3);
     }
@@ -227,14 +243,17 @@ class StepPatternSymmetricP2 : public DistanceDTWGeneric<StepPatternSymmetricP2>
 public:
     using DistanceDTWGeneric::DistanceDTWGeneric;
     static constexpr unsigned int patternOffset = 3;
-    std::pair<double, int> getCost(double *pen, unsigned int bSizeOffset, const arma::mat &A, const arma::mat &B, unsigned int i, unsigned int j) {
+    std::pair<double, int> getCost(double *pen, unsigned int bSizeOffset, const arma::mat &A, const arma::mat &B,
+      unsigned int i, unsigned int j) {
         double minArray[3] = {
-            getCell(pen, bSizeOffset, i-2, j-3) + 2 * getDistance(A, B, i-1, j-2) + 2 * getDistance(A, B, i, j-1) + getDistance(A, B, i, j),
+            getCell(pen, bSizeOffset, i-2, j-3) + 2 * getDistance(A, B, i-1, j-2) + 2 * getDistance(A, B, i, j-1) +
+              getDistance(A, B, i, j),
             getCell(pen, bSizeOffset, i-1, j-1) + 2 * getDistance(A, B, i, j),
-            getCell(pen, bSizeOffset, i-3, j-2) + 2 * getDistance(A, B, i-2, j-1) + 2* getDistance(A, B, i-1, j) + getDistance(A, B, i, j)
+            getCell(pen, bSizeOffset, i-3, j-2) + 2 * getDistance(A, B, i-2, j-1) + 2* getDistance(A, B, i-1, j) +
+              getDistance(A, B, i, j)
         };
         return argmin(minArray, 3);
     }
 };
 
-#endif
+#endif  // STEPPATTERN_H_

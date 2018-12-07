@@ -22,6 +22,7 @@
 
 #include "IDistance.h"
 #include <memory>
+#include <vector>
 
 //==============================
 // Distance Factory
@@ -33,9 +34,10 @@ private:
     std::vector<arma::mat> dataMatrixList;
     bool isDataMatrix;
 public:
-    explicit DistanceFactory(arma::mat &dataMatrix) : dataMatrix(dataMatrix), isDataMatrix(true) {};
-    explicit DistanceFactory(std::vector<arma::mat> &dataMatrixList) : dataMatrixList(dataMatrixList), isDataMatrix(false) {};
-    std::shared_ptr<IDistance> createDistanceFunction(Rcpp::List& attrs, Rcpp::List& arguments);
+    explicit DistanceFactory(arma::mat &dataMatrix) : dataMatrix(dataMatrix), isDataMatrix(true) {}
+    explicit DistanceFactory(std::vector<arma::mat> &dataMatrixList) : dataMatrixList(dataMatrixList),
+    isDataMatrix(false) {}
+    std::shared_ptr<IDistance> createDistanceFunction(const Rcpp::List& attrs, const Rcpp::List& arguments);
 };
 
-#endif
+#endif  // DISTANCEFACTORY_H_

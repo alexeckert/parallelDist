@@ -21,7 +21,7 @@
 #define DISTANCEDIST_H_
 
 #include "IDistance.h"
-#include "Utility.h"
+#include "Util.h"
 #include <limits>
 
 //=======================
@@ -56,16 +56,16 @@ public:
     arma::mat ratio = arma::abs(A - B) / denominator;
 
     unsigned int notNanCount = 0;
-    for(arma::mat::iterator it = ratio.begin(); it != ratio.end(); ++it) {
+    for (arma::mat::iterator it = ratio.begin(); it != ratio.end(); ++it) {
       if (std::isnan(*it)) {
-        (*it) = double(0);
+        (*it) = 0.0;
       } else {
         ++notNanCount;
       }
     }
 
     if (ratio.size() - notNanCount > 0) {
-      return ((notNanCount + 1)/ (double)notNanCount) * arma::accu(ratio);
+      return ((notNanCount + 1)/ static_cast<double>(notNanCount)) * arma::accu(ratio);
     } else {
       return arma::accu(ratio);
     }
@@ -79,7 +79,8 @@ class DistanceChord : public IDistance {
 public:
   double calcDistance(const arma::mat &A, const arma::mat &B) {
     // sqrt(2 * (1 - xy / sqrt(xx * yy)))
-    return sqrt(2 * (1 - arma::dot(A.row(0), B.row(0)) / sqrt(arma::dot(A.row(0), A.row(0)) * arma::dot(B.row(0), B.row(0)))));
+    return sqrt(2 * (1 - arma::dot(A.row(0), B.row(0)) /
+    sqrt(arma::dot(A.row(0), A.row(0)) * arma::dot(B.row(0), B.row(0)))));
   }
 };
 
@@ -92,9 +93,9 @@ public:
     // sum_i (x_i - y_i)^2 / (x_i + y_i)^2
     arma::mat tmp = arma::square(A - B) / arma::square(A + B);
     if (tmp.has_nan()) {
-      tmp.transform( [](double val) {
+      tmp.transform([](double val) {
         return (std::isnan(val) ? 0 : val);
-      } );
+      });
     }
     return arma::accu(tmp);
   }
@@ -116,9 +117,9 @@ public:
 class DistanceFJaccard : public IDistance {
 public:
   double calcDistance(const arma::mat &A, const arma::mat &B) {
-    //sum_i (min{x_i, y_i} / max{x_i, y_i})
+    // sum_i (min{x_i, y_i} / max{x_i, y_i})
     arma::mat tmp = arma::join_cols(A, B);
-    return utility::similarityToDistance(arma::accu(colwise_min_idx(tmp)) / arma::accu(colwise_max_idx(tmp)));
+    return util::similarityToDistance(arma::accu(colwise_min_idx(tmp)) / arma::accu(colwise_max_idx(tmp)));
   }
 };
 
@@ -139,7 +140,7 @@ public:
 class DistanceHellinger : public IDistance {
 public:
   double calcDistance(const arma::mat &A, const arma::mat &B) {
-    //sqrt(sum_i (sqrt(x_i / sum_i x) - sqrt(y_i / sum_i y)) ^ 2)
+    // sqrt(sum_i (sqrt(x_i / sum_i x) - sqrt(y_i / sum_i y)) ^ 2)
     return sqrt(arma::accu(arma::square(arma::sqrt(A / arma::accu(A)) - arma::sqrt(B /  arma::accu(B)))));
   }
 };
@@ -202,12 +203,13 @@ class DistanceMinkowski : public IDistance {
 private:
     double p;
 public:
-    explicit DistanceMinkowski (double p) {
+    explicit DistanceMinkowski(double p) {
         this->p = p;
     }
     ~DistanceMinkowski() {}
     double calcDistance(const arma::mat &A, const arma::mat &B) {
-        return pow(arma::accu(arma::pow(arma::abs(A - B), this->p)), 1.0 / this->p);
+        return pow(arma::accu(arma::pow(arma::abs(A - B), this->p)),
+        1.0 / this->p);
     }
 };
 
@@ -217,18 +219,27 @@ public:
 class DistancePodani : public IDistance {
 public:
   double calcDistance(const arma::mat &A, const arma::mat &B) {
-    unsigned long n = A.n_cols;
-    unsigned long a, b, c, d;
+    uint64_t n = A.n_cols;
+    uint64_t a, b, c, d;
     a = b = c = d = 0;
     for (unsigned int i = 0; i < n; i++) {
       for (unsigned int j = i + 1; j < n; j++) {
-        if ((A(0, i) < A(0, j) && B(0, i) < B(0, j)) || (A(0, i) > A(0, j) && B(0, i) > B(0, j))) {
+        if (
+          (A(0, i) < A(0, j) && B(0, i) < B(0, j)) ||
+          (A(0, i) > A(0, j) && B(0, i) > B(0, j))
+        ) {
           a++;
         }
-        if ((A(0, i) < A(0, j) && B(0, i) > B(0, j)) || (A(0, i) > A(0, j) && B(0, i) < B(0, j))) {
+        if (
+          (A(0, i) < A(0, j) && B(0, i) > B(0, j)) ||
+          (A(0, i) > A(0, j) && B(0, i) < B(0, j))
+        ) {
           b++;
         }
-        if (A(0, i) == A(0, j) && B(0, i) == B(0, j) && ((A(0, i) == 0 &&  B(0, i) == 0) || (A(0, i) > 0 &&  B(0, i) > 0))) {
+        if (
+          A(0, i) == A(0, j) && B(0, i) == B(0, j) &&
+          ((A(0, i) == 0 &&  B(0, i) == 0) || (A(0, i) > 0 &&  B(0, i) > 0))
+        ) {
           c++;
         }
 
@@ -243,7 +254,7 @@ public:
         }
       }
     }
-    return 1 - 2 * ((double) a - b + c - d) / (n * (n - 1));
+    return 1 - 2 * (static_cast<double>(a) - b + c - d) / (n * (n - 1));
   }
 };
 
@@ -261,16 +272,18 @@ public:
 
 //=======================
 // Wave
-// See Comprehensive Survey on Distance/Similarity Measures between Probability Density Functions
+// See Comprehensive Survey on Distance/Similarity Measures
+// between Probability Density Functions
 // Sung-Hyuk Cha
 //=======================
 class DistanceWave : public IDistance {
 public:
     double calcDistance(const arma::mat &A, const arma::mat &B) {
-        //sum_i (1 - min(x_i, y_i) / max(x_i, y_i))
+        // sum_i (1 - min(x_i, y_i) / max(x_i, y_i))
         arma::mat tmp = arma::join_cols(A, B);
         arma::mat substr = arma::abs(A - B);
-        return arma::accu(substr / repmat(colwise_max_idx(tmp), substr.n_rows, 1));
+        return arma::accu(substr / repmat(colwise_max_idx(tmp),
+        substr.n_rows, 1));
     }
 };
 
@@ -281,7 +294,8 @@ class DistanceWhittaker : public IDistance {
 public:
     double calcDistance(const arma::mat &A, const arma::mat &B) {
         // sum_i |x_i / sum_i x - y_i / sum_i y| / 2
-        return arma::accu(arma::abs(A / arma::accu(A) - B / arma::accu(B))) / 2.0;
+        return arma::accu(arma::abs(A / arma::accu(A) - B / arma::accu(B)))
+        / 2.0;
     }
 };
 
@@ -291,7 +305,8 @@ public:
 class DistanceCosine : public IDistance {
 public:
   double calcDistance(const arma::mat &A, const arma::mat &B) {
-    return utility::similarityToDistance(arma::as_scalar(arma::dot(A, B))/(arma::as_scalar(arma::norm(A))*arma::as_scalar(arma::norm(B))));
+    return util::similarityToDistance(arma::as_scalar(arma::dot(A, B))/
+    (arma::as_scalar(arma::norm(A))*arma::as_scalar(arma::norm(B))));
   }
 };
 
@@ -314,13 +329,13 @@ class DistanceCustom : public IDistance {
 private:
     funcPtr func;
 public:
-    explicit DistanceCustom (funcPtr function) : func(function) {
+    explicit DistanceCustom(funcPtr function) : func(function) {
       this->func = function;
-    };
-    ~DistanceCustom () {}
+    }
+    ~DistanceCustom() {}
     double calcDistance(const arma::mat &A, const arma::mat &B) {
         return func(A, B);
     }
 };
 
-#endif
+#endif  // DISTANCEDIST_H_

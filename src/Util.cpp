@@ -1,6 +1,6 @@
-// Utility.cpp
+// Util.cpp
 //
-// Copyright (C)  2017  Alexander Eckert
+// Copyright (C)  2017, 2018  Alexander Eckert
 //
 // This file is part of parallelDist.
 //
@@ -17,11 +17,11 @@
 // You should have received a copy of the GNU General Public License
 // along with parallelDist. If not, see <http://www.gnu.org/licenses/>.
 
-#include "Utility.h"
+#include "Util.h"
 
-namespace utility {
+namespace util {
 
-bool isEqualStr(std::string& str1, std::string str2) {
+bool isEqualStr(const std::string& str1, std::string str2) {
     return str1.compare(str2) == 0;
 }
 
@@ -29,4 +29,4 @@ double similarityToDistance(const double distance) {
     return 1.0 - std::abs(distance);
 }
 
-}
+}  // namespace util
