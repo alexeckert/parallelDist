@@ -11,6 +11,10 @@ r_github_packages:
 
 before_install:
   - tlmgr install ly1 mathdesign charter
+  - pip install --user cpplint
+
+before_script:
+  - cpplint src/*
 
 after_success:
   - Rscript -e 'covr::codecov()'
