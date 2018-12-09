@@ -2,9 +2,11 @@ language: r
 
 dist: trusty
 
+warnings_are_errors: false
+
 r:
   - devel
-warnings_are_errors: false
+  - release
 
 r_github_packages:
   - jimhester/covr

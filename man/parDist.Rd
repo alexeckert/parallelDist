@@ -226,7 +226,7 @@ An exemplary definition and usage of an user-defined euclidean distance function
       The Hamman Matching similarity for binary data. It is the proportion difference of the concordant and discordant pairs.\cr Type: binary\cr Formula: \eqn{([a + d] - [b + c]) / n}.\cr Details: See \command{pr_DB$get_entry("hamman")} in \pkg{proxy}.
     }
     \item{\code{hamming}}{
-      The hamming distance between two vectors A and B is the fraction of positions where there is a mismatch. \cr Formula: \eqn{# of (A != B) / # in A (or B)}
+      The hamming distance between two vectors A and B is the fraction of positions where there is a mismatch. \cr Formula: \eqn{\textit{\# of }(A != B) / \textit{\# in A (or B)}}
     }
     \item{\code{kulczynski1}}{
       Kulczynski similarity for binary data. Relates the (TRUE, TRUE) pairs to discordant pairs.\cr Type: binary\cr Formula: \eqn{a / (b + c)}.\cr Details: See \command{pr_DB$get_entry("kulczynski1")} in \pkg{proxy}.
