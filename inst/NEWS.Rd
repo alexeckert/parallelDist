@@ -1,5 +1,13 @@
 \name{NEWS}
 \title{NEWS for Package \pkg{parallelDist}}
+\section{Changes in parallelDist version 0.2.3}{
+  \itemize{
+    \item Preserve label attribute of dist class.
+    \item Allow double values for Minkowski distance.
+    \item Added hamming distance (contributed by Srikanth KS).
+    \item Added cosine similarity (contributed by Lucas Godoy).
+  }
+}
 \section{Changes in parallelDist version 0.2.2}{
   \itemize{
     \item Fixed DTW calculation errors for matrices of different length when using multiple threads.
