@@ -2,7 +2,7 @@ Package: parallelDist
 Type: Package
 Title: Parallel Distance Matrix Computation using Multiple Threads
 Version: 0.2.3
-Author: Alexander Eckert [aut, cre]
+Author: Alexander Eckert [aut, cre], Lucas Godoy [ctb], Srikanth KS [ctb]
 Authors@R: c(
     person("Alexander", "Eckert", role = c("aut", "cre"), email = "info@alexandereckert.com"),
     person("Lucas", "Godoy", role = "ctb", email = "lucasdac.godoy@gmail.com"),
