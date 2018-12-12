@@ -2,7 +2,7 @@
 \title{NEWS for Package \pkg{parallelDist}}
 \section{Changes in parallelDist version 0.2.4}{
   \itemize{
-    \item Fixed build on Solaris using explicits casts.
+    \item Fixed build on Solaris using explicit casts.
   }
 }
 \section{Changes in parallelDist version 0.2.3}{
