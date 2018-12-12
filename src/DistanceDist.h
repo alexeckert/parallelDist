@@ -31,7 +31,7 @@ class DistanceBhjattacharyya : public IDistance {
 public:
   double calcDistance(const arma::mat &A, const arma::mat &B) {
     // sqrt(sum_i (sqrt(x_i) - sqrt(y_i))^2))
-    return sqrt(arma::accu(arma::square(arma::sqrt(A) - arma::sqrt(B))));
+    return std::sqrt(arma::accu(arma::square(arma::sqrt(A) - arma::sqrt(B))));
   }
 };
 
@@ -79,8 +79,8 @@ class DistanceChord : public IDistance {
 public:
   double calcDistance(const arma::mat &A, const arma::mat &B) {
     // sqrt(2 * (1 - xy / sqrt(xx * yy)))
-    return sqrt(2 * (1 - arma::dot(A.row(0), B.row(0)) /
-    sqrt(arma::dot(A.row(0), A.row(0)) * arma::dot(B.row(0), B.row(0)))));
+    return std::sqrt(2 * (1 - arma::dot(A.row(0), B.row(0)) /
+    std::sqrt(arma::dot(A.row(0), A.row(0)) * arma::dot(B.row(0), B.row(0)))));
   }
 };
 
@@ -107,7 +107,7 @@ public:
 class DistanceEuclidean : public IDistance {
 public:
   double calcDistance(const arma::mat &A, const arma::mat &B) {
-    return sqrt(arma::accu(arma::square(A - B)));
+    return std::sqrt(arma::accu(arma::square(A - B)));
   }
 };
 
@@ -130,7 +130,8 @@ class DistanceGeodesic : public IDistance {
 public:
   double calcDistance(const arma::mat &A, const arma::mat &B) {
     // arccos(xy / sqrt(xx * yy))
-    return acos(arma::dot(A.row(0), B.row(0)) / sqrt(arma::dot(A.row(0), A.row(0)) * arma::dot(B.row(0), B.row(0))));
+    return acos(arma::dot(A.row(0), B.row(0)) /
+    std::sqrt(arma::dot(A.row(0), A.row(0)) * arma::dot(B.row(0), B.row(0))));
   }
 };
 
@@ -141,7 +142,7 @@ class DistanceHellinger : public IDistance {
 public:
   double calcDistance(const arma::mat &A, const arma::mat &B) {
     // sqrt(sum_i (sqrt(x_i / sum_i x) - sqrt(y_i / sum_i y)) ^ 2)
-    return sqrt(arma::accu(arma::square(arma::sqrt(A / arma::accu(A)) - arma::sqrt(B /  arma::accu(B)))));
+    return std::sqrt(arma::accu(arma::square(arma::sqrt(A / arma::accu(A)) - arma::sqrt(B /  arma::accu(B)))));
   }
 };
 
@@ -172,7 +173,7 @@ public:
   }
   double calcDistance(const arma::mat &A, const arma::mat &B) {
     arma::mat C = A - B;
-    return sqrt(arma::accu(C * this->invertedCov % C));
+    return std::sqrt(arma::accu(C * this->invertedCov % C));
   }
 };
 
@@ -208,7 +209,7 @@ public:
     }
     ~DistanceMinkowski() {}
     double calcDistance(const arma::mat &A, const arma::mat &B) {
-        return pow(arma::accu(arma::pow(arma::abs(A - B), this->p)),
+        return std::pow(arma::accu(arma::pow(arma::abs(A - B), this->p)),
         1.0 / this->p);
     }
 };

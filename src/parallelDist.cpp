@@ -31,7 +31,7 @@
 
 
 uint64_t sumForm(const uint64_t n) {
-    return (pow(n, 2) + n) / 2;
+    return ((n * n) + n) / 2;
 }
 
 uint64_t matToVecIdx(const uint64_t i, const uint64_t j, const uint64_t N) {

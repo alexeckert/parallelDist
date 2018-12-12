@@ -88,7 +88,7 @@ protected:
     if (i < getPatternOffset() || j < getPatternOffset()) {
       return INFINITY;
     } else {
-      return sqrt(arma::accu(arma::square(A.col(i - getPatternOffset()) - B.col(j - getPatternOffset()))));
+      return std::sqrt(arma::accu(arma::square(A.col(i - getPatternOffset()) - B.col(j - getPatternOffset()))));
     }
   }
 

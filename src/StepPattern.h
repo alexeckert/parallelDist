@@ -20,7 +20,7 @@
 #ifndef STEPPATTERN_H_
 #define STEPPATTERN_H_
 
-#include <math.h>
+#include <cmath>
 #include <iostream>
 #include <string>
 #include <utility>

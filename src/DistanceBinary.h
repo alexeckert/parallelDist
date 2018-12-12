@@ -21,7 +21,7 @@
 #define DISTANCEBINARY_H_
 
 #include <RcppArmadillo.h>
-#include <math.h>
+#include <cmath>
 #include "IDistance.h"
 #include "Util.h"
 #include "BinaryCount.h"
@@ -73,8 +73,10 @@ class DistanceFager : public IDistance {
 public:
   double calcDistance(const arma::mat &A, const arma::mat &B) {
     BinaryCount bc = BinaryCount::getBinaryCount(A, B);
-    return util::similarityToDistance((static_cast<double>(bc.getA()) /
-    sqrt((bc.getA() + bc.getB()) * (bc.getA() + bc.getC()))) - ((sqrt(bc.getA() + bc.getC())) / 2.0));
+    return util::similarityToDistance(
+      (static_cast<double>(bc.getA()) /
+        std::sqrt(static_cast<double>((bc.getA() + bc.getB()) * (bc.getA() + bc.getC())))) -
+      (std::sqrt(static_cast<double>(bc.getA() + bc.getC())) / 2.0));
   }
 };
 
@@ -132,7 +134,8 @@ class DistanceMichael : public IDistance {
 public:
   double calcDistance(const arma::mat &A, const arma::mat &B) {
     BinaryCount bc = BinaryCount::getBinaryCount(A, B);
-    double denominator = pow(bc.getA() + bc.getD(), 2) + pow(bc.getB() + bc.getC(), 2);
+    double denominator = std::pow(static_cast<double>(bc.getA() + bc.getD()), 2) +
+      std::pow(static_cast<double>(bc.getB() + bc.getC()), 2);
     return util::similarityToDistance((4.0 * (static_cast<double>(bc.getA() * bc.getD()) -
     (bc.getB() * bc.getC()))) / denominator);
   }
@@ -169,7 +172,7 @@ class DistanceOchiai : public IDistance {
 public:
   double calcDistance(const arma::mat &A, const arma::mat &B) {
     BinaryCount bc = BinaryCount::getBinaryCount(A, B);
-    double denominator = sqrt((bc.getA() + bc.getB()) * (bc.getA() + bc.getC()));
+    double denominator = std::sqrt(static_cast<double>((bc.getA() + bc.getB()) * (bc.getA() + bc.getC())));
     return util::similarityToDistance(static_cast<double>(bc.getA()) / denominator);
   }
 };
@@ -181,8 +184,10 @@ class DistancePhi : public IDistance {
 public:
   double calcDistance(const arma::mat &A, const arma::mat &B) {
     BinaryCount bc = BinaryCount::getBinaryCount(A, B);
-    double denominator = (sqrt(bc.getA() + bc.getB()) * sqrt(bc.getC() + bc.getD()) *
-      sqrt(bc.getA() + bc.getC()) * sqrt(bc.getB() + bc.getD()));
+    double denominator = (std::sqrt(static_cast<double>(bc.getA() + bc.getB())) *
+      std::sqrt(static_cast<double>(bc.getC() + bc.getD())) *
+      std::sqrt(static_cast<double>(bc.getA() + bc.getC())) *
+      std::sqrt(static_cast<double>(bc.getB() + bc.getD())));
     return util::similarityToDistance(
       (static_cast<double>(bc.getA() * bc.getD()) - (bc.getB() * bc.getC()))/ denominator);
   }
@@ -231,9 +236,10 @@ public:
     BinaryCount bc = BinaryCount::getBinaryCount(A, B);
     unsigned int n = A.n_cols;
     return util::similarityToDistance(
-      (log(n) + 2 * log(fabs(static_cast<double>(bc.getA() * bc.getD()) - bc.getB() * bc.getC()) - n / 2.0) -
-      log(bc.getA() + bc.getB()) - log(bc.getC() + bc.getD()) -
-      log(bc.getA() + bc.getC()) - log(bc.getB() + bc.getD())));
+      (std::log(static_cast<double>(n)) +
+        2 * std::log(std::abs(static_cast<double>(bc.getA() * bc.getD()) - bc.getB() * bc.getC()) - n / 2.0) -
+      std::log(static_cast<double>(bc.getA() + bc.getB())) - std::log(static_cast<double>(bc.getC() + bc.getD())) -
+      std::log(static_cast<double>(bc.getA() + bc.getC())) - std::log(static_cast<double>(bc.getB() + bc.getD()))));
   }
 };
 
@@ -269,9 +275,10 @@ class DistanceYule2 : public IDistance {
 public:
     double calcDistance(const arma::mat &A, const arma::mat &B) {
         BinaryCount bc = BinaryCount::getBinaryCount(A, B);
-        double denominator = sqrt(bc.getA() * bc.getD()) + sqrt(bc.getB() * bc.getC());
-        return util::similarityToDistance((static_cast<double>(sqrt(bc.getA() * bc.getD())) -
-        sqrt(bc.getB() * bc.getC())) / denominator);
+        double denominator = std::sqrt(static_cast<double>(bc.getA() * bc.getD())) +
+          std::sqrt(static_cast<double>(bc.getB() * bc.getC()));
+        return util::similarityToDistance((std::sqrt(static_cast<double>(bc.getA() * bc.getD())) -
+        std::sqrt(static_cast<double>(bc.getB() * bc.getC()))) / denominator);
     }
 };
 
