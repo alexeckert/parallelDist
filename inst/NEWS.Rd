@@ -1,5 +1,10 @@
 \name{NEWS}
 \title{NEWS for Package \pkg{parallelDist}}
+\section{Changes in parallelDist version 0.2.4}{
+  \itemize{
+    \item Fixed build on Solaris using explicits casts.
+  }
+}
 \section{Changes in parallelDist version 0.2.3}{
   \itemize{
     \item Preserve label attribute of dist class.
