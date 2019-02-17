@@ -13,7 +13,7 @@ r_github_packages:
 
 before_install:
   - tlmgr install ly1 mathdesign charter
-  - pip install --user cpplint
+  - pip install --user 'cpplint>=1.3.0,<1.4.0'
 
 before_script:
   - cpplint src/*
