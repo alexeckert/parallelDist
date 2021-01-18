@@ -2,7 +2,6 @@
 ^.Rproj\.user$
 ^misc$
 LICENSE
-.travis.yml
-appveyor.yml
+.github
 CPPLINT.cfg
 ^src\CPPLINT.cfg
