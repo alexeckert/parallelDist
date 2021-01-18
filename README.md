@@ -1,4 +1,4 @@
-## parallelDist [![CRAN](http://www.r-pkg.org/badges/version/parallelDist)](https://CRAN.R-project.org/package=parallelDist) [![Build Status](https://travis-ci.org/alexeckert/parallelDist.svg?branch=master)](https://travis-ci.org/alexeckert/parallelDist) [![Build status](https://ci.appveyor.com/api/projects/status/d6o2d529gdf7qjyu/branch/master?svg=true)](https://ci.appveyor.com/project/alexeckert/paralleldist/branch/master) [![codecov](https://codecov.io/gh/alexeckert/parallelDist/branch/master/graph/badge.svg)](https://codecov.io/gh/alexeckert/parallelDist) 
+## parallelDist [![CRAN](http://www.r-pkg.org/badges/version/parallelDist)](https://CRAN.R-project.org/package=parallelDist) [![codecov](https://codecov.io/gh/alexeckert/parallelDist/branch/master/graph/badge.svg)](https://codecov.io/gh/alexeckert/parallelDist) ![R-CMD-check](https://github.com/alexeckert/parallelDist/workflows/R-CMD-check/badge.svg)
 
 ### Introduction
 
@@ -47,7 +47,7 @@ More information can be found in the vignette and the help pages.
 
 ### Installation
 
-parallelDist is available on [CRAN](https://CRAN.R-project.org/package=parallelDist) and can be installed with the following command: 
+`parallelDist` is available on [CRAN](https://CRAN.R-project.org/package=parallelDist) and can be installed with the following command: 
 
 ```R
 install.packages("parallelDist")
