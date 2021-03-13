@@ -1,4 +1,4 @@
-## parallelDist [![CRAN](http://www.r-pkg.org/badges/version/parallelDist)](https://CRAN.R-project.org/package=parallelDist) [![codecov](https://codecov.io/gh/alexeckert/parallelDist/branch/master/graph/badge.svg)](https://codecov.io/gh/alexeckert/parallelDist) ![R-CMD-check](https://github.com/alexeckert/parallelDist/workflows/R-CMD-check/badge.svg)
+## parallelDist [![CRAN](http://www.r-pkg.org/badges/version/parallelDist)](https://CRAN.R-project.org/package=parallelDist) [![codecov](https://codecov.io/gh/alexeckert/parallelDist/branch/master/graph/badge.svg)](https://codecov.io/gh/alexeckert/parallelDist) [![R-CMD-check](https://github.com/alexeckert/parallelDist/actions/workflows/R-CMD-check.yaml/badge.svg?branch=master)](https://github.com/alexeckert/parallelDist/actions/workflows/R-CMD-check.yaml)
 
 ### Introduction
 
