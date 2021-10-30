@@ -1,6 +1,6 @@
 ## testMatrixCustomDistances.R
 ##
-## Copyright (C)  2017  Alexander Eckert
+## Copyright (C)  2017, 2021  Alexander Eckert
 ##
 ## This file is part of parallelDist.
 ##

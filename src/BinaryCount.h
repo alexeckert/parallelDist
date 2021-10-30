@@ -1,6 +1,6 @@
 // BinaryCount.h
 //
-// Copyright (C)  2017, 2018  Alexander Eckert
+// Copyright (C)  2017, 2021  Alexander Eckert
 //
 // This file is part of parallelDist.
 //
@@ -23,13 +23,13 @@
 #include <RcppArmadillo.h>
 
 class BinaryCount {
- private:
+  private:
     uint64_t a;
     uint64_t b;
     uint64_t c;
     uint64_t d;
 
- public:
+  public:
     BinaryCount(uint64_t a, uint64_t b, uint64_t c, uint64_t d) : a(a), b(b), c(c), d(d) {}
     ~BinaryCount() {}
     static BinaryCount getBinaryCount(const arma::mat &A, const arma::mat &B) {
@@ -69,4 +69,4 @@ class BinaryCount {
     }
 };
 
-#endif  // BINARYCOUNT_H_
+#endif // BINARYCOUNT_H_
