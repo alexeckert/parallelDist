@@ -1,6 +1,6 @@
 // Util.h
 //
-// Copyright (C)  2017, 2018  Alexander Eckert
+// Copyright (C)  2017, 2021  Alexander Eckert
 //
 // This file is part of parallelDist.
 //
@@ -20,16 +20,16 @@
 #ifndef UTIL_H_
 #define UTIL_H_
 
-#include <memory>
 #include <cmath>
+#include <memory>
 #include <string>
 
 namespace util {
 
-bool isEqualStr(const std::string& str1, std::string str2);
+bool isEqualStr(const std::string &str1, std::string str2);
 
 double similarityToDistance(const double distance);
 
-}
+} // namespace util
 
-#endif  // UTIL_H_
+#endif // UTIL_H_

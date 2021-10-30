@@ -1,6 +1,6 @@
 // DistanceBinary.h
 //
-// Copyright (C)  2017, 2018  Alexander Eckert
+// Copyright (C)  2017, 2021  Alexander Eckert
 //
 // This file is part of parallelDist.
 //
@@ -20,11 +20,11 @@
 #ifndef DISTANCEBINARY_H_
 #define DISTANCEBINARY_H_
 
-#include <RcppArmadillo.h>
-#include <cmath>
+#include "BinaryCount.h"
 #include "IDistance.h"
 #include "Util.h"
-#include "BinaryCount.h"
+#include <RcppArmadillo.h>
+#include <cmath>
 
 #undef max
 #define minOfPair(x, y) ((x) < (y) ? (x) : (y))
@@ -34,7 +34,7 @@
 // Binary distance
 //=======================
 class DistanceBinary : public IDistance {
-public:
+  public:
     double calcDistance(const arma::mat &A, const arma::mat &B) {
         BinaryCount bc = BinaryCount::getBinaryCount(A, B);
         uint64_t denominator = bc.getA() + bc.getB() + bc.getC();
@@ -46,68 +46,68 @@ public:
 // Braun-Blanquet
 //=======================
 class DistanceBraunblanquet : public IDistance {
-public:
-  double calcDistance(const arma::mat &A, const arma::mat &B) {
-    BinaryCount bc = BinaryCount::getBinaryCount(A, B);
-    uint64_t denominator = maxOfPair((bc.getA() + bc.getB()), (bc.getA() + bc.getC()));
-    return util::similarityToDistance(static_cast<double>(bc.getA()) / denominator);
-  }
+  public:
+    double calcDistance(const arma::mat &A, const arma::mat &B) {
+        BinaryCount bc = BinaryCount::getBinaryCount(A, B);
+        uint64_t denominator = maxOfPair((bc.getA() + bc.getB()), (bc.getA() + bc.getC()));
+        return util::similarityToDistance(static_cast<double>(bc.getA()) / denominator);
+    }
 };
 
 //=======================
 // Dice distance
 //=======================
 class DistanceDice : public IDistance {
-public:
-  double calcDistance(const arma::mat &A, const arma::mat &B) {
-    BinaryCount bc = BinaryCount::getBinaryCount(A, B);
-    uint64_t denominator = 2 * bc.getA() + bc.getB() + bc.getC();
-    return util::similarityToDistance(static_cast<double>(2 * bc.getA()) / denominator);
-  }
+  public:
+    double calcDistance(const arma::mat &A, const arma::mat &B) {
+        BinaryCount bc = BinaryCount::getBinaryCount(A, B);
+        uint64_t denominator = 2 * bc.getA() + bc.getB() + bc.getC();
+        return util::similarityToDistance(static_cast<double>(2 * bc.getA()) / denominator);
+    }
 };
 
 //=======================
 // Fager distance (like in proxy)
 //=======================
 class DistanceFager : public IDistance {
-public:
-  double calcDistance(const arma::mat &A, const arma::mat &B) {
-    BinaryCount bc = BinaryCount::getBinaryCount(A, B);
-    return util::similarityToDistance(
-      (static_cast<double>(bc.getA()) /
-        std::sqrt(static_cast<double>((bc.getA() + bc.getB()) * (bc.getA() + bc.getC())))) -
-      (std::sqrt(static_cast<double>(bc.getA() + bc.getC())) / 2.0));
-  }
+  public:
+    double calcDistance(const arma::mat &A, const arma::mat &B) {
+        BinaryCount bc = BinaryCount::getBinaryCount(A, B);
+        return util::similarityToDistance(
+            (static_cast<double>(bc.getA()) /
+             std::sqrt(static_cast<double>((bc.getA() + bc.getB()) * (bc.getA() + bc.getC())))) -
+            (std::sqrt(static_cast<double>(bc.getA() + bc.getC())) / 2.0));
+    }
 };
 
 //=======================
 // Faith distance
 //=======================
 class DistanceFaith : public IDistance {
-public:
-  double calcDistance(const arma::mat &A, const arma::mat &B) {
-    BinaryCount bc = BinaryCount::getBinaryCount(A, B);
-    return util::similarityToDistance((bc.getA() + static_cast<double>(bc.getD()) / 2.0) / A.n_cols);
-  }
+  public:
+    double calcDistance(const arma::mat &A, const arma::mat &B) {
+        BinaryCount bc = BinaryCount::getBinaryCount(A, B);
+        return util::similarityToDistance((bc.getA() + static_cast<double>(bc.getD()) / 2.0) / A.n_cols);
+    }
 };
 
 //=======================
 // Hamman distance
 //=======================
 class DistanceHamman : public IDistance {
-public:
-  double calcDistance(const arma::mat &A, const arma::mat &B) {
-    BinaryCount bc = BinaryCount::getBinaryCount(A, B);
-    return util::similarityToDistance(
-      (static_cast<double>(bc.getA()) + bc.getD() - bc.getB() - bc.getC()) / A.n_cols);
-  }
+  public:
+    double calcDistance(const arma::mat &A, const arma::mat &B) {
+        BinaryCount bc = BinaryCount::getBinaryCount(A, B);
+        return util::similarityToDistance(
+            (static_cast<double>(bc.getA()) + bc.getD() - bc.getB() - bc.getC()) / A.n_cols);
+    }
 };
 
 //=======================
 // Kulczynski1 distance
 //=======================
 class DistanceKulczynski1 : public IDistance {
-public:
+  public:
     double calcDistance(const arma::mat &A, const arma::mat &B) {
         BinaryCount bc = BinaryCount::getBinaryCount(A, B);
         return util::similarityToDistance(static_cast<double>(bc.getA()) / (bc.getB() + bc.getC()));
@@ -118,7 +118,7 @@ public:
 // Kulczynski2 distance
 //=======================
 class DistanceKulczynski2 : public IDistance {
-public:
+  public:
     double calcDistance(const arma::mat &A, const arma::mat &B) {
         BinaryCount bc = BinaryCount::getBinaryCount(A, B);
         double div1 = static_cast<double>(bc.getA()) / (bc.getA() + bc.getB());
@@ -131,21 +131,22 @@ public:
 // Michael distance
 //=======================
 class DistanceMichael : public IDistance {
-public:
-  double calcDistance(const arma::mat &A, const arma::mat &B) {
-    BinaryCount bc = BinaryCount::getBinaryCount(A, B);
-    double denominator = std::pow(static_cast<double>(bc.getA() + bc.getD()), 2) +
-      std::pow(static_cast<double>(bc.getB() + bc.getC()), 2);
-    return util::similarityToDistance((4.0 * (static_cast<double>(bc.getA() * bc.getD()) -
-    (bc.getB() * bc.getC()))) / denominator);
-  }
+  public:
+    double calcDistance(const arma::mat &A, const arma::mat &B) {
+        BinaryCount bc = BinaryCount::getBinaryCount(A, B);
+        double denominator = std::pow(static_cast<double>(bc.getA() + bc.getD()), 2) +
+                             std::pow(static_cast<double>(bc.getB() + bc.getC()), 2);
+        return util::similarityToDistance((4.0 * (static_cast<double>(bc.getA() * bc.getD()) -
+                                                  (bc.getB() * bc.getC()))) /
+                                          denominator);
+    }
 };
 
 //=======================
 // Mountford distance
 //=======================
 class DistanceMountford : public IDistance {
-public:
+  public:
     double calcDistance(const arma::mat &A, const arma::mat &B) {
         BinaryCount bc = BinaryCount::getBinaryCount(A, B);
         uint64_t denominator = bc.getA() * (bc.getB() + bc.getC()) + 2 * bc.getB() * bc.getC();
@@ -157,47 +158,47 @@ public:
 // Mozley distance
 //=======================
 class DistanceMozley : public IDistance {
-public:
-  double calcDistance(const arma::mat &A, const arma::mat &B) {
-    BinaryCount bc = BinaryCount::getBinaryCount(A, B);
-    uint64_t denominator = (bc.getA() + bc.getB()) * (bc.getA() + bc.getC());
-    return util::similarityToDistance((static_cast<double>(bc.getA() * A.n_cols)) / denominator);
-  }
+  public:
+    double calcDistance(const arma::mat &A, const arma::mat &B) {
+        BinaryCount bc = BinaryCount::getBinaryCount(A, B);
+        uint64_t denominator = (bc.getA() + bc.getB()) * (bc.getA() + bc.getC());
+        return util::similarityToDistance((static_cast<double>(bc.getA() * A.n_cols)) / denominator);
+    }
 };
 
 //=======================
 // Ochiai distance
 //=======================
 class DistanceOchiai : public IDistance {
-public:
-  double calcDistance(const arma::mat &A, const arma::mat &B) {
-    BinaryCount bc = BinaryCount::getBinaryCount(A, B);
-    double denominator = std::sqrt(static_cast<double>((bc.getA() + bc.getB()) * (bc.getA() + bc.getC())));
-    return util::similarityToDistance(static_cast<double>(bc.getA()) / denominator);
-  }
+  public:
+    double calcDistance(const arma::mat &A, const arma::mat &B) {
+        BinaryCount bc = BinaryCount::getBinaryCount(A, B);
+        double denominator = std::sqrt(static_cast<double>((bc.getA() + bc.getB()) * (bc.getA() + bc.getC())));
+        return util::similarityToDistance(static_cast<double>(bc.getA()) / denominator);
+    }
 };
 
 //=======================
 // Phi distance
 //=======================
 class DistancePhi : public IDistance {
-public:
-  double calcDistance(const arma::mat &A, const arma::mat &B) {
-    BinaryCount bc = BinaryCount::getBinaryCount(A, B);
-    double denominator = (std::sqrt(static_cast<double>(bc.getA() + bc.getB())) *
-      std::sqrt(static_cast<double>(bc.getC() + bc.getD())) *
-      std::sqrt(static_cast<double>(bc.getA() + bc.getC())) *
-      std::sqrt(static_cast<double>(bc.getB() + bc.getD())));
-    return util::similarityToDistance(
-      (static_cast<double>(bc.getA() * bc.getD()) - (bc.getB() * bc.getC()))/ denominator);
-  }
+  public:
+    double calcDistance(const arma::mat &A, const arma::mat &B) {
+        BinaryCount bc = BinaryCount::getBinaryCount(A, B);
+        double denominator = (std::sqrt(static_cast<double>(bc.getA() + bc.getB())) *
+                              std::sqrt(static_cast<double>(bc.getC() + bc.getD())) *
+                              std::sqrt(static_cast<double>(bc.getA() + bc.getC())) *
+                              std::sqrt(static_cast<double>(bc.getB() + bc.getD())));
+        return util::similarityToDistance(
+            (static_cast<double>(bc.getA() * bc.getD()) - (bc.getB() * bc.getC())) / denominator);
+    }
 };
 
 //=======================
 // Russel distance
 //=======================
 class DistanceRussel : public IDistance {
-public:
+  public:
     double calcDistance(const arma::mat &A, const arma::mat &B) {
         BinaryCount bc = BinaryCount::getBinaryCount(A, B);
         return util::similarityToDistance(static_cast<double>(bc.getA()) / A.n_cols);
@@ -208,7 +209,7 @@ public:
 // SimpleMatching distance
 //=======================
 class DistanceSimplematching : public IDistance {
-public:
+  public:
     double calcDistance(const arma::mat &A, const arma::mat &B) {
         BinaryCount bc = BinaryCount::getBinaryCount(A, B);
         return util::similarityToDistance(static_cast<double>(bc.getA() + bc.getD()) / A.n_cols);
@@ -219,35 +220,35 @@ public:
 // Simpson distance
 //=======================
 class DistanceSimpson : public IDistance {
-public:
-  double calcDistance(const arma::mat &A, const arma::mat &B) {
-    BinaryCount bc = BinaryCount::getBinaryCount(A, B);
-    uint64_t denominator = minOfPair((bc.getA() + bc.getB()), (bc.getA() + bc.getC()));
-    return util::similarityToDistance(static_cast<double>(bc.getA()) / denominator);
-  }
+  public:
+    double calcDistance(const arma::mat &A, const arma::mat &B) {
+        BinaryCount bc = BinaryCount::getBinaryCount(A, B);
+        uint64_t denominator = minOfPair((bc.getA() + bc.getB()), (bc.getA() + bc.getC()));
+        return util::similarityToDistance(static_cast<double>(bc.getA()) / denominator);
+    }
 };
 
 //=======================
 // Stiles distance
 //=======================
 class DistanceStiles : public IDistance {
-public:
-  double calcDistance(const arma::mat &A, const arma::mat &B) {
-    BinaryCount bc = BinaryCount::getBinaryCount(A, B);
-    unsigned int n = A.n_cols;
-    return util::similarityToDistance(
-      (std::log(static_cast<double>(n)) +
-        2 * std::log(std::abs(static_cast<double>(bc.getA() * bc.getD()) - bc.getB() * bc.getC()) - n / 2.0) -
-      std::log(static_cast<double>(bc.getA() + bc.getB())) - std::log(static_cast<double>(bc.getC() + bc.getD())) -
-      std::log(static_cast<double>(bc.getA() + bc.getC())) - std::log(static_cast<double>(bc.getB() + bc.getD()))));
-  }
+  public:
+    double calcDistance(const arma::mat &A, const arma::mat &B) {
+        BinaryCount bc = BinaryCount::getBinaryCount(A, B);
+        unsigned int n = A.n_cols;
+        return util::similarityToDistance(
+            (std::log(static_cast<double>(n)) +
+             2 * std::log(std::abs(static_cast<double>(bc.getA() * bc.getD()) - bc.getB() * bc.getC()) - n / 2.0) -
+             std::log(static_cast<double>(bc.getA() + bc.getB())) - std::log(static_cast<double>(bc.getC() + bc.getD())) -
+             std::log(static_cast<double>(bc.getA() + bc.getC())) - std::log(static_cast<double>(bc.getB() + bc.getD()))));
+    }
 };
 
 //=======================
 // Tanimoto distance
 //=======================
 class DistanceTanimoto : public IDistance {
-public:
+  public:
     double calcDistance(const arma::mat &A, const arma::mat &B) {
         BinaryCount bc = BinaryCount::getBinaryCount(A, B);
         uint64_t denominator = bc.getA() + 2 * bc.getB() + 2 * bc.getC() + bc.getD();
@@ -259,12 +260,13 @@ public:
 // Yule distance
 //=======================
 class DistanceYule : public IDistance {
-public:
+  public:
     double calcDistance(const arma::mat &A, const arma::mat &B) {
         BinaryCount bc = BinaryCount::getBinaryCount(A, B);
         uint64_t denominator = (bc.getA() * bc.getD()) + (bc.getB() * bc.getC());
         return util::similarityToDistance((static_cast<double>(bc.getA() * bc.getD()) -
-        (bc.getB() * bc.getC())) / denominator);
+                                           (bc.getB() * bc.getC())) /
+                                          denominator);
     }
 };
 
@@ -272,14 +274,15 @@ public:
 // Yule2 distance
 //=======================
 class DistanceYule2 : public IDistance {
-public:
+  public:
     double calcDistance(const arma::mat &A, const arma::mat &B) {
         BinaryCount bc = BinaryCount::getBinaryCount(A, B);
         double denominator = std::sqrt(static_cast<double>(bc.getA() * bc.getD())) +
-          std::sqrt(static_cast<double>(bc.getB() * bc.getC()));
+                             std::sqrt(static_cast<double>(bc.getB() * bc.getC()));
         return util::similarityToDistance((std::sqrt(static_cast<double>(bc.getA() * bc.getD())) -
-        std::sqrt(static_cast<double>(bc.getB() * bc.getC()))) / denominator);
+                                           std::sqrt(static_cast<double>(bc.getB() * bc.getC()))) /
+                                          denominator);
     }
 };
 
-#endif  // DISTANCEBINARY_H_
+#endif // DISTANCEBINARY_H_

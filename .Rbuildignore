@@ -5,3 +5,4 @@ LICENSE
 .github
 CPPLINT.cfg
 ^src\CPPLINT.cfg
+^\.Rproj\.user$

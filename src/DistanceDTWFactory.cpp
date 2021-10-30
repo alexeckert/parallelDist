@@ -1,6 +1,6 @@
 // DistanceDTWFactory.cpp
 //
-// Copyright (C)  2017, 2018  Alexander Eckert
+// Copyright (C)  2017, 2021  Alexander Eckert
 //
 // This file is part of parallelDist.
 //
@@ -22,7 +22,7 @@
 #include "Util.h"
 
 std::shared_ptr<IDistance> DistanceDTWFactory::createDistanceFunction(
-  const std::string& distName, const Rcpp::List& arguments) {
+    const std::string &distName, const Rcpp::List &arguments) {
     using util::isEqualStr;
 
     std::shared_ptr<IDistance> distanceFunction = NULL;
@@ -33,10 +33,10 @@ std::shared_ptr<IDistance> DistanceDTWFactory::createDistanceFunction(
 
     warpingWindow = arguments.containsElementNamed("window.size");
     if (warpingWindow) {
-        windowSize = Rcpp::as<unsigned int >(arguments["window.size"]);
+        windowSize = Rcpp::as<unsigned int>(arguments["window.size"]);
     }
     if (arguments.containsElementNamed("norm.method")) {
-        std::string normMethodStr = Rcpp::as<std::string >(arguments["norm.method"]);
+        std::string normMethodStr = Rcpp::as<std::string>(arguments["norm.method"]);
         if (isEqualStr(normMethodStr, "n")) {
             normMethod = NormMethod::ALength;
         } else if (isEqualStr(normMethodStr, "n+m")) {
@@ -46,7 +46,7 @@ std::shared_ptr<IDistance> DistanceDTWFactory::createDistanceFunction(
         }
     }
     if (arguments.containsElementNamed("step.pattern")) {
-        stepPatternName = Rcpp::as<std::string >(arguments["step.pattern"]);
+        stepPatternName = Rcpp::as<std::string>(arguments["step.pattern"]);
     }
 
     if (isEqualStr(stepPatternName, "asymmetric")) {
@@ -60,9 +60,8 @@ std::shared_ptr<IDistance> DistanceDTWFactory::createDistanceFunction(
     } else if (isEqualStr(stepPatternName, "asymmetricP2")) {
         distanceFunction = std::make_shared<StepPatternAsymmetricP2>(warpingWindow, windowSize, normMethod);
     } else if (
-      isEqualStr(stepPatternName, "symmetric2") ||
-      isEqualStr(stepPatternName, "symmetricP0")
-    ) {
+        isEqualStr(stepPatternName, "symmetric2") ||
+        isEqualStr(stepPatternName, "symmetricP0")) {
         distanceFunction = std::make_shared<StepPatternSymmetric2>(warpingWindow, windowSize, normMethod);
     } else if (isEqualStr(stepPatternName, "symmetricP05")) {
         distanceFunction = std::make_shared<StepPatternSymmetricP05>(warpingWindow, windowSize, normMethod);

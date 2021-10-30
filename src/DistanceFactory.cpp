@@ -1,6 +1,6 @@
 // DistanceFactory.cpp
 //
-// Copyright (C)  2017, 2018  Alexander Eckert
+// Copyright (C)  2017, 2021  Alexander Eckert
 //
 // This file is part of parallelDist.
 //
@@ -18,13 +18,13 @@
 // along with parallelDist. If not, see <http://www.gnu.org/licenses/>.
 
 #include "DistanceFactory.h"
-#include "DistanceDTWFactory.h"
-#include "Util.h"
-#include "DistanceDist.h"
 #include "DistanceBinary.h"
+#include "DistanceDTWFactory.h"
+#include "DistanceDist.h"
+#include "Util.h"
 
-std::shared_ptr<IDistance> DistanceFactory::createDistanceFunction(const Rcpp::List& attrs,
-  const Rcpp::List& arguments) {
+std::shared_ptr<IDistance> DistanceFactory::createDistanceFunction(const Rcpp::List &attrs,
+                                                                   const Rcpp::List &arguments) {
     using util::isEqualStr;
     std::string distName = attrs["method"];
     std::shared_ptr<IDistance> distanceFunction = NULL;
@@ -56,21 +56,21 @@ std::shared_ptr<IDistance> DistanceFactory::createDistanceFunction(const Rcpp::L
         bool isCov = arguments.containsElementNamed("cov");
         arma::Mat<double> cov;
         if (isCov) {
-          cov = Rcpp::as<arma::Mat<double>>(arguments["cov"]);
+            cov = Rcpp::as<arma::Mat<double>>(arguments["cov"]);
         } else {
-          // if data was provided as matrix
-          if (this->isDataMatrix) {
-            // calc covariance matrix if input data is in matrix format
-            cov = arma::cov(dataMatrix);
-          } else {
-            Rcpp::stop("Calculation of inverted covariance matrix is only supported for input data in matrix format.");
-          }
+            // if data was provided as matrix
+            if (this->isDataMatrix) {
+                // calc covariance matrix if input data is in matrix format
+                cov = arma::cov(dataMatrix);
+            } else {
+                Rcpp::stop("Calculation of inverted covariance matrix is only supported for input data in matrix format.");
+            }
         }
         if (arguments.containsElementNamed("inverted")) {
-          isInvertedCov = Rcpp::as<bool >(arguments["inverted"]);
+            isInvertedCov = Rcpp::as<bool>(arguments["inverted"]);
         }
         if (!isInvertedCov) {
-          cov = arma::inv(cov);
+            cov = arma::inv(cov);
         }
         distanceFunction = std::make_shared<DistanceMahalanobis>(cov);
     } else if (isEqualStr(distName, "manhattan")) {
@@ -80,7 +80,7 @@ std::shared_ptr<IDistance> DistanceFactory::createDistanceFunction(const Rcpp::L
     } else if (isEqualStr(distName, "minkowski")) {
         double p = 2;
         if (arguments.containsElementNamed("p")) {
-          p = Rcpp::as<double >(arguments["p"]);
+            p = Rcpp::as<double>(arguments["p"]);
         }
         distanceFunction = std::make_shared<DistanceMinkowski>(p);
     } else if (isEqualStr(distName, "podani")) {
@@ -132,7 +132,7 @@ std::shared_ptr<IDistance> DistanceFactory::createDistanceFunction(const Rcpp::L
     } else if (isEqualStr(distName, "yule2")) {
         distanceFunction = std::make_shared<DistanceYule2>();
     } else if (isEqualStr(distName, "hamming")) {
-      distanceFunction = std::make_shared<DistanceHamming>();
+        distanceFunction = std::make_shared<DistanceHamming>();
     } else if (isEqualStr(distName, "custom")) {
         SEXP func_ = arguments["func"];
         funcPtr func = *Rcpp::XPtr<funcPtr>(func_);

@@ -1,6 +1,6 @@
 ## testMatrixListDTWDistances.R
 ##
-## Copyright (C)  2018  Alexander Eckert
+## Copyright (C)  2018, 2021  Alexander Eckert
 ##
 ## This file is part of parallelDist.
 ##

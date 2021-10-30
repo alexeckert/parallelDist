@@ -1,6 +1,6 @@
 // DistanceDTWGeneric.h
 //
-// Copyright (C)  2017, 2018  Alexander Eckert
+// Copyright (C)  2017, 2021  Alexander Eckert
 //
 // This file is part of parallelDist.
 //
@@ -27,9 +27,12 @@
 #define min(x, y) ((x) < (y) ? (x) : (y))
 #define max(x, y) ((x) < (y) ? (y) : (x))
 #define min3(x, y, z) (min(x, min(y, z)))
-#define unused(x) ((void) x)
+#define unused(x) ((void)x)
 
-enum class NormMethod { NoNorm, PathLength, ALength, ABLength };
+enum class NormMethod { NoNorm,
+                        PathLength,
+                        ALength,
+                        ABLength };
 
 //==============================
 // Dynamic Time Warping distance
@@ -37,7 +40,7 @@ enum class NormMethod { NoNorm, PathLength, ALength, ABLength };
 // Generic implementation
 template <typename Implementation>
 class DistanceDTWGeneric : public IDistance {
-private:
+  private:
     unsigned int windowSize;
     bool warpingWindow;
     NormMethod normalizationMethod;
@@ -46,8 +49,8 @@ private:
         return Implementation::patternOffset;
     }
 
-    inline Implementation& impl() {
-        return *static_cast<Implementation*>(this);
+    inline Implementation &impl() {
+        return *static_cast<Implementation *>(this);
     }
 
     /**
@@ -61,40 +64,40 @@ private:
      @return costs for two entries of input matrices A and B
      */
     std::pair<double, int> getCost(double *pen, unsigned int bSizeOffset, const arma::mat &A, const arma::mat &B,
-      unsigned int i, unsigned int j) {
+                                   unsigned int i, unsigned int j) {
         return impl().getCost(pen, bSizeOffset, A, B, i, j);
     }
 
-protected:
-  // calculates minimum and argmin of a double array
-  std::pair<double, int> argmin(double arr[], unsigned int len) {
-    double min = arr[0];
-    unsigned int argMin = 0;
+  protected:
+    // calculates minimum and argmin of a double array
+    std::pair<double, int> argmin(double arr[], unsigned int len) {
+        double min = arr[0];
+        unsigned int argMin = 0;
 
-    for (unsigned int i = 1; i < len; i++) {
-      if (arr[i] < min) {
-        min = arr[i];
-        argMin = i;
-      }
+        for (unsigned int i = 1; i < len; i++) {
+            if (arr[i] < min) {
+                min = arr[i];
+                argMin = i;
+            }
+        }
+        return std::make_pair(min, argMin);
     }
-    return std::make_pair(min, argMin);
-  }
-  // returns value of cell of matrix
-  double getCell(double *matrix, unsigned int bMatrixSizeOffset, unsigned int i, unsigned int j) {
-    return matrix[i * bMatrixSizeOffset + j];
-  }
-  // calculates euclidean distance between two matrices
-  double getDistance(const arma::mat &A, const arma::mat &B, unsigned int i, unsigned int j) {
-    if (i < getPatternOffset() || j < getPatternOffset()) {
-      return INFINITY;
-    } else {
-      return std::sqrt(arma::accu(arma::square(A.col(i - getPatternOffset()) - B.col(j - getPatternOffset()))));
+    // returns value of cell of matrix
+    double getCell(double *matrix, unsigned int bMatrixSizeOffset, unsigned int i, unsigned int j) {
+        return matrix[i * bMatrixSizeOffset + j];
     }
-  }
+    // calculates euclidean distance between two matrices
+    double getDistance(const arma::mat &A, const arma::mat &B, unsigned int i, unsigned int j) {
+        if (i < getPatternOffset() || j < getPatternOffset()) {
+            return INFINITY;
+        } else {
+            return std::sqrt(arma::accu(arma::square(A.col(i - getPatternOffset()) - B.col(j - getPatternOffset()))));
+        }
+    }
 
-public:
+  public:
     DistanceDTWGeneric(bool warpingWindow = false, unsigned int windowSize = 0,
-      NormMethod normalizationMethod = NormMethod::NoNorm) {
+                       NormMethod normalizationMethod = NormMethod::NoNorm) {
         this->warpingWindow = warpingWindow;
         this->windowSize = windowSize;
         this->normalizationMethod = normalizationMethod;
@@ -161,7 +164,7 @@ public:
         double dist = pen[aSizeOffset * bSizeOffset - 1];
 
         // free memory
-        delete [] pen;
+        delete[] pen;
 
         // calc warp path for normalization
         if (normalizationMethod == NormMethod::PathLength) {
@@ -187,7 +190,7 @@ public:
                 }
             }
             // free memory
-            delete [] pre;
+            delete[] pre;
             dist /= warpPathLength;
         } else if (normalizationMethod == NormMethod::ABLength) {
             dist /= (Asize + Bsize);
@@ -199,4 +202,4 @@ public:
     }
 };
 
-#endif  // DISTANCEDTWGENERIC_H_
+#endif // DISTANCEDTWGENERIC_H_

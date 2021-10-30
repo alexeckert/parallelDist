@@ -1,6 +1,6 @@
 // DistanceFactory.h
 //
-// Copyright (C)  2017, 2018  Alexander Eckert
+// Copyright (C)  2017, 2021  Alexander Eckert
 //
 // This file is part of parallelDist.
 //
@@ -28,16 +28,17 @@
 // Distance Factory
 //==============================
 class DistanceFactory {
-private:
+  private:
     // Store reference to data objects to enable distance method parameter precalculations
     arma::mat dataMatrix;
     std::vector<arma::mat> dataMatrixList;
     bool isDataMatrix;
-public:
+
+  public:
     explicit DistanceFactory(arma::mat &dataMatrix) : dataMatrix(dataMatrix), isDataMatrix(true) {}
     explicit DistanceFactory(std::vector<arma::mat> &dataMatrixList) : dataMatrixList(dataMatrixList),
-    isDataMatrix(false) {}
-    std::shared_ptr<IDistance> createDistanceFunction(const Rcpp::List& attrs, const Rcpp::List& arguments);
+                                                                       isDataMatrix(false) {}
+    std::shared_ptr<IDistance> createDistanceFunction(const Rcpp::List &attrs, const Rcpp::List &arguments);
 };
 
-#endif  // DISTANCEFACTORY_H_
+#endif // DISTANCEFACTORY_H_

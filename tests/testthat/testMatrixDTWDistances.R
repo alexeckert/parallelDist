@@ -1,6 +1,6 @@
 ## testMatrixDTWDistances.R
 ##
-## Copyright (C)  2017, 2018  Alexander Eckert
+## Copyright (C)  2017, 2021  Alexander Eckert
 ##
 ## This file is part of parallelDist.
 ##
@@ -46,12 +46,11 @@ testMatrixEqualityForMatList <- function(matlist, method, ...) {
 }
 
 # Tests
-
 test_that("error for unsupported step pattern shows up", {
   expect_error(parDist(mat.sample1, method = "dtw", step.pattern="unknown"), "Step pattern is not supported.")
 })
 
-test_that("parDist and dtw produces same results for differen step patterns", {
+test_that("parDist and dtw produces same results for different step patterns", {
   # symmetric1 / symmetric
   testMatrixEqualityForMatList(mat.list, method="dtw", window.type="none", step.pattern=symmetric1)
   invisible(sapply(mat.list, function(x) {

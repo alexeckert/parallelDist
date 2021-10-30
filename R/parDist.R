@@ -1,6 +1,6 @@
 ## parDist.R
 ##
-## Copyright (C)  2017  Alexander Eckert
+## Copyright (C)  2017, 2021  Alexander Eckert
 ##
 ## This file is part of parallelDist.
 ##
@@ -20,20 +20,23 @@
 #
 # Calculates distance matrices in parallel
 #
-parDist <- parallelDist <- function (x, method = "euclidean", diag = FALSE, upper = FALSE, threads = NULL, ...) {
-  METHODS <- c("bhjattacharyya", "bray", "canberra", "chord", "divergence",
-               "dtw", "euclidean", "fJaccard", "geodesic", "hellinger",
-               "kullback", "mahalanobis", "manhattan", "maximum", "minkowski",
-               "podani", "soergel", "wave", "whittaker",
-               "binary", "braun-blanquet", "dice", "fager", "faith",
-               "hamman", "kulczynski1", "kulczynski2", "michael", "mountford",
-               "mozley", "ochiai", "phi", "russel", "simple matching",
-               "simpson", "stiles", "tanimoto", "yule", "yule2", "cosine"
-               , "hamming"
-               , "custom") # w/o "levenshtein"
+parDist <- parallelDist <- function(x, method = "euclidean", diag = FALSE, upper = FALSE, threads = NULL, ...) {
+  METHODS <- c(
+    "bhjattacharyya", "bray", "canberra", "chord", "divergence",
+    "dtw", "euclidean", "fJaccard", "geodesic", "hellinger",
+    "kullback", "mahalanobis", "manhattan", "maximum", "minkowski",
+    "podani", "soergel", "wave", "whittaker",
+    "binary", "braun-blanquet", "dice", "fager", "faith",
+    "hamman", "kulczynski1", "kulczynski2", "michael", "mountford",
+    "mozley", "ochiai", "phi", "russel", "simple matching",
+    "simpson", "stiles", "tanimoto", "yule", "yule2", "cosine",
+    "hamming",
+    "custom"
+  ) # w/o "levenshtein"
   methodIdx <- pmatch(method, METHODS)
-  if (is.na(methodIdx))
+  if (is.na(methodIdx)) {
     stop("Invalid distance method")
+  }
   method <- METHODS[methodIdx]
 
   arguments <- list(...)
@@ -45,7 +48,7 @@ parDist <- parallelDist <- function (x, method = "euclidean", diag = FALSE, uppe
 
   # check funct argument for custom distance measure
   if (method == "custom") {
-    funcPtr = arguments[["func"]]
+    funcPtr <- arguments[["func"]]
     if (is.null(funcPtr)) {
       stop("Parameter 'func' is missing.")
     }
@@ -58,8 +61,10 @@ parDist <- parallelDist <- function (x, method = "euclidean", diag = FALSE, uppe
   }
 
   N <- ifelse(is.list(x), length(x), nrow(x))
-  attrs <- list(Size = N, Labels = dimnames(x)[[1L]], Diag = diag, Upper = upper,
-                method = METHODS[methodIdx], call = match.call(), class = "dist")
+  attrs <- list(
+    Size = N, Labels = dimnames(x)[[1L]], Diag = diag, Upper = upper,
+    method = METHODS[methodIdx], call = match.call(), class = "dist"
+  )
 
   # check data type
   if (is.list(x) && inherits(x, "list")) {
@@ -67,17 +72,17 @@ parDist <- parallelDist <- function (x, method = "euclidean", diag = FALSE, uppe
     if (method %in% methods.first.row.only) {
       warning("Only first row of each matrix is used for distance calculation.")
     }
-    return(.Call('_parallelDist_cpp_parallelDistVec', PACKAGE = 'parallelDist', x, attrs, arguments = arguments))
+    return(.Call("_parallelDist_cpp_parallelDistVec", PACKAGE = "parallelDist", x, attrs, arguments = arguments))
   } else {
     if (is.matrix(x)) {
-      return(.Call('_parallelDist_cpp_parallelDistMatrixVec', PACKAGE = 'parallelDist', x, attrs, arguments = arguments))
+      return(.Call("_parallelDist_cpp_parallelDistMatrixVec", PACKAGE = "parallelDist", x, attrs, arguments = arguments))
     } else {
       stop("x must be a matrix or a list of matrices.")
     }
   }
 }
 
-getType <- function (code) {
+getType <- function(code) {
   tokenize <- strsplit(code, "[[:space:]]*(\\(|\\)){1}[[:space:]]*")[[1]]
   tokens <- strsplit(tokenize[[1]], "[[:space:]]+")[[1]]
   tokens <- tokens[seq_len(length(tokens) - 1)]
@@ -86,16 +91,20 @@ getType <- function (code) {
 
 getStepPatternName <- function(arguments) {
   step.pattern.name <- NA
-  supported.patterns.names <- c("asymmetric", "asymmetricP0", "asymmetricP05", "asymmetricP1", "asymmetricP2",
-                                "symmetric1", "symmetric2", "symmetricP0", "symmetricP05", "symmetricP1", "symmetricP2")
+  supported.patterns.names <- c(
+    "asymmetric", "asymmetricP0", "asymmetricP05", "asymmetricP1", "asymmetricP2",
+    "symmetric1", "symmetric2", "symmetricP0", "symmetricP05", "symmetricP1", "symmetricP2"
+  )
   sp.candidate <- arguments[["step.pattern"]]
 
   if (!is.null(sp.candidate)) {
-    if (class(sp.candidate) == "stepPattern" && requireNamespace("dtw", quietly = TRUE))  {
-      supported.patterns <- list(dtw::asymmetric, dtw::asymmetricP0, dtw::asymmetricP05, dtw::asymmetricP1, dtw::asymmetricP2,
-                                 dtw::symmetric1, dtw::symmetric2, dtw::symmetricP0, dtw::symmetricP05, dtw::symmetricP1, dtw::symmetricP2)
+    if (class(sp.candidate) == "stepPattern" && requireNamespace("dtw", quietly = TRUE)) {
+      supported.patterns <- list(
+        dtw::asymmetric, dtw::asymmetricP0, dtw::asymmetricP05, dtw::asymmetricP1, dtw::asymmetricP2,
+        dtw::symmetric1, dtw::symmetric2, dtw::symmetricP0, dtw::symmetricP05, dtw::symmetricP1, dtw::symmetricP2
+      )
       # check if step pattern is supported (using object)
-      sp.found <- sapply(supported.patterns, FUN = function(x){
+      sp.found <- sapply(supported.patterns, FUN = function(x) {
         if (identical(dim(x), dim(sp.candidate))) {
           all(x == sp.candidate)
         } else {
@@ -129,11 +138,11 @@ checkPtr <- function(ptr) {
   msg <- character()
   # check return type
   if (actualReturnType != expectedReturnType) {
-    msg <- paste(c(msg, paste0("  Wrong return type '", actualReturnType,  "', should be '", expectedReturnType, "'.")), collapse = "\n")
+    msg <- paste(c(msg, paste0("  Wrong return type '", actualReturnType, "', should be '", expectedReturnType, "'.")), collapse = "\n")
   }
   # check number of arguments
   if (length(actualArgTypes) != 2) {
-    msg <- paste(c(msg, paste0("  Wrong number of arguments ('", length(actualArgTypes) ,"'), should be 2.")), collapse = "\n")
+    msg <- paste(c(msg, paste0("  Wrong number of arguments ('", length(actualArgTypes), "'), should be 2.")), collapse = "\n")
   } else {
     # check argument types
     for (i in which(!(expectedArgTypes == actualArgTypes))) {
@@ -141,6 +150,7 @@ checkPtr <- function(ptr) {
     }
   }
 
-  if (length(msg))
+  if (length(msg)) {
     stop("Bad XPtr signature:\n", msg)
+  }
 }

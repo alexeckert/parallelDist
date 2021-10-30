@@ -1,6 +1,6 @@
 // IDistance.h
 //
-// Copyright (C)  2017, 2018  Alexander Eckert
+// Copyright (C)  2017, 2021  Alexander Eckert
 //
 // This file is part of parallelDist.
 //
@@ -28,8 +28,8 @@ using arma::uword;
 
 typedef double (*funcPtr)(const mat &A, const mat &B);
 
-template<typename T>
-Mat<T> colwise_max_idx(const Mat<T>& A) {
+template <typename T>
+Mat<T> colwise_max_idx(const Mat<T> &A) {
     Mat<T> res = mat(1, A.n_cols);
     for (uword i = 0; i != A.n_cols; ++i) {
         res.at(0, i) = A.col(i).max();
@@ -37,8 +37,8 @@ Mat<T> colwise_max_idx(const Mat<T>& A) {
     return res;
 }
 
-template<typename T>
-Mat<T> colwise_min_idx(const Mat<T>& A) {
+template <typename T>
+Mat<T> colwise_min_idx(const Mat<T> &A) {
     Mat<T> res = mat(1, A.n_cols);
     for (uword i = 0; i != A.n_cols; ++i) {
         res.at(0, i) = A.col(i).min();
@@ -47,9 +47,9 @@ Mat<T> colwise_min_idx(const Mat<T>& A) {
 }
 
 class IDistance {
-public:
+  public:
     virtual ~IDistance() {}
     virtual double calcDistance(const mat &A, const mat &B) = 0;
 };
 
-#endif  // IDISTANCE_H_
+#endif // IDISTANCE_H_
