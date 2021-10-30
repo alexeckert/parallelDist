@@ -22,15 +22,15 @@ jobs:
       fail-fast: false
       matrix:
         config:
-          - { os: windows-latest, r: "4.0" }
-          - { os: macOS-latest, r: "4.0" }
-          - { os: ubuntu-16.04, r: "devel", vdiffr: false, xref: true }
+          - { os: windows-latest, r: "4.0", xref: false }
+          - { os: macOS-latest, r: "4.0", xref: false }
+          - { os: ubuntu-20.04, r: "devel", vdiffr: false, xref: true }
           - {
-              os: ubuntu-16.04,
+              os: ubuntu-20.04,
               r: "4.0",
               vdiffr: true,
               xref: true,
-              rspm: "https://packagemanager.rstudio.com/cran/__linux__/xenial/latest",
+              rspm: "https://packagemanager.rstudio.com/cran/__linux__/focal/latest",
             }
 
     env:
@@ -78,7 +78,7 @@ jobs:
           while read -r cmd
           do
             eval sudo $cmd
-          done < <(Rscript -e 'writeLines(remotes::system_requirements("ubuntu", "16.04"))')
+          done < <(Rscript -e 'writeLines(remotes::system_requirements("ubuntu", "20.04"))')
 
       - name: Install system dependencies on macOS
         if: runner.os == 'macOS'
@@ -106,7 +106,7 @@ jobs:
           path: check
 
       - name: Install dependencies
-        if: matrix.config.os == 'ubuntu-16.04' && matrix.config.r == '4.0'
+        if: matrix.config.os == 'ubuntu-20.04' && matrix.config.r == '4.0'
         run: |
           install.packages(c("remotes"))
           remotes::install_deps(dependencies = TRUE)
@@ -114,7 +114,7 @@ jobs:
         shell: Rscript {0}
 
       - name: Test coverage
-        if: matrix.config.os == 'ubuntu-16.04' && matrix.config.r == '4.0'
+        if: matrix.config.os == 'ubuntu-20.04' && matrix.config.r == '4.0'
         run: |
           R CMD INSTALL .
           Rscript -e 'covr::codecov()'

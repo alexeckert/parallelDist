@@ -9,3 +9,6 @@ src-*/
 -.Rproj.user
 *.Rproj
 misc/*
+.vscode/settings.json
+src/symbols.rds
+..Rcheck/
