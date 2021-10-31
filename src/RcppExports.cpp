@@ -6,6 +6,11 @@
 
 using namespace Rcpp;
 
+#ifdef RCPP_USE_GLOBAL_ROSTREAM
+Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
+Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
+#endif
+
 // cpp_parallelDistVec
 Rcpp::NumericVector cpp_parallelDistVec(Rcpp::List dataList, Rcpp::List attrs, Rcpp::List arguments);
 RcppExport SEXP _parallelDist_cpp_parallelDistVec(SEXP dataListSEXP, SEXP attrsSEXP, SEXP argumentsSEXP) {

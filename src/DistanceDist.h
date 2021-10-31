@@ -307,7 +307,7 @@ class DistanceWhittaker : public IDistance {
 class DistanceCosine : public IDistance {
   public:
     double calcDistance(const arma::mat &A, const arma::mat &B) {
-        return util::similarityToDistance(
+        return 1.0 - (
             arma::as_scalar(arma::dot(A, B)) /
             (arma::as_scalar(arma::norm(A)) * arma::as_scalar(arma::norm(B))));
     }
