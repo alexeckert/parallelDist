@@ -12,35 +12,16 @@ name: R-CMD-check
 # Increment this version when we want to clear cache
 env:
   cache-version: v4
+  R_RELEASE_VERSION: "release"
+  R_TEST_OS: "ubuntu-20.04"
 
 jobs:
   R-CMD-check:
     runs-on: ${{ matrix.config.os }}
 
     name: ${{ matrix.config.os }} (${{ matrix.config.r }})
-
-    strategy:
-      fail-fast: false
-      matrix:
-        config:
-          - { os: windows-latest, r: "4.0", xref: false }
-          - { os: macOS-latest, r: "4.0", xref: false }
-          - { 
-              os: ubuntu-20.04, 
-              r: "devel", 
-              vdiffr: false, 
-              xref: true,
-              rspm: "https://packagemanager.rstudio.com/cran/__linux__/focal/latest",
-            }
-          - {
-              os: ubuntu-20.04,
-              r: "4.0",
-              vdiffr: true,
-              xref: true,
-              rspm: "https://packagemanager.rstudio.com/cran/__linux__/focal/latest",
-            }
-
     env:
+      R_KEEP_PKG_SOURCE: yes
       R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
       RSPM: ${{ matrix.config.rspm }}
       # don't treat missing suggested packages as error
@@ -50,18 +31,39 @@ jobs:
       # Runs vdiffr test only on the latest version of R
       VDIFFR_RUN_TESTS: ${{ matrix.config.vdiffr }}
       VDIFFR_LOG_PATH: "../vdiffr.Rout.fail"
-
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+          - { os: windows-latest, r: "release", xref: true }
+          - { os: macOS-latest, r: "release", xref: true }
+          - { 
+              os: "ubuntu-20.04",
+              r: "devel",
+              vdiffr: false,
+              xref: true,
+              http-user-agent: 'release',
+              rspm: "https://packagemanager.rstudio.com/cran/__linux__/focal/latest",
+            }
+          - {
+              os: "ubuntu-20.04",
+              r: "release",
+              vdiffr: true,
+              xref: true,
+              rspm: "https://packagemanager.rstudio.com/cran/__linux__/focal/latest",
+            }
     steps:
       - uses: actions/checkout@v2
 
-      - uses: r-lib/actions/setup-r@master
+      - uses: r-lib/actions/setup-pandoc@v2
+
+      - uses: r-lib/actions/setup-r@v2
         with:
           r-version: ${{ matrix.config.r }}
           http-user-agent: ${{ matrix.config.http-user-agent }}
+          use-public-rspm: true
 
-      - uses: r-lib/actions/setup-pandoc@master
-
-      - uses: r-lib/actions/setup-tinytex@v1
+      - uses: r-lib/actions/setup-tinytex@v2
       - name: Install tlmgr
         run: tlmgr install ly1 mathdesign charter microtype ae grfext
 
@@ -96,7 +98,7 @@ jobs:
           # Use only binary packages
           echo 'options(pkgType = "binary")' >> ~/.Rprofile
 
-      - name: Install dependencies
+      - name: Install package dependencies
         run: |
           remotes::install_deps(dependencies = TRUE)
           remotes::install_cran("rcmdcheck")
@@ -113,16 +115,14 @@ jobs:
           name: ${{ runner.os }}-r${{ matrix.config.r }}-results
           path: check
 
-      - name: Install dependencies
-        if: matrix.config.os == 'ubuntu-20.04' && matrix.config.r == '4.0'
+      - name: Install test dependencies
+        if: matrix.config.os == env.R_TEST_OS && matrix.config.r == env.R_RELEASE_VERSION
         run: |
-          install.packages(c("remotes"))
-          remotes::install_deps(dependencies = TRUE)
           remotes::install_cran("covr")
         shell: Rscript {0}
 
       - name: Test coverage
-        if: matrix.config.os == 'ubuntu-20.04' && matrix.config.r == '4.0'
+        if: matrix.config.os == env.R_TEST_OS && matrix.config.r == env.R_RELEASE_VERSION
         run: |
           R CMD INSTALL .
           Rscript -e 'covr::codecov()'
