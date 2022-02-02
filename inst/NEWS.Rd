@@ -1,5 +1,11 @@
 \name{NEWS}
 \title{NEWS for Package \pkg{parallelDist}}
+\section{Changes in parallelDist version 0.2.6}{
+  \itemize{
+    \item Remove LazyData from DESCRIPTION
+    \item Switch vignette font
+  }
+}
 \section{Changes in parallelDist version 0.2.5}{
   \itemize{
     \item Reflect changes in proxy 0.4-26: Change coercion function for cosine similarity to distance to 1-x instead of 1-abs(x)
