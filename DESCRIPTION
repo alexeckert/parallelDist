@@ -25,7 +25,7 @@ Description: A fast parallelized alternative to R's native 'dist' function to
     the implementation stays flexible enough to support different DTW step
     patterns and normalization methods.
 License: GPL (>= 2)
-URL: https://github.com/alexeckert/parallelDist, https://www.alexandereckert.com/R
+URL: https://github.com/alexeckert/parallelDist, https://www.alexandereckert.com/projects/#r-packages
 BugReports: https://github.com/alexeckert/parallelDist/issues
 NeedsCompilation: yes
 Depends:
