@@ -1,8 +1,9 @@
 ^.*\.Rproj$
-^.Rproj\.user$
 ^misc$
 LICENSE
 .github
 CPPLINT.cfg
 ^src\CPPLINT.cfg
 ^\.Rproj\.user$
+.vscode
+install.sh
