@@ -1,31 +1,16 @@
-## testMatrixDistances.R
-##
-## Copyright (C)  2017, 2021  Alexander Eckert
-##
-## This file is part of parallelDist.
-##
-## parallelDist is free software: you can redistribute it and/or modify it
-## under the terms of the GNU General Public License as published by
-## the Free Software Foundation, either version 2 of the License, or
-## (at your option) any later version.
-##
-## parallelDist is distributed in the hope that it will be useful, but
-## WITHOUT ANY WARRANTY; without even the implied warranty of
-## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-## GNU General Public License for more details.
-##
-## You should have received a copy of the GNU General Public License
-## along with parallelDist. If not, see <http://www.gnu.org/licenses/>.
-
 context("Distance methods using matrix as input")
 
-mat.sample1 <- matrix(c(0, 1, 0, 1, 0, 0, 1, 0), nrow = 2)
-mat.sample2 <- matrix(c(0, 1, 0, 1, 0, 0, 1, 0, 1, 1), nrow = 2)
+set.seed(1)
+mat.sample1 <- matrix(c(NA, 2, NA, 4, NA, 6, 7, 8 ,9, NA, 11, 12), nrow = 4)
+mat.sample2 <- matrix(c(0, 1, 0, 1, NA, 0, 1, 0, 1, 1), nrow = 2)
 mat.sample3 <- matrix(c(1:500), ncol = 5)
+p <- 0.3
+mat.sample3 <- apply(mat.sample3, 1:2, function(x) sample(c(x, NA), 1, prob=c((1 - p), p)))
 mat.sample4 <- matrix(rep(0, 100), ncol = 5)
 mat.sample5 <- matrix(c(-500:499), ncol = 5)
-mat.sample6 <- matrix(c(1:2), ncol = 1)
-mat.sample7 <- matrix(c(0.5, 1, 0, 1, 0, 0, 1, 0.3, 1, 1), nrow = 2)
+p <- 0.2
+mat.sample5 <- apply(mat.sample5, 1:2, function(x) sample(c(x, NA), 1, prob=c((1 - p), p)))
+mat.sample6 <- matrix(c(1:NA), ncol = 1)
 
 
 mat.list <- list(mat.sample1, mat.sample2, mat.sample3, mat.sample4, mat.sample5, mat.sample6, mat.sample7)
@@ -57,10 +42,10 @@ test_that("dist class label attribute keeps preserved", {
   namedMatrix <- matrix(1:12, 4)
   colnames(namedMatrix) <- c("A", "B", "C")
   rownames(namedMatrix) <- c("a", "b", "c", "d")
-
+  
   attributes1 <- attributes(parDist(namedMatrix))
   attributes2 <- attributes(dist(namedMatrix))
-
+  
   expect_equal(attributes1$Labels, attributes2$Labels)
 })
 
