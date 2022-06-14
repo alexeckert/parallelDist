@@ -53,24 +53,17 @@ class DistanceBray : public IDistance {
 class DistanceCanberra : public IDistance {
   public:
     double calcDistance(const arma::mat &A, const arma::mat &B) {
-        arma::mat denominator = arma::abs(A + B);
-        arma::mat ratio = arma::abs(A - B) / denominator;
+        arma::mat denominator = arma::abs(A) + arma::abs(B);
+        arma::mat ratio = arma::abs(A) - arma::abs(B) / denominator;
 
-        unsigned int notNanCount = 0;
-        for (arma::mat::iterator it = ratio.begin(); it != ratio.end(); ++it) {
-            if (std::isnan(*it)) {
-                (*it) = 0.0;
-            } else {
-                ++notNanCount;
-            }
-        }
-
-        if (ratio.size() - notNanCount > 0) {
-            return ((notNanCount + 1) / static_cast<double>(notNanCount)) *
-                   arma::accu(ratio);
+        if (ratio.has_nan()) {
+          remove_nan(ratio);
+          res = arma::accu(ratio) / proportion();
         } else {
-            return arma::accu(ratio);
+          res = arma::accu(ratio);
         }
+
+        return res;
     }
 };
 
@@ -108,7 +101,15 @@ class DistanceDivergence : public IDistance {
 class DistanceEuclidean : public IDistance {
   public:
     double calcDistance(const arma::mat &A, const arma::mat &B) {
-        return std::sqrt(arma::accu(arma::square(A - B)));
+        arma::mat tmp = A - B;
+        if (tmp.has_nan()) {
+          remove_nan(tmp);
+          res = std::sqrt(arma::accu(arma::square(tmp))) / proportion();
+        } else {
+          res = std::sqrt(arma::accu(arma::square(tmp)));
+        }
+
+        return res;
     }
 };
 
@@ -189,7 +190,16 @@ class DistanceMahalanobis : public IDistance {
 class DistanceManhattan : public IDistance {
   public:
     double calcDistance(const arma::mat &A, const arma::mat &B) {
-        return arma::accu(arma::abs(A - B));
+
+        arma::mat tmp = A - B;
+        if (tmp.has_nan()) {
+          remove_nan(tmp);
+          res = arma::accu(arma::abs(tmp)) / proportion();
+        } else {
+          res = arma::accu(arma::abs(tmp));
+        }
+
+        return res;
     }
 };
 
@@ -214,8 +224,17 @@ class DistanceMinkowski : public IDistance {
     explicit DistanceMinkowski(double p) { this->p = p; }
     ~DistanceMinkowski() {}
     double calcDistance(const arma::mat &A, const arma::mat &B) {
-        return std::pow(arma::accu(arma::pow(arma::abs(A - B), this->p)),
+        arma::mat tmp = A - B;
+        if (tmp.has_nan()) {
+          remove_nan(tmp);
+          res = std::pow(arma::accu(arma::pow(arma::abs(tmp), this->p)) / proportion(),
                         1.0 / this->p);
+        } else {
+          res = std::pow(arma::accu(arma::pow(arma::abs(A - B), this->p)),
+                        1.0 / this->p);
+        }
+
+        return res;
     }
 };
 

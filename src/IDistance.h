@@ -50,6 +50,20 @@ class IDistance {
   public:
     virtual ~IDistance() {}
     virtual double calcDistance(const mat &A, const mat &B) = 0;
+
+  protected:
+    double res;
+    int countFinite;
+    int countCol;
+
+    double proportion() { return (double)countFinite/countCol; }
+    
+    void remove_nan(mat &res) {        
+        countFinite = arma::uvec(arma::find_finite( res )).n_elem;
+        countCol = res.n_cols;
+        res.elem( find_nonfinite(res) ).zeros();
+    }
+
 };
 
 #endif // IDISTANCE_H_
