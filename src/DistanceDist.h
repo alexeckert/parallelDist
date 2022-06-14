@@ -21,7 +21,6 @@
 #define DISTANCEDIST_H_
 
 #include <limits>
-#include <iostream>
 
 #include "IDistance.h"
 #include "Util.h"
@@ -52,14 +51,6 @@ class DistanceBray : public IDistance {
 // Canberra distance
 //=======================
 class DistanceCanberra : public IDistance {
-  private:
-    double proportion(const int countFinite, const int countCol) { return (double)countFinite/countCol; }
-    
-    void remove_nan(mat &res, int &countFinite, int &countCol) {        
-        countFinite = arma::uvec(arma::find_finite( res )).n_elem;
-        countCol = res.n_cols;
-        res.elem( find_nonfinite(res) ).zeros();
-    }
 
   public:
     double calcDistance(const arma::mat &A, const arma::mat &B) {
@@ -67,13 +58,17 @@ class DistanceCanberra : public IDistance {
         int countCol;
         arma::mat denominator = arma::abs(A + B);
         arma::mat ratio = (arma::abs(A - B)) / denominator;
-        
+
+        if (ratio.has_inf()) {
+          return std::numeric_limits<double>::infinity();;
+        }
+
         if (ratio.has_nan()) {
-          remove_nan(ratio, countFinite, countCol);
+          util::remove_nan(ratio, countFinite, countCol);
           if (countFinite == 0) {
             return NA_REAL;
           }
-          return arma::accu(ratio) / proportion(countFinite, countCol);
+          return arma::accu(ratio) / util::proportion(countFinite, countCol);
         } else {
           return arma::accu(ratio);
         }
@@ -113,14 +108,6 @@ class DistanceDivergence : public IDistance {
 // Euclidean distance
 //=======================
 class DistanceEuclidean : public IDistance {
-  private:
-    double proportion(const int countFinite, const int countCol) { return (double)countFinite/countCol; }
-    
-    void remove_nan(mat &res, int &countFinite, int &countCol) {        
-        countFinite = arma::uvec(arma::find_finite( res )).n_elem;
-        countCol = res.n_cols;
-        res.elem( find_nonfinite(res) ).zeros();
-    }
 
   public:
     double calcDistance(const arma::mat &A, const arma::mat &B) {
@@ -129,8 +116,8 @@ class DistanceEuclidean : public IDistance {
         
         arma::mat tmp = A - B;
         if (tmp.has_nan()) {
-          remove_nan(tmp, countFinite, countCol);
-          return std::sqrt(arma::accu(arma::square(tmp)) / proportion(countFinite, countCol));
+          util::remove_nan(tmp, countFinite, countCol);
+          return std::sqrt(arma::accu(arma::square(tmp)) / util::proportion(countFinite, countCol));
         } else {
           return std::sqrt(arma::accu(arma::square(tmp)));
         }
@@ -212,25 +199,17 @@ class DistanceMahalanobis : public IDistance {
 // Manhattan distance
 //=======================
 class DistanceManhattan : public IDistance {
-  private:
-    double proportion(const int countFinite, const int countCol) { return (double)countFinite/countCol; }
-    
-    void remove_nan(mat &res, int &countFinite, int &countCol) {        
-        countFinite = arma::uvec(arma::find_finite( res )).n_elem;
-        countCol = res.n_cols;
-        res.elem( find_nonfinite(res) ).zeros();
-    }
 
   public:
 
     double calcDistance(const arma::mat &A, const arma::mat &B) {
         int countFinite;
         int countCol;
-        
+
         arma::mat tmp = A - B;
         if (tmp.has_nan()) {
-          remove_nan(tmp, countFinite, countCol);
-          return arma::accu(arma::abs(tmp)) / proportion(countFinite, countCol);
+          util::remove_nan(tmp, countFinite, countCol);
+          return arma::accu(arma::abs(tmp)) / util::proportion(countFinite, countCol);
         } else {
           return arma::accu(arma::abs(tmp));
         }
@@ -271,14 +250,6 @@ class DistanceMinkowski : public IDistance {
   private:
     double p;
 
-    double proportion(const int countFinite, const int countCol) { return (double)countFinite/countCol; }
-    
-    void remove_nan(mat &res, int &countFinite, int &countCol) {        
-        countFinite = arma::uvec(arma::find_finite( res )).n_elem;
-        countCol = res.n_cols;
-        res.elem( find_nonfinite(res) ).zeros();
-    }
-
   public:
     explicit DistanceMinkowski(double p) { this->p = p; }
     ~DistanceMinkowski() {}
@@ -288,8 +259,8 @@ class DistanceMinkowski : public IDistance {
         arma::mat tmp = A - B;
 
         if (tmp.has_nan()) {
-          remove_nan(tmp, countFinite, countCol);
-          return std::pow(arma::accu(arma::pow(arma::abs(tmp), this->p)) / proportion(countFinite, countCol),
+          util::remove_nan(tmp, countFinite, countCol);
+          return std::pow(arma::accu(arma::pow(arma::abs(tmp), this->p)) / util::proportion(countFinite, countCol),
                         1.0 / this->p);
         } else {
           return std::pow(arma::accu(arma::pow(arma::abs(A - B), this->p)),
