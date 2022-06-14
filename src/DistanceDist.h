@@ -21,6 +21,7 @@
 #define DISTANCEDIST_H_
 
 #include <limits>
+#include <iostream>
 
 #include "IDistance.h"
 #include "Util.h"
@@ -53,8 +54,8 @@ class DistanceBray : public IDistance {
 class DistanceCanberra : public IDistance {
   public:
     double calcDistance(const arma::mat &A, const arma::mat &B) {
-        arma::mat denominator = arma::abs(A) + arma::abs(B);
-        arma::mat ratio = arma::abs(A) - arma::abs(B) / denominator;
+        arma::mat denominator = arma::abs(A + B);
+        arma::mat ratio = (arma::abs(A - B)) / denominator;
 
         if (ratio.has_nan()) {
           remove_nan(ratio);
@@ -101,10 +102,13 @@ class DistanceDivergence : public IDistance {
 class DistanceEuclidean : public IDistance {
   public:
     double calcDistance(const arma::mat &A, const arma::mat &B) {
+        checkNanPairs(A, B);
+
         arma::mat tmp = A - B;
         if (tmp.has_nan()) {
           remove_nan(tmp);
-          res = std::sqrt(arma::accu(arma::square(tmp))) / proportion();
+          res = std::sqrt(arma::accu(arma::square(tmp)) / proportion());
+          std::cout << "res = " << res << "; countFinite = " << countFinite << "; countCol = " << countCol << "; nanPairs = " << nanPairs << "; proportion = " << proportion() << std::endl;
         } else {
           res = std::sqrt(arma::accu(arma::square(tmp)));
         }
