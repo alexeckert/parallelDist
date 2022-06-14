@@ -55,20 +55,12 @@ class IDistance {
     double res;
     int countFinite;
     int countCol;
-    int nanPairs = 0;
-
-    void checkNanPairs(const mat &A, const mat &B) {
-        arma::uvec A_na = find_nonfinite(A);
-        arma::uvec B_na = find_nonfinite(B);
-        arma::uvec commonIdx = intersect(A_na, B_na);
-        nanPairs = commonIdx.n_rows;
-    }
 
     double proportion() { return (double)countFinite/countCol; }
     
     void remove_nan(mat &res) {        
         countFinite = arma::uvec(arma::find_finite( res )).n_elem;
-        countCol = res.n_cols - nanPairs;
+        countCol = res.n_cols;
         res.elem( find_nonfinite(res) ).zeros();
     }
 

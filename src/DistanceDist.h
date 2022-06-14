@@ -102,13 +102,10 @@ class DistanceDivergence : public IDistance {
 class DistanceEuclidean : public IDistance {
   public:
     double calcDistance(const arma::mat &A, const arma::mat &B) {
-        checkNanPairs(A, B);
-
         arma::mat tmp = A - B;
         if (tmp.has_nan()) {
           remove_nan(tmp);
           res = std::sqrt(arma::accu(arma::square(tmp)) / proportion());
-          std::cout << "res = " << res << "; countFinite = " << countFinite << "; countCol = " << countCol << "; nanPairs = " << nanPairs << "; proportion = " << proportion() << std::endl;
         } else {
           res = std::sqrt(arma::accu(arma::square(tmp)));
         }
