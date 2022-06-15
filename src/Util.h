@@ -23,12 +23,17 @@
 #include <cmath>
 #include <memory>
 #include <string>
+#include <RcppArmadillo.h>
 
 namespace util {
 
 bool isEqualStr(const std::string &str1, std::string str2);
 
 double similarityToDistance(const double distance);
+
+inline double proportion(const int countFinite, const int countCol) { return (double)countFinite/countCol; }
+
+void remove_nan(arma::mat &res, int &countFinite, int &countCol);
 
 } // namespace util
 

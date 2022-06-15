@@ -51,26 +51,28 @@ class DistanceBray : public IDistance {
 // Canberra distance
 //=======================
 class DistanceCanberra : public IDistance {
+
   public:
     double calcDistance(const arma::mat &A, const arma::mat &B) {
+        int countFinite;
+        int countCol;
         arma::mat denominator = arma::abs(A + B);
-        arma::mat ratio = arma::abs(A - B) / denominator;
+        arma::mat ratio = (arma::abs(A - B)) / denominator;
 
-        unsigned int notNanCount = 0;
-        for (arma::mat::iterator it = ratio.begin(); it != ratio.end(); ++it) {
-            if (std::isnan(*it)) {
-                (*it) = 0.0;
-            } else {
-                ++notNanCount;
-            }
+        if (ratio.has_inf()) {
+          return std::numeric_limits<double>::infinity();;
         }
 
-        if (ratio.size() - notNanCount > 0) {
-            return ((notNanCount + 1) / static_cast<double>(notNanCount)) *
-                   arma::accu(ratio);
+        if (ratio.has_nan()) {
+          util::remove_nan(ratio, countFinite, countCol);
+          if (countFinite == 0) {
+            return NA_REAL;
+          }
+          return arma::accu(ratio) / util::proportion(countFinite, countCol);
         } else {
-            return arma::accu(ratio);
+          return arma::accu(ratio);
         }
+
     }
 };
 
@@ -106,9 +108,19 @@ class DistanceDivergence : public IDistance {
 // Euclidean distance
 //=======================
 class DistanceEuclidean : public IDistance {
+
   public:
     double calcDistance(const arma::mat &A, const arma::mat &B) {
-        return std::sqrt(arma::accu(arma::square(A - B)));
+        int countFinite;
+        int countCol;
+        
+        arma::mat tmp = A - B;
+        if (tmp.has_nan()) {
+          util::remove_nan(tmp, countFinite, countCol);
+          return std::sqrt(arma::accu(arma::square(tmp)) / util::proportion(countFinite, countCol));
+        } else {
+          return std::sqrt(arma::accu(arma::square(tmp)));
+        }
     }
 };
 
@@ -187,9 +199,21 @@ class DistanceMahalanobis : public IDistance {
 // Manhattan distance
 //=======================
 class DistanceManhattan : public IDistance {
+
   public:
+
     double calcDistance(const arma::mat &A, const arma::mat &B) {
-        return arma::accu(arma::abs(A - B));
+        int countFinite;
+        int countCol;
+
+        arma::mat tmp = A - B;
+        if (tmp.has_nan()) {
+          util::remove_nan(tmp, countFinite, countCol);
+          return arma::accu(arma::abs(tmp)) / util::proportion(countFinite, countCol);
+        } else {
+          return arma::accu(arma::abs(tmp));
+        }
+
     }
 };
 
@@ -197,9 +221,25 @@ class DistanceManhattan : public IDistance {
 // Maximum distance
 //=======================
 class DistanceMaximum : public IDistance {
+  private:
+    
+    void remove_nan(mat &res, int &countFinite) {        
+        countFinite = arma::uvec(arma::find_finite( res )).n_elem;
+        res.elem( find_nonfinite(res) ).zeros();
+    }
+
   public:
     double calcDistance(const arma::mat &A, const arma::mat &B) {
-        return arma::abs(A - B).max();
+        int countFinite;
+        arma::mat tmp = A - B;
+        if (tmp.has_nan()) {
+          remove_nan(tmp, countFinite);
+          if (countFinite == 0) {
+            return NA_REAL;
+          }
+        }
+
+        return arma::abs(tmp).max();
     }
 };
 
@@ -214,8 +254,18 @@ class DistanceMinkowski : public IDistance {
     explicit DistanceMinkowski(double p) { this->p = p; }
     ~DistanceMinkowski() {}
     double calcDistance(const arma::mat &A, const arma::mat &B) {
-        return std::pow(arma::accu(arma::pow(arma::abs(A - B), this->p)),
+        int countFinite;
+        int countCol;
+        arma::mat tmp = A - B;
+
+        if (tmp.has_nan()) {
+          util::remove_nan(tmp, countFinite, countCol);
+          return std::pow(arma::accu(arma::pow(arma::abs(tmp), this->p)) / util::proportion(countFinite, countCol),
                         1.0 / this->p);
+        } else {
+          return std::pow(arma::accu(arma::pow(arma::abs(A - B), this->p)),
+                        1.0 / this->p);
+        }
     }
 };
 
