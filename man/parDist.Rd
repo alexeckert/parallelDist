@@ -135,7 +135,7 @@ An exemplary definition and usage of an user-defined euclidean distance function
       The fuzzy Jaccard distance.\cr Type: binary\cr Formula: \eqn{sum_i (min{x_i, y_i}) / sum_i(max{x_i, y_i})}.\cr Details: See \command{pr_DB$get_entry("fJaccard")} in \pkg{proxy}.
     }
     \item{\code{geodesic}}{
-      The geoedesic distance, i.e. the angle between x and y.\cr Type: continuous\cr Formula: \eqn{arccos(xy / sqrt(xx * yy))}.\cr Details: See \command{pr_DB$get_entry("geodesic")} in \pkg{proxy}.
+      The geodesic distance, i.e. the angle between x and y.\cr Type: continuous\cr Formula: \eqn{arccos(xy / sqrt(xx * yy))}.\cr Details: See \command{pr_DB$get_entry("geodesic")} in \pkg{proxy}.
     }
     \item{\code{hellinger}}{
       The Hellinger distance.\cr Type: continuous\cr Formula: \eqn{sqrt(sum_i (sqrt(x_i / sum_i x) - sqrt(y_i / sum_i y)) ^ 2)}.\cr Details: See \command{pr_DB$get_entry("hellinger")} in \pkg{proxy}.
