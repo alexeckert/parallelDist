@@ -55,7 +55,7 @@ class DistanceDTWGeneric : public IDistance {
 
     /**
      Calculate costs for two entries of input matrices A and B
-     @param pen penality matrix
+     @param pen penalty matrix
      @param bSizeOffset B.ncol + patternOffset
      @param A matrix A
      @param B matrix B
@@ -113,7 +113,7 @@ class DistanceDTWGeneric : public IDistance {
         const unsigned int aSizeOffset = Asize + patternOffset;
         const unsigned int bSizeOffset = Bsize + patternOffset;
 
-        // size penality matrix according to the possible offset of the steppattern
+        // size penalty matrix according to the possible offset of the steppattern
         double *pen = new double[aSizeOffset * bSizeOffset];
 
         char *pre = 0;
