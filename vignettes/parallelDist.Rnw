@@ -54,7 +54,7 @@ The package is mainly implemented in \proglang{C++} and leverages the \pkg{Rcpp}
 
 \section{Performance}
 
-The inital motivation for building this package was the need for a fast Dynamic Time Warping implementation which uses multiple cores and supports multi-dimensional (time) series. DTW is an expensive distance measure, where the computation of the DTW distance between two series of length $N$ has a complexity of $\mathcal{O}(N^2)$. This motivates an efficient and parallelized implementation in \proglang{C++}.
+The initial motivation for building this package was the need for a fast Dynamic Time Warping implementation which uses multiple cores and supports multi-dimensional (time) series. DTW is an expensive distance measure, where the computation of the DTW distance between two series of length $N$ has a complexity of $\mathcal{O}(N^2)$. This motivates an efficient and parallelized implementation in \proglang{C++}.
 
 Figure \ref{fig:performanceDtw} shows a performance comparison between the \rdoc{parallelDist}{parDist} function of \pkg{parallelDist} and the \rdoc{stats}{dist} function in conjunction with the \pkg{dtw} package.
 
