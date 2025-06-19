@@ -131,10 +131,12 @@ class DistanceFJaccard : public IDistance {
 class DistanceGeodesic : public IDistance {
   public:
     double calcDistance(const arma::mat &A, const arma::mat &B) {
-        // arccos(xy / sqrt(xx * yy))
-        return acos(arma::dot(A.row(0), B.row(0)) /
-                    std::sqrt(arma::dot(A.row(0), A.row(0)) *
-                              arma::dot(B.row(0), B.row(0))));
+        // arccos(xy / sqrt(xx * yy)) with clamped cosine
+        double cosTheta = arma::dot(A.row(0), B.row(0)) /
+                          std::sqrt(arma::dot(A.row(0), A.row(0)) *
+                                    arma::dot(B.row(0), B.row(0)));
+        cosTheta = std::max(-1.0, std::min(1.0, cosTheta));
+        return std::acos(cosTheta);
     }
 };
 
