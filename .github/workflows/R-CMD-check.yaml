@@ -123,6 +123,8 @@ jobs:
 
       - name: Test coverage
         if: matrix.config.os == env.R_TEST_OS && matrix.config.r == env.R_RELEASE_VERSION
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         run: |
           R CMD INSTALL .
-          Rscript -e "covr::codecov(token = '${{secrets.CODECOV_TOKEN}}')"
+          Rscript tools/run-codecov.R
