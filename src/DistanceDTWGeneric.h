@@ -55,7 +55,7 @@ class DistanceDTWGeneric : public IDistance {
 
     /**
      Calculate costs for two entries of input matrices A and B
-     @param pen penality matrix
+     @param pen penalty matrix
      @param bSizeOffset B.ncol + patternOffset
      @param A matrix A
      @param B matrix B
