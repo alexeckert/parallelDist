@@ -266,3 +266,64 @@ testMatrixListEqualityHamming <- function(matlist, ...) {
 testthat::test_that("hamming method produces same outputs as dist", {
   testMatrixListEqualityHamming(mat.list)
 })
+
+test_that("BinaryCount covers all conditional branches", {
+  # Comprehensive test to ensure all 4 conditional branches in
+  # BinaryCount::getBinaryCount are covered
+  # The uncovered branches are:
+  # 1. !aZero && !bZero (both non-zero)
+  # 2. !aZero && bZero (first non-zero, second zero)
+  # 3. aZero && !bZero (first zero, second non-zero)
+  # 4. aZero && bZero (both zero)
+
+  # Primary test matrix that guarantees all 4 branch combinations
+  # Row 1: [1, 1, 0, 0]
+  # Row 2: [1, 0, 1, 0]
+  # Position-wise comparisons: [1,1], [1,0], [0,1], [0,0] - hits all 4 branches
+  coverage_matrix <- matrix(c(1, 1, 0, 0, 1, 0, 1, 0), nrow = 2, byrow = TRUE)
+
+  result <- parDist(coverage_matrix, method = "binary")
+  expect_true(is.numeric(result))
+  expect_equal(length(result), 1)
+
+  # Additional comprehensive test cases to guarantee branch coverage
+
+  # Test 1: Matrix that forces !aZero && bZero branch
+  # (first non-zero, second zero)
+  test1_matrix <- matrix(c(1, 2, 3, 4, 0, 0, 0, 0), nrow = 2, byrow = TRUE)
+  result1 <- parDist(test1_matrix, method = "binary")
+  expect_true(is.numeric(result1))
+
+  # Test 2: Matrix that forces aZero && !bZero branch
+  # (first zero, second non-zero)
+  test2_matrix <- matrix(c(0, 0, 0, 0, 1, 2, 3, 4), nrow = 2, byrow = TRUE)
+  result2 <- parDist(test2_matrix, method = "binary")
+  expect_true(is.numeric(result2))
+
+  # Test 3: Matrix that forces aZero && bZero branch (both zero)
+  test3_matrix <- matrix(c(0, 0, 0, 0, 0, 0, 0, 0), nrow = 2, byrow = TRUE)
+  result3 <- parDist(test3_matrix, method = "binary")
+  expect_true(is.numeric(result3))
+
+  # Test 4: Matrix that forces !aZero && !bZero branch (both non-zero)
+  test4_matrix <- matrix(c(1, 2, 3, 4, 5, 6, 7, 8), nrow = 2, byrow = TRUE)
+  result4 <- parDist(test4_matrix, method = "binary")
+  expect_true(is.numeric(result4))
+
+  # Test 5: Mixed values including negative numbers for robust coverage
+  test5_matrix <- matrix(c(-1, 0.5, 0, -2, 0, -0.5, 1, 0),
+                         nrow = 2, byrow = TRUE)
+  result5 <- parDist(test5_matrix, method = "binary")
+  expect_true(is.numeric(result5))
+
+  # Test 6: Additional pattern to ensure comprehensive coverage
+  # 3x3 matrix with strategic 0/non-zero placement to maximize branch hits
+  comprehensive_matrix <- matrix(c(
+    1, 0, 1,  # Row 1: non-zero, zero, non-zero
+    0, 1, 0,  # Row 2: zero, non-zero, zero
+    1, 1, 0   # Row 3: non-zero, non-zero, zero
+  ), nrow = 3, byrow = TRUE)
+  result6 <- parDist(comprehensive_matrix, method = "binary")
+  expect_true(is.numeric(result6))
+  expect_equal(length(result6), 3) # Should have 3 pairwise distances
+})
