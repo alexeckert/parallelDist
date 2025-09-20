@@ -36,7 +36,6 @@ Imports:
 LinkingTo: Rcpp,
     RcppParallel,
     RcppArmadillo
-SystemRequirements: C++11
 Suggests:
     dtw,
     ggplot2,

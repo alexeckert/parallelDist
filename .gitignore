@@ -11,4 +11,4 @@ src-*/
 misc/*
 .vscode/settings.json
 src/symbols.rds
-..Rcheck/
+*.Rcheck/

@@ -64,7 +64,7 @@ The benchmark has been performed on a system with the following specifications:
   \item 32 Gb RAM
 \end{itemize}
 
-As depicted in figure \ref{fig:performanceDtw}, \rdoc{parallelDist}{parDist} makes the calculation of large distance matrices with DTW up to 3 orders of magnitudes faster.
+As depicted in figure \ref{fig:performanceDtw}, \rdoc{parallelDist}{parDist} makes the calculation of large distance matrices with DTW up to 3 orders of magnitude faster.
 
 \begin{figure}
 \begin{center}
@@ -267,7 +267,7 @@ Here the \rdoc{parallelDist}{parDist} function calculates the distance matrix us
 dist.euclidean <- parDist(sample.matrix, method = "euclidean")
 @
 
-The dist object can easily converted into a matrix, or can be used as an input for R's clustering algorithms.
+The dist object can easily be converted into a matrix, or can be used as an input for R's clustering algorithms.
 
 <<eval=FALSE>>=
 # convert to matrix
@@ -304,11 +304,11 @@ dist.euclidean <- parDist(sample.matrix, method = "euclidean", threads = 2)
 
 \rdoc{parallelDist}{parDist} also supports the calculation of distances between multi-dimensional series. Instead of one single matrix a list of matrices is used as input parameter. One matrix with M rows and N columns corresponds to a series with M dimensions and length N.
 
-In the example below, a list with 2 matrices is defined where each matrix corresponds to a series with 2 dimensions of length 10.
+In the example below, a list with 2 matrices is defined where each matrix corresponds to a two-dimensional series of length 10.
 
 <<eval=FALSE>>=
 # defining a list of matrices, where each
-# list entry row corresponds to a two dimensional series
+# list entry corresponds to a two-dimensional series
 tmp.mat <- matrix(c(1:40), ncol = 10)
 sample.matrix.list <- list(tmp.mat[1:2,], tmp.mat[3:4,])
 @
@@ -322,7 +322,7 @@ parDist(x = sample.matrix.list, method = "dtw")
 
 \subsection{Using user-defined distance functions}
 
-Since version 0.2.0 of \pkg{parallelDist} custom user-defined distance measures can be defined to calculate distances matrices in parallel. To ensure a performant execution, the user-defined function needs to be defined and compiled in C++ and an external pointer to the compiled C++ function needs to be passed to \rdoc{parallelDist}{parDist} with the \code{func} argument.
+Since version 0.2.0 of \pkg{parallelDist} custom user-defined distance measures can be defined to calculate distance matrices in parallel. To ensure a performant execution, the user-defined function needs to be defined and compiled in C++ and an external pointer to the compiled C++ function needs to be passed to \rdoc{parallelDist}{parDist} with the \code{func} argument.
 \newline\newline
 The user-defined function needs to have the following signature:
 
