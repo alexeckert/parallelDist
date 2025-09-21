@@ -29,4 +29,11 @@ double similarityToDistance(const double distance) {
     return 1.0 - std::abs(distance);
 }
 
+void remove_nan(arma::mat &res, int &countFinite, int &countCol) {        
+    countFinite = arma::uvec(arma::find_finite( res )).n_elem;
+    countCol = res.n_cols;
+    res.elem( find_nonfinite(res) ).zeros();
+}
+
+
 } // namespace util

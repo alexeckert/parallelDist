@@ -27,6 +27,7 @@ mat.sample5 <- matrix(c(-500:499), ncol = 5)
 mat.sample6 <- matrix(c(1:2), ncol = 1)
 mat.sample7 <- matrix(c(0.5, 1, 0, 1, 0, 0, 1, 0.3, 1, 1), nrow = 2)
 
+
 mat.list <- list(mat.sample1, mat.sample2, mat.sample3, mat.sample4, mat.sample5, mat.sample6, mat.sample7)
 
 if (isCran()) {

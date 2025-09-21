@@ -50,6 +50,7 @@ class IDistance {
   public:
     virtual ~IDistance() {}
     virtual double calcDistance(const mat &A, const mat &B) = 0;
+
 };
 
 #endif // IDISTANCE_H_

@@ -1,12 +1,13 @@
 Package: parallelDist
 Type: Package
 Title: Parallel Distance Matrix Computation using Multiple Threads
-Version: 0.2.6
+Version: 0.2.6.1
 Author: Alexander Eckert [aut, cre], Lucas Godoy [ctb], Srikanth KS [ctb]
 Authors@R: c(
     person("Alexander", "Eckert", role = c("aut", "cre"), email = "info@alexandereckert.com"),
     person("Lucas", "Godoy", role = "ctb", email = "lucasdac.godoy@gmail.com"),
-    person("Srikanth", "KS", role = "ctb", email = "sri.teach@gmail.com")
+    person("Srikanth", "KS", role = "ctb", email = "sri.teach@gmail.com"),
+    person("Jiawei", "Lian", role="ctb", email = "1049861267@qq.com")
     )
 Maintainer: Alexander Eckert <info@alexandereckert.com>
 Description: A fast parallelized alternative to R's native 'dist' function to
