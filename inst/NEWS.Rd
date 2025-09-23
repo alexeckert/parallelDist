@@ -1,5 +1,10 @@
 \name{NEWS}
 \title{NEWS for Package \pkg{parallelDist}}
+\section{Changes in parallelDist version 0.2.7}{
+  \itemize{
+    \item Removed C++11 dependency to support newer Armadillo versions
+  }
+}
 \section{Changes in parallelDist version 0.2.6}{
   \itemize{
     \item Remove LazyData from DESCRIPTION
