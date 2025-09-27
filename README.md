@@ -20,13 +20,13 @@ Details about the 41 supported distance methods and their parameters are describ
 
 Since version 0.2.0, parallelDist supports fast parallel distance matrix computations for user-defined distance functions written in C++.
 
-A user-defined function needs to have the following signature (also see the [Armadillo documentation](http://arma.sourceforge.net/docs.html)):
+A user-defined function needs to have the following signature (also see the [Armadillo documentation](https://arma.sourceforge.net/docs.html)):
 
 ```Cpp
 double customDist(const arma::mat &A, const arma::mat &B)
 ```
 
-Defining and compiling the function, as well as creating an external pointer to the user-defined function can easily be achieved with the *cppXPtr* function of the '[RcppXPtrUtils](https://CRAN.R-project.org/package=RcppXPtrUtils)' package. The following code shows a full example of defining and using a user-defined euclidean distance function:
+Defining and compiling the function, as well as creating an external pointer to the user-defined function can easily be achieved with the _cppXPtr_ function of the '[RcppXPtrUtils](https://CRAN.R-project.org/package=RcppXPtrUtils)' package. The following code shows a full example of defining and using a user-defined euclidean distance function:
 
 ```R
 # RcppArmadillo is used as dependency
@@ -47,7 +47,7 @@ More information can be found in the vignette and the help pages.
 
 ### Installation
 
-`parallelDist` is available on [CRAN](https://CRAN.R-project.org/package=parallelDist) and can be installed with the following command: 
+`parallelDist` is available on [CRAN](https://CRAN.R-project.org/package=parallelDist) and can be installed with the following command:
 
 ```R
 install.packages("parallelDist")
@@ -58,6 +58,34 @@ The current version from github can be installed using the 'devtools' package:
 ```R
 library(devtools)
 install_github("alexeckert/parallelDist")
+```
+
+### Building Package
+
+#### System Dependencies
+
+To build the package from source, the following system dependencies are required:
+
+- **LAPACK and BLAS libraries**: Required for linear algebra operations
+
+On Ubuntu/Debian systems:
+
+```bash
+sudo apt-get install liblapack-dev libblas-dev
+```
+
+On RHEL/CentOS/Fedora systems:
+
+```bash
+sudo yum install lapack-devel blas-devel
+# or on newer systems:
+sudo dnf install lapack-devel blas-devel
+```
+
+On macOS with Homebrew:
+
+```bash
+brew install lapack openblas
 ```
 
 ### Authors

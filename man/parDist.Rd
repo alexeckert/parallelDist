@@ -35,7 +35,7 @@ Parameters:
             \item{
               \describe{
                 \item{\code{func} (Xptr)}{External pointer to a user-defined distance function with the following signature: \cr \code{double customDist(const arma::mat &A, const arma::mat &B)} \cr Note that the return value must be a \verb{double} and the two parameters must be of type \verb{const arma::mat &param}.  \cr \cr
-                More information about the Armadillo library can be found at \url{http://arma.sourceforge.net/docs.html} or as part of the documentation of the \pkg{RcppArmadillo} package.}
+                More information about the Armadillo library can be found at \url{https://arma.sourceforge.net/docs.html} or as part of the documentation of the \pkg{RcppArmadillo} package.}
               }
             }
           }

@@ -98,7 +98,7 @@ getStepPatternName <- function(arguments) {
   sp.candidate <- arguments[["step.pattern"]]
 
   if (!is.null(sp.candidate)) {
-    if (class(sp.candidate) == "stepPattern" && requireNamespace("dtw", quietly = TRUE)) {
+    if (inherits(sp.candidate, "stepPattern") && requireNamespace("dtw", quietly = TRUE)) {
       supported.patterns <- list(
         dtw::asymmetric, dtw::asymmetricP0, dtw::asymmetricP05, dtw::asymmetricP1, dtw::asymmetricP2,
         dtw::symmetric1, dtw::symmetric2, dtw::symmetricP0, dtw::symmetricP05, dtw::symmetricP1, dtw::symmetricP2
