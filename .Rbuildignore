@@ -7,3 +7,4 @@ CPPLINT.cfg
 ^\.Rproj\.user$
 .vscode
 install.sh
+^tools$
